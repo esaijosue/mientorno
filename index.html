@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MiEntorno - Riesgos en Tiempo Real SST</title>
+  <meta name="description" content="Monitoreo de riesgos del entorno en tiempo real para trabajadores de campo en minería, energía, construcción y puertos del Perú.">
+  
+  <!-- Leaflet CSS (cdnjs) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" integrity="sha512-Zcn6bjR/8RZbLEpLIeXrNGAffCNWFZDl64355DYWFUD9B56N1x5z5UbdFs9FVebPRkqV8BHNetTrG81MBNN23w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Estilos de la aplicación -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Encabezado -->
+    <header class="app-header">
+      <div class="brand-wrapper">
+        <div class="brand-icon" aria-hidden="true">🛡️</div>
+        <div>
+          <h1 id="app-name" class="brand-title">MiEntorno</h1>
+          <p class="brand-tagline">Seguridad y Salud en el Trabajo (SST / HSE)</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Panel de Búsqueda y Ubicación -->
+    <section class="control-panel" aria-label="Control de ubicación">
+      <!-- Búsqueda con Nominatim -->
+      <div class="search-box-container">
+        <div class="search-input-wrapper">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input
+            type="search"
+            id="search-input"
+            class="search-input"
+            placeholder="Buscar ciudad, mina, puerto o campamento en Perú..."
+            autocomplete="off"
+            aria-label="Buscar lugar por nombre"
+          >
+        </div>
+        <ul id="search-results" class="search-results-list" hidden></ul>
+      </div>
+
+      <!-- Botón de Ubicación GPS -->
+      <button id="btn-location" class="btn-location" type="button">
+        <span class="icon">📍</span> Usar mi ubicación
+      </button>
+
+      <!-- Barra de Metadatos de Posición -->
+      <div class="location-meta-bar">
+        <span id="location-status" class="location-status">Esperando selección de ubicación...</span>
+        <span id="coords-display" class="coords-display">Lat: --.---- | Lon: --.----</span>
+      </div>
+
+      <!-- Alertas de precisión y notificaciones -->
+      <div id="accuracy-alert" class="alert-container" hidden></div>
+    </section>
+
+    <!-- Mapa Interactivo -->
+    <main class="map-card" aria-label="Mapa interactivo de ubicación">
+      <div class="map-header">
+        <span>📍 Mapa de Operaciones</span>
+        <span>Arrastra el marcador para afinar</span>
+      </div>
+      <div id="map" class="map-container"></div>
+    </main>
+
+    <!-- Sección de Tarjetas de Riesgo (Contenedor para Fase 2) -->
+    <section class="cards-section" aria-label="Tarjetas de riesgos">
+      <div class="section-title">
+        <span>⚠️</span>
+        <span>Evaluación de Riesgos del Entorno</span>
+      </div>
+
+      <div id="cards-container" class="cards-grid">
+        <div class="welcome-card">
+          <h3>Fase 1: Ubicación y Base Operativa</h3>
+          <p>
+            Ubicación y mapa configurados con precisión. En la Fase 2 se integrarán automáticamente las tarjetas de Radiación UV, Lluvia horaria, Viento y Ráfagas, y Tormenta eléctrica con datos de Open-Meteo.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Pie de página fijo reglamentario -->
+  <footer class="app-footer">
+    <p class="footer-disclaimer">
+      Información referencial. No reemplaza las alertas oficiales (SENAMHI, IGP, INDECI, DHN).
+    </p>
+    <p class="footer-attribution">
+      Datos meteorológicos por <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> &bull; Cartografía por <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>
+    </p>
+  </footer>
+
+  <!-- Leaflet JS (cdnjs) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLTSXzSmGyk97vT6rvPGoLk4FXUkDRQ9ikrW95ES4TEzdbHSg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <!-- Script Principal de la Aplicación (ES Module) -->
+  <script type="module" src="main.js"></script>
+</body>
+</html>
