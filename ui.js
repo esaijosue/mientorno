@@ -121,23 +121,30 @@ export function updateLocationInfo(lat, lon, accuracy, source = 'gps') {
     }
   } else {
     const label = source === 'arrastre_marcador'
-      ? 'Punto reajustado manualmente'
+      ? 'Punto reajustado en el mapa'
       : source === 'click_mapa'
-        ? 'Punto fijado en mapa'
+        ? 'Punto fijado en el mapa'
         : source === 'busqueda'
           ? 'Ubicación seleccionada por búsqueda'
-          : 'Ubicación de sesión recuperada';
+          : source === 'inicial'
+            ? 'Frente de operación activo (Lima / Callao)'
+            : 'Ubicación recuperada de sesión';
 
     elements.locationStatus.textContent = label;
-    elements.accuracyAlert.innerHTML = `
-      <div class="modern-alert alert-info-glow" role="alert">
-        <span class="alert-pulse-dot dot-cyan"></span>
-        <div class="alert-content">
-          ${label}. Arrastra el radar para reajustar tu posición.
+
+    if (source === 'inicial') {
+      elements.accuracyAlert.hidden = true;
+    } else {
+      elements.accuracyAlert.innerHTML = `
+        <div class="modern-alert alert-info-glow" role="alert">
+          <span class="alert-pulse-dot dot-blue"></span>
+          <div class="alert-content">
+            ${label}. Puedes arrastrar el marcador para afinar la ubicación exacta de campo.
+          </div>
         </div>
-      </div>
-    `;
-    elements.accuracyAlert.hidden = false;
+      `;
+      elements.accuracyAlert.hidden = false;
+    }
   }
 }
 

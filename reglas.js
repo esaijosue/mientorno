@@ -18,6 +18,13 @@ export const PERU_DEFAULT_COORDS = {
   zoom: 6
 };
 
+// Ubicación operativa inicial para carga instantánea sin esperar GPS
+export const OPERATIONAL_DEFAULT_COORDS = {
+  lat: -12.0464,
+  lon: -77.0428,
+  name: 'Lima / Callao (Frente Operativo)'
+};
+
 // Umbral de precisión para considerar la ubicación como aproximada (en metros)
 export const ACCURACY_WARNING_THRESHOLD_METERS = 500;
 

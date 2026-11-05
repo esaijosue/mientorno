@@ -8,6 +8,7 @@ import {
   GEOLOCATION_CONFIG,
   STORAGE_KEY_LOCATION,
   PERU_DEFAULT_COORDS,
+  OPERATIONAL_DEFAULT_COORDS,
   AUTO_REFRESH_INTERVAL_MS
 } from './reglas.js';
 import { searchLocationNominatim, fetchWeatherData } from './api.js';
@@ -296,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(resizeMap, 300);
   });
 
-  // 1. Cargar ubicación guardada previamente si existe para render instantáneo
+  // 1. Cargar ubicación inicial instantánea (evita pantallas en blanco o esperas de GPS)
   const saved = recuperarUbicacionLocalStorage();
   if (saved) {
     setMarkerPosition(
@@ -309,7 +310,16 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     alCambiarUbicacion(saved.lat, saved.lon, saved.accuracy, 'storage');
   } else {
-    centerPeru();
+    // Carga inmediata de la base operativa de referencia para disponibilidad 100% instantánea
+    setMarkerPosition(
+      OPERATIONAL_DEFAULT_COORDS.lat,
+      OPERATIONAL_DEFAULT_COORDS.lon,
+      null,
+      true,
+      12,
+      (lat, lon, acc, origen) => alCambiarUbicacion(lat, lon, acc, origen)
+    );
+    alCambiarUbicacion(OPERATIONAL_DEFAULT_COORDS.lat, OPERATIONAL_DEFAULT_COORDS.lon, null, 'inicial');
   }
 
   // 2. Intentar reconocimiento automático de GPS de inmediato (solicitado para experiencia óptima de campo)
