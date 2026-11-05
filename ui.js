@@ -15,26 +15,36 @@ import {
 } from './reglas.js';
 
 // Elementos cacheados del DOM
-const elements = {
-  appName: document.getElementById('app-name'),
-  btnLocation: document.getElementById('btn-location'),
-  locationStatus: document.getElementById('location-status'),
-  accuracyAlert: document.getElementById('accuracy-alert'),
-  coordsDisplay: document.getElementById('coords-display'),
-  searchInput: document.getElementById('search-input'),
-  searchResults: document.getElementById('search-results'),
-  cardsContainer: document.getElementById('cards-container'),
-  btnRefresh: document.getElementById('btn-refresh'),
-  lastUpdated: document.getElementById('last-updated')
-};
+let elements = {};
 
 /**
- * Inicializa los textos de la interfaz con las constantes del proyecto.
+ * Inicializa y recupera los elementos de la interfaz.
  */
 export function initUI() {
+  elements = {
+    appName: document.getElementById('app-name'),
+    btnLocation: document.getElementById('btn-location'),
+    locationStatus: document.getElementById('location-status'),
+    accuracyAlert: document.getElementById('accuracy-alert'),
+    coordsDisplay: document.getElementById('coords-display'),
+    searchInput: document.getElementById('search-input'),
+    searchResults: document.getElementById('search-results'),
+    cardsContainer: document.getElementById('cards-container'),
+    btnRefresh: document.getElementById('btn-refresh'),
+    lastUpdated: document.getElementById('last-updated')
+  };
+
   if (elements.appName) {
     elements.appName.textContent = APP_NAME;
   }
+  return elements;
+}
+
+function getElements() {
+  if (!elements.cardsContainer) {
+    initUI();
+  }
+  return elements;
 }
 
 /**
@@ -221,39 +231,40 @@ export function hideSearchResults() {
  */
 
 export function renderRiskCards(weatherData) {
-  if (!elements.cardsContainer) return;
-  elements.cardsContainer.innerHTML = '';
+  const els = getElements();
+  if (!els.cardsContainer) return;
+  els.cardsContainer.innerHTML = '';
 
   // 1. Radiación UV
   try {
-    elements.cardsContainer.appendChild(createUVCard(weatherData));
+    els.cardsContainer.appendChild(createUVCard(weatherData));
   } catch (err) {
     console.error('Error generando tarjeta UV:', err);
-    elements.cardsContainer.appendChild(createErrorCard('Radiación UV', 'solar'));
+    els.cardsContainer.appendChild(createErrorCard('Radiación UV', 'solar'));
   }
 
   // 2. Lluvia por hora
   try {
-    elements.cardsContainer.appendChild(createRainCard(weatherData));
+    els.cardsContainer.appendChild(createRainCard(weatherData));
   } catch (err) {
     console.error('Error generando tarjeta Lluvia:', err);
-    elements.cardsContainer.appendChild(createErrorCard('Lluvia y Precipitación', 'rain'));
+    els.cardsContainer.appendChild(createErrorCard('Lluvia y Precipitación', 'rain'));
   }
 
   // 3. Viento y Ráfagas
   try {
-    elements.cardsContainer.appendChild(createWindCard(weatherData));
+    els.cardsContainer.appendChild(createWindCard(weatherData));
   } catch (err) {
     console.error('Error generando tarjeta Viento:', err);
-    elements.cardsContainer.appendChild(createErrorCard('Viento y Ráfagas', 'wind'));
+    els.cardsContainer.appendChild(createErrorCard('Viento y Ráfagas', 'wind'));
   }
 
   // 4. Tormenta Eléctrica
   try {
-    elements.cardsContainer.appendChild(createThunderstormCard(weatherData));
+    els.cardsContainer.appendChild(createThunderstormCard(weatherData));
   } catch (err) {
     console.error('Error generando tarjeta Tormenta:', err);
-    elements.cardsContainer.appendChild(createErrorCard('Tormenta Eléctrica (CAPE)', 'storm'));
+    els.cardsContainer.appendChild(createErrorCard('Tormenta Eléctrica (CAPE)', 'storm'));
   }
 
   updateLastRefreshTimestamp();

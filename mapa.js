@@ -17,6 +17,7 @@ let currentTileLayer = null;
  * Crea el icono personalizado de radar pulsante para el marcador de campo.
  */
 function createPulseMarkerIcon() {
+  if (typeof L === 'undefined') return null;
   return L.divIcon({
     className: 'pulse-marker-wrapper',
     html: `
@@ -47,6 +48,11 @@ function getTileUrl() {
  * @param {Function} onLocationChange Callback al mover marcador o hacer clic
  */
 export function initMap(containerId, onLocationChange) {
+  if (typeof L === 'undefined') {
+    console.warn('Leaflet aún no está cargado');
+    return null;
+  }
+
   if (map) {
     map.remove();
   }
@@ -101,7 +107,7 @@ export function initMap(containerId, onLocationChange) {
  * Ubica o mueve el marcador arrastrable con estilo radar.
  */
 export function setMarkerPosition(lat, lon, accuracy = null, panTo = true, customZoom = null, onDragCallback = null) {
-  if (!map) return;
+  if (typeof L === 'undefined' || !map) return;
 
   const coords = [lat, lon];
   const pulseIcon = createPulseMarkerIcon();

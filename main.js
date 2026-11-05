@@ -235,13 +235,17 @@ function iniciarAutoRefresco() {
 /**
  * Inicialización de la aplicación al cargar el DOM.
  */
-document.addEventListener('DOMContentLoaded', () => {
+function iniciarApp() {
   initUI();
 
-  // Inicializar mapa interactivo Leaflet
-  initMap('map', (lat, lon, acc, origen) => {
-    alCambiarUbicacion(lat, lon, acc, origen);
-  });
+  // Inicializar mapa interactivo Leaflet con captura segura
+  try {
+    initMap('map', (lat, lon, acc, origen) => {
+      alCambiarUbicacion(lat, lon, acc, origen);
+    });
+  } catch (err) {
+    console.error('Error al inicializar mapa Leaflet:', err);
+  }
 
   // Configurar botón "Usar mi ubicación"
   const btnLocation = document.getElementById('btn-location');
@@ -324,4 +328,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 2. Intentar reconocimiento automático de GPS de inmediato (solicitado para experiencia óptima de campo)
   solicitarGeolocalizacion(true);
-});
+}
+
+// Ejecución infalible (maneja tanto DOMContentLoaded como ejecución diferida de type=module)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', iniciarApp);
+} else {
+  iniciarApp();
+}
