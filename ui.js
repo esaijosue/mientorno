@@ -1,11 +1,11 @@
 /**
- * ui.js - Manejo visual de la plataforma de inteligencia de riesgos y centro de control
+ * ui.js - Manejo visual de la plataforma de inteligencia ambiental y centro de control
  * Proyecto: MiEntorno
  * 
- * Sistema visual inspirado en salas de operaciones de misión crítica y monitoreo satelital.
- * Todas las etiquetas en mayúsculas y minúsculas naturales (sentence case),
- * cálculo dinámico del índice de seguridad de faena (0-100%), curva sparkline interactiva de 24 horas,
- * tarjetas técnicas con medidas de control SST y panel flotante de alertas y recomendaciones.
+ * Sistema visual inspirado 100% en interfaces de misión crítica de alta gama.
+ * Textos en mayúsculas y minúsculas naturales (sentence case), cálculo dinámico del
+ * índice de seguridad de faena (0-100%), curva sparkline interactiva de 24 horas,
+ * tarjetas limpias sin bordes toscos y panel flotante de alertas y recomendaciones.
  */
 
 import {
@@ -48,8 +48,6 @@ export function initUI() {
     warningPrimaryTitle: document.getElementById('warning-primary-title'),
     warningRecommendText: document.getElementById('warning-recommend-text'),
     headerAlertBadge: document.getElementById('header-alert-badge'),
-    bottomAtmPressure: document.getElementById('bottom-atm-pressure'),
-    bottomAtmDetail: document.getElementById('bottom-atm-detail'),
     chartAreaPath: document.getElementById('chart-area-path'),
     chartLinePath: document.getElementById('chart-line-path'),
     dockBtnDashboard: document.getElementById('dock-btn-dashboard'),
@@ -65,9 +63,9 @@ export function initUI() {
     });
   }
 
-  // Atajo de teclado global Ctrl+K / Ctrl+Shift+F para enfocar el buscador
+  // Atajo de teclado global Ctrl+K para enfocar el buscador
   window.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K' || (e.shiftKey && (e.key === 'f' || e.key === 'F')))) {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
       e.preventDefault();
       if (elements.searchInput) {
         elements.searchInput.focus();
@@ -120,7 +118,7 @@ export function updateLastRefreshTimestamp() {
 }
 
 /**
- * Muestra el estado de la ubicación y la precisión en metros.
+ * Muestra el estado de la ubicación y la precisión en metros con caracteres limpios (sin entidades crudas).
  */
 export function updateLocationInfo(lat, lon, accuracy, source = 'gps', placeName = null) {
   const els = getElements();
@@ -135,12 +133,12 @@ export function updateLocationInfo(lat, lon, accuracy, source = 'gps', placeName
 
   if (accuracy !== null && accuracy !== undefined) {
     const roundedAcc = Math.round(accuracy);
-    els.locationStatus.textContent = `${displayName} &bull; Señal GPS activa (&plusmn;${roundedAcc} m de precisión)`;
+    els.locationStatus.textContent = `${displayName} • Señal GPS activa (±${roundedAcc} m de precisión)`;
 
     if (roundedAcc > ACCURACY_WARNING_THRESHOLD_METERS) {
       els.accuracyAlert.innerHTML = `
         <div class="precision-banner alert-warning">
-          <strong>Ubicación aproximada (&plusmn;${roundedAcc} m)</strong>
+          <strong>Ubicación aproximada (±${roundedAcc} m)</strong>
           <span>Puedes arrastrar el marcador en el mapa satelital para afinar tu frente de trabajo.</span>
         </div>
       `;
@@ -255,7 +253,7 @@ export function renderRiskCards(weatherData) {
     els.cardsContainer.appendChild(uvCard);
   } catch (err) {
     console.error('Error generando tarjeta UV:', err);
-    els.cardsContainer.appendChild(createErrorCard('Factor 01 &bull; Radiación UV'));
+    els.cardsContainer.appendChild(createErrorCard('Radiación solar UV'));
   }
 
   // 2. Lluvia y precipitación
@@ -264,7 +262,7 @@ export function renderRiskCards(weatherData) {
     els.cardsContainer.appendChild(rainCard);
   } catch (err) {
     console.error('Error generando tarjeta Lluvia:', err);
-    els.cardsContainer.appendChild(createErrorCard('Factor 02 &bull; Precipitación y lluvia'));
+    els.cardsContainer.appendChild(createErrorCard('Precipitación y lluvia'));
   }
 
   // 3. Viento y ráfagas (D.S. 024-2016-EM)
@@ -273,7 +271,7 @@ export function renderRiskCards(weatherData) {
     els.cardsContainer.appendChild(windCard);
   } catch (err) {
     console.error('Error generando tarjeta Viento:', err);
-    els.cardsContainer.appendChild(createErrorCard('Factor 03 &bull; Velocidad del viento'));
+    els.cardsContainer.appendChild(createErrorCard('Velocidad del viento'));
   }
 
   // 4. Tormenta eléctrica y energía convectiva (CAPE)
@@ -282,7 +280,7 @@ export function renderRiskCards(weatherData) {
     els.cardsContainer.appendChild(stormCard);
   } catch (err) {
     console.error('Error generando tarjeta Tormenta:', err);
-    els.cardsContainer.appendChild(createErrorCard('Factor 04 &bull; Potencial de tormenta'));
+    els.cardsContainer.appendChild(createErrorCard('Potencial de tormenta'));
   }
 
   // Actualizar métricas ejecutivas en la tarjeta hero del índice de seguridad
@@ -294,9 +292,6 @@ export function renderRiskCards(weatherData) {
   // Actualizar panel de alertas y recomendaciones SST del mapa
   updateWarningAccordion(riskContext);
 
-  // Actualizar telemetría atmosférica del pie de mapa
-  updateAtmosphereTelemetry(weatherData);
-
   updateLastRefreshTimestamp();
 }
 
@@ -307,7 +302,6 @@ function updateSafetyIndexSummary(context, weatherData) {
   const els = getElements();
   if (!els.safetyScoreNumber) return;
 
-  // Cálculo del puntaje de seguridad (100 base menos deducciones)
   const finalScore = Math.max(20, Math.min(99, 100 - context.scoreDeductions));
   els.safetyScoreNumber.textContent = finalScore.toFixed(1);
 
@@ -328,7 +322,6 @@ function renderSparklineCurve(weatherData, currentScore) {
   const hourlyUV = weatherData?.hourly?.uv_index || [];
   const hourlyWind = weatherData?.hourly?.wind_gusts_10m || [];
 
-  // Puntos base si no hay datos suficientes
   const points = [];
   const width = 380;
   const height = 90;
@@ -340,16 +333,14 @@ function renderSparklineCurve(weatherData, currentScore) {
     const windVal = hourlyWind[i] || 15;
 
     // A mayor UV y viento, menor puntaje de seguridad (más bajo en el eje Y)
-    // Coordenada Y en SVG: 0 es arriba (100% seguro), 90 es abajo (peligroso)
     const riskFactor = Math.min(1, (uvVal / 11) * 0.6 + (windVal / 50) * 0.4);
     const simulatedScore = Math.max(30, Math.min(95, currentScore * (1 - riskFactor * 0.35)));
     
-    // Normalizar a escala SVG de 20px a 75px
-    const y = Math.round(80 - ((simulatedScore - 30) / 70) * 55);
+    // Escala SVG normalizada
+    const y = Math.round(75 - ((simulatedScore - 30) / 70) * 50);
     points.push({ x, y });
   }
 
-  // Construir trayectorias SVG smooth
   if (points.length >= 2) {
     let pathD = `M ${points[0].x},${points[0].y}`;
     for (let i = 1; i < points.length; i++) {
@@ -406,22 +397,6 @@ function updateWarningAccordion(context) {
   }
 }
 
-/**
- * Actualiza la telemetría atmosférica del pie del mapa.
- */
-function updateAtmosphereTelemetry(weatherData) {
-  const els = getElements();
-  if (!els.bottomAtmPressure) return;
-
-  const currentPressure = weatherData?.current?.surface_pressure ? Math.round(weatherData.current.surface_pressure) : 1014;
-  const currentHumidity = weatherData?.current?.relative_humidity_2m ? Math.round(weatherData.current.relative_humidity_2m) : 42;
-
-  els.bottomAtmPressure.textContent = `${currentPressure} hPa`;
-  if (els.bottomAtmDetail) {
-    els.bottomAtmDetail.textContent = `Humedad ${currentHumidity}% &bull; Visibilidad &gt;10 km`;
-  }
-}
-
 function getCurrentHourIndex(hourlyTime, currentTimeStr) {
   if (!hourlyTime || !Array.isArray(hourlyTime)) return 0;
   if (!currentTimeStr) return 0;
@@ -471,16 +446,14 @@ function createUVCard(data, ctx) {
     };
   }
 
-  const badgeClass = evaluatedValue >= 8 ? 'badge-red' : evaluatedValue >= 6 ? 'badge-amber' : 'badge-green';
   const pillClass = evaluatedValue >= 8 ? 'pill-red' : evaluatedValue >= 6 ? 'pill-amber' : 'pill-green';
-  const borderClass = evaluatedValue >= 8 ? 'border-red' : evaluatedValue >= 6 ? 'border-amber' : 'border-green';
 
   const card = document.createElement('article');
   card.className = 'risk-card';
   card.innerHTML = `
     <div class="risk-card-top-row">
       <div class="factor-identifier">
-        <span class="factor-badge-circle ${badgeClass}">01</span>
+        <span class="factor-badge-circle">01</span>
         <span class="factor-title">Radiación solar UV</span>
       </div>
       <span class="card-external-arrow">&nearr;</span>
@@ -494,7 +467,7 @@ function createUVCard(data, ctx) {
       <span class="risk-status-pill ${pillClass}">Nivel ${rule.nivel.toLowerCase()}</span>
     </div>
 
-    <div class="control-measure-box ${borderClass}">
+    <div class="control-measure-box">
       <span class="control-label">Medida de control SST</span>
       <span>${escapeHTML(rule.recomendacion)}</span>
     </div>
@@ -529,9 +502,7 @@ function createRainCard(data, ctx) {
     }
   }
 
-  const badgeClass = !hasRain ? 'badge-green' : maxProb >= 70 ? 'badge-red' : 'badge-amber';
   const pillClass = !hasRain ? 'pill-green' : maxProb >= 70 ? 'pill-red' : 'pill-amber';
-  const borderClass = !hasRain ? 'border-green' : maxProb >= 70 ? 'border-red' : 'border-amber';
   const nivelTexto = !hasRain ? 'Seco' : maxProb >= 70 ? 'Lluvia intensa' : 'Lluvia probable';
 
   const recomendacion = !hasRain
@@ -561,7 +532,6 @@ function createRainCard(data, ctx) {
     };
   }
 
-  // Generar micro-histograma interactivo
   let barsHTML = '';
   for (let i = 0; i < Math.min(times.length, 24); i++) {
     const prob = probs[i] || 0;
@@ -577,7 +547,7 @@ function createRainCard(data, ctx) {
   card.innerHTML = `
     <div class="risk-card-top-row">
       <div class="factor-identifier">
-        <span class="factor-badge-circle ${badgeClass}">02</span>
+        <span class="factor-badge-circle">02</span>
         <span class="factor-title">Precipitación y lluvia</span>
       </div>
       <span class="card-external-arrow">&nearr;</span>
@@ -595,7 +565,7 @@ function createRainCard(data, ctx) {
       ${barsHTML}
     </div>
 
-    <div class="control-measure-box ${borderClass}">
+    <div class="control-measure-box">
       <span class="control-label">Medida de control SST</span>
       <span>${escapeHTML(recomendacion)}</span>
     </div>
@@ -615,37 +585,29 @@ function createWindCard(data, ctx) {
   const max12hGust = Math.max(currentGust, ...(next12Gusts.length ? next12Gusts : [0]));
 
   let nivelLabel = 'Normal';
-  let badgeClass = 'badge-green';
   let pillClass = 'pill-green';
-  let borderClass = 'border-green';
   let deduction = 0;
   let severityScore = 0;
   let recomendacion = 'Vientos calmos. Operaciones de izaje, grúas y trabajos en altura autorizados sin restricción.';
 
   if (max12hGust > 50) {
     nivelLabel = 'Suspensión obligatoria';
-    badgeClass = 'badge-red';
     pillClass = 'pill-red';
-    borderClass = 'border-red';
     deduction = 35;
     severityScore = 5;
     recomendacion = 'Parada total de grúas y trabajos en altura conforme a D.S. 024-2016-EM. Descenso de plumas.';
   } else if (max12hGust >= 36) {
     nivelLabel = 'Restricción de izajes';
-    badgeClass = 'badge-red';
     pillClass = 'pill-red';
-    borderClass = 'border-red';
     deduction = 20;
     severityScore = 4;
     recomendacion = 'Prohibido izaje de cargas de gran área de vela. Evaluación obligatoria con anemómetro en punta de pluma.';
   } else if (max12hGust >= 25) {
     nivelLabel = 'Precaución en izajes';
-    badgeClass = 'badge-amber';
     pillClass = 'pill-amber';
-    borderClass = 'border-amber';
     deduction = 8;
     severityScore = 2;
-    recomendacion = 'Inspección de vientos guía (vientos de cola), estabilizadores de grúas y arneses con barbiquejo.';
+    recomendacion = 'Inspección de vientos guía, estabilizadores de grúas y arneses con barbiquejo.';
   }
 
   ctx.scoreDeductions += deduction;
@@ -657,7 +619,7 @@ function createWindCard(data, ctx) {
       subtitle: `${nivelLabel}`,
       value: Math.round(max12hGust),
       unit: 'km/h',
-      caption: `Sostenido: ${Math.round(currentSpeed)} km/h &bull; Ráfaga: ${Math.round(max12hGust)} km/h`,
+      caption: `Sostenido: ${Math.round(currentSpeed)} km/h • Ráfaga: ${Math.round(max12hGust)} km/h`,
       recommendation: recomendacion,
       severityScore
     };
@@ -668,7 +630,7 @@ function createWindCard(data, ctx) {
   card.innerHTML = `
     <div class="risk-card-top-row">
       <div class="factor-identifier">
-        <span class="factor-badge-circle ${badgeClass}">03</span>
+        <span class="factor-badge-circle">03</span>
         <span class="factor-title">Velocidad del viento</span>
       </div>
       <span class="card-external-arrow">&nearr;</span>
@@ -682,7 +644,7 @@ function createWindCard(data, ctx) {
       <span class="risk-status-pill ${pillClass}">${nivelLabel}</span>
     </div>
 
-    <div class="control-measure-box ${borderClass}">
+    <div class="control-measure-box">
       <span class="control-label">Norma D.S. 024-2016-EM / Izajes</span>
       <span>${escapeHTML(recomendacion)}</span>
     </div>
@@ -725,37 +687,27 @@ function createThunderstormCard(data, ctx) {
 
   let nivelLabel = capeRule.nivel;
   let recomendacion = capeRule.recomendacion;
-  let badgeClass = 'badge-green';
   let pillClass = 'pill-green';
-  let borderClass = 'border-green';
   let deduction = 0;
   let severityScore = 0;
 
   if (stormDetected) {
-    badgeClass = 'badge-red';
     pillClass = 'pill-red';
-    borderClass = 'border-red';
     nivelLabel = 'Tormenta prevista';
     deduction = 35;
     severityScore = 5;
     const horaMsg = estimatedStormTime ? ` a las ${estimatedStormTime} h.` : '.';
     recomendacion = `Tormenta eléctrica prevista aprox.${horaMsg} Activar detector de rayos y preparar repliegue a refugio seguro.`;
   } else if (level === 'MUY_ALTO') {
-    badgeClass = 'badge-red';
     pillClass = 'pill-red';
-    borderClass = 'border-red';
     deduction = 22;
     severityScore = 4;
   } else if (level === 'ALTO') {
-    badgeClass = 'badge-amber';
     pillClass = 'pill-amber';
-    borderClass = 'border-amber';
     deduction = 14;
     severityScore = 3;
   } else if (level === 'MODERADO') {
-    badgeClass = 'badge-amber';
     pillClass = 'pill-amber';
-    borderClass = 'border-amber';
     deduction = 6;
     severityScore = 1;
   }
@@ -780,7 +732,7 @@ function createThunderstormCard(data, ctx) {
   card.innerHTML = `
     <div class="risk-card-top-row">
       <div class="factor-identifier">
-        <span class="factor-badge-circle ${badgeClass}">04</span>
+        <span class="factor-badge-circle">04</span>
         <span class="factor-title">Potencial de tormenta</span>
       </div>
       <span class="card-external-arrow">&nearr;</span>
@@ -794,7 +746,7 @@ function createThunderstormCard(data, ctx) {
       <span class="risk-status-pill ${pillClass}">${nivelLabel}</span>
     </div>
 
-    <div class="control-measure-box ${borderClass}">
+    <div class="control-measure-box">
       <span class="control-label">Protocolo de tormenta eléctrica</span>
       <span>${escapeHTML(recomendacion)}</span>
     </div>
@@ -811,11 +763,11 @@ function createErrorCard(title) {
   card.innerHTML = `
     <div class="risk-card-top-row">
       <div class="factor-identifier">
-        <span class="factor-badge-circle badge-amber">!</span>
+        <span class="factor-badge-circle">!</span>
         <span class="factor-title">${escapeHTML(title)}</span>
       </div>
     </div>
-    <div class="control-measure-box border-amber">
+    <div class="control-measure-box">
       <span>Dato no disponible temporalmente. Verificando sensores.</span>
     </div>
   `;

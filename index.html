@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>MiEntorno &bull; Centro de Control y Monitoreo Ambiental SST</title>
+  <title>MiEntorno &bull; Monitoreo Ambiental de Campo</title>
   <meta name="description" content="Plataforma de evaluación y monitoreo de riesgos climáticos y físicos en tiempo real para faenas mineras, energéticas, construcción y puertos del Perú.">
   
   <!-- Tipografía Inter oficial -->
@@ -20,44 +20,20 @@
 <body class="theme-control-room">
   <div class="app-layout">
     <!-- =====================================================================
-         BARRA SUPERIOR EJECUTIVA (HEADER)
-         Estilo idéntico a la referencia: Logo vectorial, pestañas operativas,
-         buscador global, botón de GPS explícito y telemetría en vivo.
+         BARRA SUPERIOR (HEADER LIMPIO SIN PESTAÑAS FALSAS)
+         Logotipo oficial logo.webp, buscador global, botón de GPS y telemetría
          ===================================================================== -->
     <header class="app-top-header">
-      <!-- Marca y Logo estilo cabecera de misión crítica -->
+      <!-- Logotipo oficial del usuario -->
       <div class="header-brand-section">
-        <div class="brand-geometric-logo" aria-hidden="true">
-          <svg viewBox="0 0 28 28" width="22" height="22" fill="none">
-            <line x1="4" y1="20" x2="14" y2="4" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
-            <line x1="10" y1="24" x2="20" y2="8" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
-            <line x1="16" y1="26" x2="24" y2="14" stroke="#0ea5e9" stroke-width="3" stroke-linecap="round"/>
-          </svg>
-        </div>
+        <img src="logo.webp" alt="Logo MiEntorno" class="brand-logo-img">
         <div class="brand-titles">
           <span class="brand-main-title">MiEntorno</span>
-          <span class="brand-sub-badge">Control SST</span>
+          <span class="brand-sub-badge">Monitoreo de campo</span>
         </div>
       </div>
 
-      <!-- Pestañas de navegación de operaciones (idéntico a Live Map / Fleet / Routes / Analytics) -->
-      <nav class="header-nav-tabs" aria-label="Secciones operativas">
-        <button class="nav-tab-pill active" type="button" data-view="live-map">
-          <span class="tab-dot-pulse"></span>
-          <span>Monitoreo en vivo</span>
-        </button>
-        <button class="nav-tab-pill" type="button" data-view="iperc">
-          <span>Matriz IPERC</span>
-        </button>
-        <button class="nav-tab-pill" type="button" data-view="protocolos">
-          <span>Protocolos SST</span>
-        </button>
-        <button class="nav-tab-pill" type="button" data-view="forecast">
-          <span>Pronóstico 24h</span>
-        </button>
-      </nav>
-
-      <!-- Buscador de faena / ubicación con atajo de teclado -->
+      <!-- Buscador de faena / ciudad con atajo de teclado Ctrl+K -->
       <div class="header-search-wrapper">
         <div class="header-search-box">
           <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
@@ -77,9 +53,8 @@
         <ul id="search-results" class="search-dropdown-menu" hidden></ul>
       </div>
 
-      <!-- Acciones de cabecera: Botón de GPS con etiqueta clara y campana de alertas -->
+      <!-- Acciones de cabecera: Botón explícito de GPS, coordenadas y sincronización -->
       <div class="header-controls-group">
-        <!-- Botón explícito para geolocalización -->
         <button id="btn-location" class="btn-action-pill btn-gps-trigger" type="button" title="Obtener mi ubicación GPS de alta precisión">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
@@ -87,93 +62,72 @@
           <span>Usar mi GPS</span>
         </button>
 
-        <!-- Indicador de telemetría y coordenadas -->
         <div class="telemetry-pill">
           <span class="live-dot-beacon"></span>
           <span id="coords-display" class="coords-telemetry-text">Lat: -12.0464, Lon: -77.0428</span>
         </div>
 
-        <!-- Campana de alertas con insignia numérica -->
+        <button id="btn-refresh" class="btn-icon-pill" type="button" title="Sincronizar datos climáticos en tiempo real">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+          </svg>
+        </button>
+
         <button id="btn-notifications" class="btn-icon-pill" type="button" title="Alertas de seguridad activas">
-          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
             <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
           </svg>
           <span id="header-alert-badge" class="notification-badge">1</span>
         </button>
-
-        <!-- Perfil ejecutivo del supervisor SST -->
-        <div class="user-supervisor-chip" title="Sesión de supervisión activa">
-          <div class="user-avatar-dot">SST</div>
-          <span class="user-name-text">Ing. de Campo</span>
-        </div>
       </div>
     </header>
 
     <!-- =====================================================================
-         PANEL PRINCIPAL DE OPERACIONES (GRID EN 2 COLUMNAS)
-         Columna izquierda: Tablero ejecutivo SST con gráfico sparkline y tarjetas
-         Columna derecha: Mapa satelital Esri con overlays flotantes
+         GRID PRINCIPAL: TABLERO EJECUTIVO A LA IZQUIERDA Y MAPA A LA DERECHA
          ===================================================================== -->
     <div class="app-workspace-grid">
       <!-- -----------------------------------------------------------------
-           COLUMNA IZQUIERDA: CENTRO DE INTELIGENCIA Y EVALUACIÓN SST
+           COLUMNA IZQUIERDA: TABLERO DE EVALUACIÓN AMBIENTAL
            ----------------------------------------------------------------- -->
       <aside id="panel-dashboard" class="intelligence-side-panel">
-        <!-- Fila de filtros de categoría rápida (idéntico a "24 Bus | 100 Taxi | 12 Trains") -->
-        <div class="filter-chips-row">
-          <button class="filter-chip active" type="button">
-            <span>4 Factores</span>
-          </button>
-          <button class="filter-chip" type="button">
-            <span class="chip-dot chip-red"></span>
-            <span>1 Alerta</span>
-          </button>
-          <button class="filter-chip" type="button">
-            <span class="chip-dot chip-green"></span>
-            <span>3 Normal</span>
-          </button>
-          <button class="filter-chip" type="button">
-            <span>D.S. 024-EM</span>
-          </button>
-        </div>
-
-        <!-- Fila de contadores de estado dual (idéntico a "Online 12 / Offline 4") -->
+        <!-- Fila de contadores de estado dual (idéntico a Online 12 / Offline 4 de la referencia, sin bordes laterales) -->
         <div class="dual-status-kpi-row">
-          <div class="status-counter-card card-safe">
+          <div class="status-counter-card">
             <div class="counter-head">
-              <span class="status-dot dot-safe"></span>
+              <div class="kpi-icon-circle kpi-green">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
               <span class="counter-label">Condición normal</span>
             </div>
             <div id="tally-safe-count" class="counter-number">3</div>
           </div>
-          <div class="status-counter-card card-alert">
+
+          <div class="status-counter-card">
             <div class="counter-head">
-              <span class="status-dot dot-alert"></span>
+              <div class="kpi-icon-circle kpi-red">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                </svg>
+              </div>
               <span class="counter-label">Atención requerida</span>
             </div>
             <div id="tally-alert-count" class="counter-number">1</div>
           </div>
         </div>
 
-        <!-- Tarjeta Hero del Índice de Seguridad Operativa (idéntica a "Operational Efficiency 78.3%") -->
+        <!-- Tarjeta Hero: Índice de seguridad en faena (idéntica a Operational Efficiency 78.3%) -->
         <section class="safety-efficiency-card">
           <div class="efficiency-card-head">
             <div>
               <span class="efficiency-title">Índice de seguridad en faena</span>
               <p id="location-status" class="efficiency-subtitle">Lima / Callao &bull; Frente de operación</p>
             </div>
-            <div class="head-actions">
-              <button id="btn-refresh" class="btn-refresh-icon" type="button" title="Sincronizar datos climáticos en tiempo real">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2">
-                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-                </svg>
-              </button>
-              <span class="external-link-arrow">&nearr;</span>
-            </div>
+            <span class="external-link-arrow">&nearr;</span>
           </div>
 
-          <!-- Métrica hero grande con tipografía delgada -->
           <div class="efficiency-hero-row">
             <div class="hero-metric-box">
               <span id="safety-score-number" class="hero-number">78.3</span>
@@ -190,24 +144,16 @@
             <svg id="efficiency-sparkline-svg" class="efficiency-chart-svg" viewBox="0 0 380 90" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35"/>
-                  <stop offset="85%" stop-color="#38bdf8" stop-opacity="0.0"/>
-                </linearGradient>
-                <linearGradient id="alertGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#ef4444" stop-opacity="0.45"/>
-                  <stop offset="85%" stop-color="#ef4444" stop-opacity="0.0"/>
+                  <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.3"/>
+                  <stop offset="90%" stop-color="#38bdf8" stop-opacity="0.0"/>
                 </linearGradient>
               </defs>
               <!-- Línea horizontal de referencia 80% -->
-              <line x1="0" y1="35" x2="380" y2="35" stroke="rgba(255,255,255,0.15)" stroke-dasharray="3,3" stroke-width="1"/>
+              <line x1="0" y1="35" x2="380" y2="35" stroke="rgba(255,255,255,0.12)" stroke-dasharray="3,3" stroke-width="1"/>
               <!-- Área y trayectoria generada por JS -->
               <path id="chart-area-path" class="chart-area-fill" fill="url(#chartGradient)" d="M0,60 L60,65 L120,70 L180,45 L240,25 L300,50 L380,40 L380,90 L0,90 Z"/>
               <path id="chart-line-path" class="chart-line-stroke" fill="none" stroke="#e2e8f0" stroke-width="1.8" d="M0,60 L60,65 L120,70 L180,45 L240,25 L300,50 L380,40"/>
-              <!-- Puntos de inflexión destacados -->
-              <circle cx="120" cy="70" r="3.5" fill="#f97316" stroke="#0a0d13" stroke-width="1.5"/>
-              <circle cx="240" cy="25" r="3.5" fill="#10b981" stroke="#0a0d13" stroke-width="1.5"/>
             </svg>
-            <!-- Eje de tiempo inferior (06:00, 09:00, 12:00, 15:00, 18:00, 21:00) -->
             <div class="chart-time-axis">
               <span>06:00</span>
               <span>09:00</span>
@@ -219,52 +165,53 @@
           </div>
         </section>
 
-        <!-- Alerta de precisión GPS (si es mayor a 500m) -->
+        <!-- Alerta de precisión GPS (solo si > 500m) -->
         <div id="accuracy-alert" class="accuracy-banner-container" hidden></div>
 
-        <!-- Encabezado sutil de factores de riesgo evaluados -->
+        <!-- Encabezado sutil sin mayúsculas sostenidas -->
         <div class="factors-section-header">
-          <span class="factors-title">Factores críticos evaluados</span>
-          <span id="last-updated" class="factors-timestamp">Sincronizado en tiempo real</span>
+          <span class="factors-title">Factores evaluados en tiempo real</span>
+          <span id="last-updated" class="factors-timestamp">Sincronizado</span>
         </div>
 
-        <!-- Contenedor dinámico de las 4 tarjetas de riesgo meteorológico y físico -->
+        <!-- Contenedor dinámico de las 4 tarjetas de riesgo -->
         <div id="cards-container" class="risk-cards-stream" aria-label="Tarjetas de evaluación de riesgo"></div>
       </aside>
 
       <!-- -----------------------------------------------------------------
-           COLUMNA DERECHA: CENTRO DE MAPA SATELITAL ESRI Y PANELES FLOTANTES
+           COLUMNA DERECHA: MAPA SATELITAL CINEMÁTICO CON OVERLAYS FLOTANTES
            ----------------------------------------------------------------- -->
       <main id="panel-map-container" class="satellite-map-panel">
         <div class="satellite-viewport">
           <!-- Lienzo del mapa satelital Leaflet -->
           <div id="map" class="map-render-canvas"></div>
 
-          <!-- Píldoras flotantes superiores sobre el mapa (Ubicación activa y Fuente satelital) -->
-          <div class="floating-map-top-bar">
-            <!-- Selector de ubicación activa en píldora con flecha desplegable -->
-            <button id="map-location-pill" class="map-floating-pill location-pill" type="button" title="Ubicación monitoreada">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg>
-              <span id="floating-place-name">Lima / Callao</span>
-              <svg class="chevron-down" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-            </button>
+          <!-- Título principal flotando sobre el mapa (idéntico a 'Traffic Management' en la referencia) -->
+          <div class="floating-map-hero-header">
+            <h1 class="map-hero-title">Monitoreo de Campo</h1>
+            <div class="map-pills-row">
+              <button id="map-location-pill" class="map-glass-pill" type="button" title="Haz clic para buscar otra faena">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <span id="floating-place-name">Lima / Callao</span>
+                <svg class="pill-chevron" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
 
-            <!-- Píldora de fuente satelital de alta resolución -->
-            <div class="map-floating-pill provider-pill">
-              <span class="provider-live-pulse"></span>
-              <span>Satelital Esri Maxar</span>
+              <div class="map-glass-pill provider-pill">
+                <span class="live-pulse-dot"></span>
+                <span>Satelital Esri</span>
+              </div>
             </div>
           </div>
 
-          <!-- TARJETA DE CRISTAL FLOTANTE SOBRE EL MAPA (Réplica exacta de 'Passenger Load 87%') -->
+          <!-- Tarjeta de cristal flotante sobre el mapa (réplica exacta de 'Passenger Load 87%') -->
           <div id="map-floating-card" class="frosted-glass-metric-card">
             <div class="glass-card-top">
-              <span id="floating-kpi-title" class="glass-metric-label">Riesgo crítico actual</span>
+              <span id="floating-kpi-title" class="glass-metric-label">Riesgo prioritario</span>
               <span class="glass-arrow">&nearr;</span>
             </div>
             <span id="floating-kpi-subtitle" class="glass-metric-sub">Radiación solar UV</span>
@@ -272,15 +219,13 @@
               <span id="floating-kpi-value" class="glass-hero-val">10.8</span>
               <span id="floating-kpi-unit" class="glass-hero-unit">UV</span>
             </div>
-            <span id="floating-kpi-caption" class="glass-caption-note">Pico extremo previsto a las 12:30 pm</span>
+            <span id="floating-kpi-caption" class="glass-caption-note">Pico crítico previsto a las 12:30 pm</span>
           </div>
 
-          <!-- PANEL DE ACORDEÓN DE ALERTAS Y CONTROLES SST (Réplica exacta de 'Warning' del diseño) -->
+          <!-- Panel acordeón de alertas y recomendaciones SST sobre el mapa -->
           <aside class="floating-warning-accordion" id="warning-accordion">
             <div class="accordion-header" id="accordion-toggle-btn">
-              <div class="accordion-title-group">
-                <span class="accordion-main-title">Alertas y controles SST</span>
-              </div>
+              <span class="accordion-main-title">Alertas y controles SST</span>
               <svg class="accordion-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="18 15 12 9 6 15"></polyline>
               </svg>
@@ -288,7 +233,7 @@
 
             <div class="accordion-body" id="accordion-content">
               <div class="warning-subheading">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
                   <line x1="12" y1="9" x2="12" y2="13"/>
                   <line x1="12" y1="17" x2="12.01" y2="17"/>
@@ -296,8 +241,8 @@
                 <span id="accordion-warning-count">Condiciones con restricción (1 factor)</span>
               </div>
 
-              <!-- Tarjeta de alerta teñida en rojo oscuro con insignia circular roja -->
-              <div class="warning-alert-box alert-red">
+              <!-- Tarjeta de alerta teñida en tono vino oscuro con insignia roja circular -->
+              <div class="warning-alert-box">
                 <div class="warning-box-head">
                   <span class="warning-badge-pill">1</span>
                   <div class="warning-box-titles">
@@ -323,37 +268,18 @@
                 </div>
               </div>
 
-              <!-- Segundo protocolo colapsable: Izaje y vientos -->
+              <!-- Protocolo secundario -->
               <div class="warning-secondary-protocol">
                 <div class="protocol-row-head">
-                  <span class="protocol-indicator dot-amber"></span>
-                  <span class="protocol-title">Protocolo de izaje y grúas (Viento 27 km/h)</span>
+                  <span class="protocol-indicator"></span>
+                  <span class="protocol-title">Protocolo de izaje y grúas (D.S. 024-2016-EM)</span>
                 </div>
-                <p class="protocol-desc">Operación permitida con precaución. Límite mandatorio de parada técnica: 32 km/h según D.S. 024-2016-EM.</p>
+                <p class="protocol-desc">Operación permitida con precaución. Límite mandatorio de parada técnica: 32 km/h.</p>
               </div>
             </div>
           </aside>
 
-          <!-- TARJETAS HORIZONTALES FLOTANTES AL PIE DEL MAPA (Réplica de 'Schedule Offset' y 'Live Passenger') -->
-          <div class="floating-map-bottom-metrics">
-            <div class="bottom-metric-card">
-              <span class="bottom-metric-label">Ventana de trabajo seguro</span>
-              <div class="bottom-metric-row">
-                <span class="bottom-metric-hero">&plusmn; 4.5 h</span>
-                <span class="bottom-metric-sub">Horas con UV &lt; 6 y vientos calmos</span>
-              </div>
-            </div>
-
-            <div class="bottom-metric-card">
-              <span class="bottom-metric-label">Atmósfera de faena</span>
-              <div class="bottom-metric-row">
-                <span id="bottom-atm-pressure" class="bottom-metric-hero">1,014 hPa</span>
-                <span id="bottom-atm-detail" class="bottom-metric-sub">Humedad 42% &bull; Visibilidad &gt;10 km</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- CONTROLES FLOTANTES DE ZOOM Y CENTRADO GPS -->
+          <!-- Controles de navegación y zoom en el mapa -->
           <div class="map-floating-navigation-controls">
             <button id="map-zoom-in" class="map-btn-circle" type="button" title="Acercar mapa satelital">+</button>
             <button id="map-recenter-gps" class="map-btn-circle" type="button" title="Centrar en mi ubicación GPS">
@@ -368,9 +294,7 @@
     </div>
 
     <!-- =====================================================================
-         BARRA FLOTANTE INFERIOR DOCK PARA MÓVIL (Réplica exacta de Imagen 9)
-         Permite al usuario en teléfono alternar instantáneamente entre el Tablero,
-         el Mapa Satelital, las Alertas y disparar el GPS.
+         BARRA DOCK INFERIOR PARA MÓVIL
          ===================================================================== -->
     <nav class="mobile-bottom-dock-bar" aria-label="Navegación móvil">
       <div class="dock-capsule-container">
@@ -413,20 +337,12 @@
         </button>
       </div>
     </nav>
-
-    <!-- Pie de página discreto con estándares de auditoría y fuentes -->
-    <footer class="app-auditory-footer">
-      <div class="footer-inner-content">
-        <span>Evaluación de campo conforme a D.S. 024-2016-EM, Norma G.050 y estándares OMS/OMM.</span>
-        <span>Imágenes satelitales fotorrealistas: Esri y Maxar. Datos predictivos: Open-Meteo.</span>
-      </div>
-    </footer>
   </div>
 
-  <!-- Leaflet JS sin bloqueo de SRI -->
+  <!-- Leaflet JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 
-  <!-- Orquestador principal de la aplicación -->
+  <!-- Script principal de la aplicación -->
   <script type="module" src="main.js"></script>
 </body>
 </html>
