@@ -12,7 +12,7 @@ import {
   AUTO_REFRESH_INTERVAL_MS
 } from './reglas.js';
 import { searchLocationNominatim, fetchWeatherData } from './api.js';
-import { initMap, setMarkerPosition, centerPeru, resizeMap } from './mapa.js';
+import { initMap, setMarkerPosition, centerPeru, resizeMap, zoomIn, zoomOut } from './mapa.js';
 import {
   initUI,
   setLocationButtonLoading,
@@ -263,6 +263,20 @@ function iniciarApp() {
         showNotification('Selecciona primero una ubicación en el mapa o activa tu GPS.', 'info');
       }
     });
+  }
+
+  // Configurar controles flotantes del mapa satelital
+  const btnZoomIn = document.getElementById('map-zoom-in');
+  if (btnZoomIn) {
+    btnZoomIn.addEventListener('click', zoomIn);
+  }
+  const btnZoomOut = document.getElementById('map-zoom-out');
+  if (btnZoomOut) {
+    btnZoomOut.addEventListener('click', zoomOut);
+  }
+  const btnRecenter = document.getElementById('map-recenter-gps');
+  if (btnRecenter) {
+    btnRecenter.addEventListener('click', () => solicitarGeolocalizacion(false));
   }
 
   // Configurar campo de búsqueda

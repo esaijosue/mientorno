@@ -1,9 +1,9 @@
 /**
- * mapa.js - Inicialización y control del mapa interactivo
+ * mapa.js - Inicialización y control del mapa satelital de alta resolución
  * Proyecto: MiEntorno
  * 
- * Utiliza mosaicos de alto impacto visual (CartoDB Positron / Dark Matter)
- * y marcador de radar pulsante de alta precisión para operaciones SST.
+ * Capa satelital de alta definición (Esri World Imagery + Etiquetas de referencia)
+ * con marcador de radar de campo y controles flotantes.
  */
 
 import { PERU_DEFAULT_COORDS } from './reglas.js';
@@ -11,20 +11,19 @@ import { PERU_DEFAULT_COORDS } from './reglas.js';
 let map = null;
 let marker = null;
 let accuracyCircle = null;
-let currentTileLayer = null;
 
 /**
- * Crea el icono personalizado de radar pulsante para el marcador de campo.
+ * Crea el icono de radar pulsante de alta precisión para el mapa satelital.
  */
 function createPulseMarkerIcon() {
   if (typeof L === 'undefined') return null;
   return L.divIcon({
-    className: 'pulse-marker-wrapper',
+    className: 'sat-marker-wrapper',
     html: `
-      <div class="pulse-marker-container">
-        <div class="pulse-marker-ring"></div>
-        <div class="pulse-marker-ping"></div>
-        <div class="pulse-marker-dot"></div>
+      <div class="sat-marker-container">
+        <div class="sat-marker-ring"></div>
+        <div class="sat-marker-ping"></div>
+        <div class="sat-marker-dot"></div>
       </div>
     `,
     iconSize: [36, 36],
@@ -33,17 +32,7 @@ function createPulseMarkerIcon() {
 }
 
 /**
- * Obtiene la URL de mosaicos según el esquema de color del sistema.
- */
-function getTileUrl() {
-  const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  return isDark
-    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-    : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-}
-
-/**
- * Inicializa el mapa Leaflet con estética de centro de control moderno.
+ * Inicializa el mapa Leaflet con vista satelital fotorrealista.
  * @param {string} containerId ID del contenedor HTML
  * @param {Function} onLocationChange Callback al mover marcador o hacer clic
  */
@@ -57,41 +46,31 @@ export function initMap(containerId, onLocationChange) {
     map.remove();
   }
 
-  // Inicializar mapa centrado en Perú por defecto
+  // Inicializar mapa centrado en Perú
   map = L.map(containerId, {
-    zoomControl: false, // Reemplazaremos por control estilizado en posición óptima
+    zoomControl: false,
     attributionControl: false
   }).setView([PERU_DEFAULT_COORDS.lat, PERU_DEFAULT_COORDS.lon], PERU_DEFAULT_COORDS.zoom);
 
-  // Control de zoom en esquina superior derecha para no interferir con controles móviles
-  L.control.zoom({ position: 'topright' }).addTo(map);
+  // 1. Capa Satelital de Alta Resolución (Esri World Imagery - Gratis, global y sub-métrica)
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19,
+    attribution: 'Esri, Maxar, Earthstar Geographics'
+  }).addTo(map);
 
-  // Atribución compacta oficial
+  // 2. Capa Híbrida de Referencia (Límites, carreteras y localidades sutiles)
+  L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19,
+    opacity: 0.75
+  }).addTo(map);
+
+  // Atribución compacta
   L.control.attribution({
     position: 'bottomright',
     prefix: false
-  }).addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OSM</a> &bull; <a href="https://carto.com/" target="_blank" rel="noopener">CARTO</a>').addTo(map);
+  }).addAttribution('&copy; Esri &bull; Maxar').addTo(map);
 
-  // Capa base moderna (CartoDB Voyager / Dark Matter)
-  currentTileLayer = L.tileLayer(getTileUrl(), {
-    maxZoom: 19,
-    subdomains: 'abcd'
-  }).addTo(map);
-
-  // Escuchar cambios de tema oscuro/claro para actualizar los tiles automáticamente
-  if (window.matchMedia) {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      if (currentTileLayer && map) {
-        map.removeLayer(currentTileLayer);
-        currentTileLayer = L.tileLayer(getTileUrl(), {
-          maxZoom: 19,
-          subdomains: 'abcd'
-        }).addTo(map);
-      }
-    });
-  }
-
-  // Selección manual interactiva al pulsar sobre el mapa
+  // Escuchar clic en el mapa para posicionamiento manual
   map.on('click', (e) => {
     const { lat, lng } = e.latlng;
     setMarkerPosition(lat, lng, null, false);
@@ -104,7 +83,7 @@ export function initMap(containerId, onLocationChange) {
 }
 
 /**
- * Ubica o mueve el marcador arrastrable con estilo radar.
+ * Mueve o ubica el marcador de radar en las coordenadas indicadas.
  */
 export function setMarkerPosition(lat, lon, accuracy = null, panTo = true, customZoom = null, onDragCallback = null) {
   if (typeof L === 'undefined' || !map) return;
@@ -112,12 +91,11 @@ export function setMarkerPosition(lat, lon, accuracy = null, panTo = true, custo
   const coords = [lat, lon];
   const pulseIcon = createPulseMarkerIcon();
 
-  // Crear o actualizar marcador
   if (!marker) {
     marker = L.marker(coords, {
       draggable: true,
       icon: pulseIcon,
-      title: 'Punto de monitoreo de riesgos SST'
+      title: 'Punto de monitoreo de riesgos'
     }).addTo(map);
 
     marker.on('dragend', () => {
@@ -145,11 +123,11 @@ export function setMarkerPosition(lat, lon, accuracy = null, panTo = true, custo
   if (accuracy && accuracy > 0) {
     accuracyCircle = L.circle(coords, {
       radius: accuracy,
-      color: '#06b6d4',
-      fillColor: '#06b6d4',
-      fillOpacity: 0.12,
+      color: '#38bdf8',
+      fillColor: '#38bdf8',
+      fillOpacity: 0.15,
       weight: 1.5,
-      dashArray: '4, 4'
+      dashArray: '3, 4'
     }).addTo(map);
   }
 
@@ -157,9 +135,9 @@ export function setMarkerPosition(lat, lon, accuracy = null, panTo = true, custo
     let targetZoom = customZoom;
     if (!targetZoom) {
       if (accuracy) {
-        targetZoom = accuracy > 1000 ? 12 : accuracy > 500 ? 14 : 16;
+        targetZoom = accuracy > 1000 ? 13 : accuracy > 500 ? 15 : 17;
       } else {
-        targetZoom = Math.max(map.getZoom(), 14);
+        targetZoom = Math.max(map.getZoom(), 15);
       }
     }
     map.setView(coords, targetZoom, { animate: true, duration: 0.8 });
@@ -182,7 +160,18 @@ export function centerPeru() {
 }
 
 /**
- * Redimensiona el mapa para evitar errores de renderizado
+ * Control de zoom manual desde los botones flotantes del mapa
+ */
+export function zoomIn() {
+  if (map) map.zoomIn();
+}
+
+export function zoomOut() {
+  if (map) map.zoomOut();
+}
+
+/**
+ * Redimensiona el mapa
  */
 export function resizeMap() {
   if (map) {
