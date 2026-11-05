@@ -1,6 +1,8 @@
 /**
  * main.js - Orquestador principal de la aplicación SST/HSE
- * Proyecto: MiEntorno - Fase 2
+ * Proyecto: MiEntorno
+ * 
+ * Centro de Control y Monitoreo Ambiental de Misión Crítica.
  */
 
 import {
@@ -73,7 +75,6 @@ function recuperarUbicacionLocalStorage() {
 
 /**
  * Consulta la API meteorológica y actualiza todas las tarjetas de riesgo.
- * Si ocurre un error, cada tarjeta maneja su contingencia mostrando "Dato no disponible".
  */
 async function cargarDatosMeteorologicos(lat, lon) {
   if (lat === null || lon === null) return;
@@ -86,7 +87,6 @@ async function cargarDatosMeteorologicos(lat, lon) {
   } catch (err) {
     console.error('Error al cargar datos meteorológicos:', err);
     showNotification('No se pudieron actualizar los datos meteorológicos en tiempo real. Mostrando estado de contingencia.', 'warning');
-    // Enviar objeto nulo para que cada tarjeta individual renderice "Dato no disponible"
     renderRiskCards(null);
   } finally {
     setRefreshButtonLoading(false);
@@ -111,7 +111,6 @@ function alCambiarUbicacion(lat, lon, accuracy = null, origen = 'manual') {
 
 /**
  * Solicita geolocalización al navegador mediante navigator.geolocation.
- * @param {boolean} isAutoInit Si es llamada automática al inicio
  */
 function solicitarGeolocalizacion(isAutoInit = false) {
   if (!('geolocation' in navigator)) {
@@ -147,7 +146,6 @@ function solicitarGeolocalizacion(isAutoInit = false) {
       setLocationButtonLoading(false);
 
       if (isAutoInit) {
-        // En auto-inicio silencioso no interrumpir agresivamente si ya hay caché
         const saved = recuperarUbicacionLocalStorage();
         if (saved) return;
       }
@@ -247,7 +245,7 @@ function iniciarApp() {
     console.error('Error al inicializar mapa Leaflet:', err);
   }
 
-  // Configurar botón "Usar mi ubicación"
+  // Configurar botón "Usar mi GPS"
   const btnLocation = document.getElementById('btn-location');
   if (btnLocation) {
     btnLocation.addEventListener('click', () => solicitarGeolocalizacion(false));
@@ -279,8 +277,17 @@ function iniciarApp() {
     btnRecenter.addEventListener('click', () => solicitarGeolocalizacion(false));
   }
 
-  // Configurar campo de búsqueda
+  // Píldora de ubicación en el mapa para enfocar buscador
+  const mapLocationPill = document.getElementById('map-location-pill');
   const searchInput = document.getElementById('search-input');
+  if (mapLocationPill && searchInput) {
+    mapLocationPill.addEventListener('click', () => {
+      searchInput.focus();
+      searchInput.select();
+    });
+  }
+
+  // Configurar campo de búsqueda
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
       manejarBusqueda(e.target.value);
@@ -295,9 +302,45 @@ function iniciarApp() {
 
   // Ocultar resultados de búsqueda al hacer clic fuera
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('.search-box-container')) {
+    if (!e.target.closest('.header-search-wrapper')) {
       hideSearchResults();
     }
+  });
+
+  // Configurar pestañas de navegación superior
+  const navTabs = document.querySelectorAll('.nav-tab-pill');
+  navTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      navTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  // Configurar barra dock inferior móvil
+  const dockBtns = document.querySelectorAll('.dock-action-btn');
+  dockBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      dockBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const target = btn.dataset.target;
+      if (target === 'dashboard') {
+        document.body.classList.remove('mobile-mode-map');
+        document.body.classList.add('mobile-mode-dashboard');
+      } else if (target === 'map') {
+        document.body.classList.remove('mobile-mode-dashboard');
+        document.body.classList.add('mobile-mode-map');
+        setTimeout(resizeMap, 150);
+      } else if (target === 'alerts') {
+        const accordion = document.getElementById('warning-accordion');
+        if (accordion) {
+          accordion.classList.remove('collapsed');
+          accordion.scrollIntoView({ behavior: 'smooth' });
+        }
+      } else if (target === 'gps') {
+        solicitarGeolocalizacion(false);
+      }
+    });
   });
 
   // Iniciar temporizador de actualización periódica de 10 minutos
@@ -340,7 +383,7 @@ function iniciarApp() {
     alCambiarUbicacion(OPERATIONAL_DEFAULT_COORDS.lat, OPERATIONAL_DEFAULT_COORDS.lon, null, 'inicial');
   }
 
-  // 2. Intentar reconocimiento automático de GPS de inmediato (solicitado para experiencia óptima de campo)
+  // 2. Intentar reconocimiento automático de GPS de inmediato
   solicitarGeolocalizacion(true);
 }
 

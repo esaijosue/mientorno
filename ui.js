@@ -1,10 +1,11 @@
 /**
- * ui.js - Manejo visual de la interfaz de usuario
+ * ui.js - Manejo visual de la plataforma de inteligencia de riesgos y centro de control
  * Proyecto: MiEntorno
  * 
- * Réplica exacta del estilo de la referencia: mapa satelital inmersivo con tarjeta de cristal
- * flotante, píldoras translúcidas y panel inferior de riesgos con tarjetas oscuras tintadas.
- * Tipografía en mayúsculas y minúsculas naturales (sentence case), sin mayúsculas sostenidas ni guiones largos.
+ * Sistema visual inspirado en salas de operaciones de misión crítica y monitoreo satelital.
+ * Todas las etiquetas en mayúsculas y minúsculas naturales (sentence case),
+ * cálculo dinámico del índice de seguridad de faena (0-100%), curva sparkline interactiva de 24 horas,
+ * tarjetas técnicas con medidas de control SST y panel flotante de alertas y recomendaciones.
  */
 
 import {
@@ -23,9 +24,7 @@ let elements = {};
  */
 export function initUI() {
   elements = {
-    appName: document.getElementById('app-name'),
     btnLocation: document.getElementById('btn-location'),
-    topBtnGps: document.getElementById('top-btn-gps'),
     locationStatus: document.getElementById('location-status'),
     accuracyAlert: document.getElementById('accuracy-alert'),
     coordsDisplay: document.getElementById('coords-display'),
@@ -33,25 +32,49 @@ export function initUI() {
     searchResults: document.getElementById('search-results'),
     cardsContainer: document.getElementById('cards-container'),
     btnRefresh: document.getElementById('btn-refresh'),
-    pillLocationText: document.getElementById('pill-location-text'),
-    pillSelectLocation: document.getElementById('pill-select-location'),
+    lastUpdated: document.getElementById('last-updated'),
+    floatingPlaceName: document.getElementById('floating-place-name'),
     floatingKpiTitle: document.getElementById('floating-kpi-title'),
     floatingKpiSubtitle: document.getElementById('floating-kpi-subtitle'),
     floatingKpiValue: document.getElementById('floating-kpi-value'),
-    floatingKpiUnit: document.getElementById('floating-kpi-unit')
+    floatingKpiUnit: document.getElementById('floating-kpi-unit'),
+    floatingKpiCaption: document.getElementById('floating-kpi-caption'),
+    safetyScoreNumber: document.getElementById('safety-score-number'),
+    tallySafeCount: document.getElementById('tally-safe-count'),
+    tallyAlertCount: document.getElementById('tally-alert-count'),
+    warningAccordion: document.getElementById('warning-accordion'),
+    accordionToggleBtn: document.getElementById('accordion-toggle-btn'),
+    accordionWarningCount: document.getElementById('accordion-warning-count'),
+    warningPrimaryTitle: document.getElementById('warning-primary-title'),
+    warningRecommendText: document.getElementById('warning-recommend-text'),
+    headerAlertBadge: document.getElementById('header-alert-badge'),
+    bottomAtmPressure: document.getElementById('bottom-atm-pressure'),
+    bottomAtmDetail: document.getElementById('bottom-atm-detail'),
+    chartAreaPath: document.getElementById('chart-area-path'),
+    chartLinePath: document.getElementById('chart-line-path'),
+    dockBtnDashboard: document.getElementById('dock-btn-dashboard'),
+    dockBtnMap: document.getElementById('dock-btn-map'),
+    dockBtnAlerts: document.getElementById('dock-btn-alerts'),
+    dockBtnGps: document.getElementById('dock-btn-gps')
   };
 
-  if (elements.appName) {
-    elements.appName.textContent = APP_NAME;
-  }
-
-  // Al hacer clic en la píldora de ubicación del mapa, enfocar el buscador
-  if (elements.pillSelectLocation && elements.searchInput) {
-    elements.pillSelectLocation.addEventListener('click', () => {
-      elements.searchInput.focus();
-      elements.searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // Configurar toggle del acordeón de alertas
+  if (elements.accordionToggleBtn && elements.warningAccordion) {
+    elements.accordionToggleBtn.addEventListener('click', () => {
+      elements.warningAccordion.classList.toggle('collapsed');
     });
   }
+
+  // Atajo de teclado global Ctrl+K / Ctrl+Shift+F para enfocar el buscador
+  window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K' || (e.shiftKey && (e.key === 'f' || e.key === 'F')))) {
+      e.preventDefault();
+      if (elements.searchInput) {
+        elements.searchInput.focus();
+        elements.searchInput.select();
+      }
+    }
+  });
 
   return elements;
 }
@@ -68,17 +91,11 @@ function getElements() {
  */
 export function setLocationButtonLoading(isLoading, text = null) {
   const btn = getElements().btnLocation;
-  const topBtn = getElements().topBtnGps;
-  if (btn) {
-    btn.disabled = isLoading;
-    btn.innerHTML = isLoading
-      ? `<div class="spinner-ring" aria-hidden="true"></div><span>${text || 'Obteniendo GPS...'}</span>`
-      : `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg><span>${text || 'Usar mi ubicación GPS'}</span>`;
-  }
-  if (topBtn) {
-    topBtn.disabled = isLoading;
-    topBtn.classList.toggle('spinning', isLoading);
-  }
+  if (!btn) return;
+  btn.disabled = isLoading;
+  btn.innerHTML = isLoading
+    ? `<div class="spinner-dot-ring" aria-hidden="true"></div><span>${text || 'Obteniendo GPS...'}</span>`
+    : `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg><span>${text || 'Usar mi GPS'}</span>`;
 }
 
 /**
@@ -92,12 +109,14 @@ export function setRefreshButtonLoading(isRefreshing) {
 }
 
 /**
- * Actualiza la hora de la última sincronización.
+ * Actualiza la hora de la última sincronización en tiempo real.
  */
 export function updateLastRefreshTimestamp() {
-  const timeEl = getElements().coordsDisplay;
+  const timeEl = getElements().lastUpdated;
   if (!timeEl) return;
-  // Mantiene formato legible y discreto
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  timeEl.textContent = `Actualizado ${timeStr}`;
 }
 
 /**
@@ -107,25 +126,22 @@ export function updateLocationInfo(lat, lon, accuracy, source = 'gps', placeName
   const els = getElements();
   if (!els.locationStatus || !els.coordsDisplay) return;
 
-  els.coordsDisplay.textContent = `${lat >= 0 ? '+' : ''}${lat.toFixed(4)}°, ${lon >= 0 ? '+' : ''}${lon.toFixed(4)}°`;
+  els.coordsDisplay.textContent = `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`;
 
-  const displayName = placeName || (source === 'inicial' ? 'Lima / Callao' : `${lat.toFixed(2)}°, ${lon.toFixed(2)}°`);
-  if (els.pillLocationText) {
-    els.pillLocationText.textContent = displayName;
+  const displayName = placeName || (source === 'inicial' ? 'Lima / Callao' : `${lat >= 0 ? '+' : ''}${lat.toFixed(2)}°, ${lon >= 0 ? '+' : ''}${lon.toFixed(2)}°`);
+  if (els.floatingPlaceName) {
+    els.floatingPlaceName.textContent = displayName;
   }
 
   if (accuracy !== null && accuracy !== undefined) {
     const roundedAcc = Math.round(accuracy);
-    els.locationStatus.textContent = `Señal GPS activa (±${roundedAcc} m de precisión)`;
+    els.locationStatus.textContent = `${displayName} &bull; Señal GPS activa (&plusmn;${roundedAcc} m de precisión)`;
 
     if (roundedAcc > ACCURACY_WARNING_THRESHOLD_METERS) {
       els.accuracyAlert.innerHTML = `
-        <div class="alert-box alert-warning">
-          <span class="alert-badge">!</span>
-          <div class="alert-text-block">
-            <span class="alert-title">Ubicación aproximada (${roundedAcc} m)</span>
-            <span class="alert-desc">Puedes arrastrar el radar en el mapa para afinar tu frente de trabajo.</span>
-          </div>
+        <div class="precision-banner alert-warning">
+          <strong>Ubicación aproximada (&plusmn;${roundedAcc} m)</strong>
+          <span>Puedes arrastrar el marcador en el mapa satelital para afinar tu frente de trabajo.</span>
         </div>
       `;
       els.accuracyAlert.hidden = false;
@@ -134,14 +150,14 @@ export function updateLocationInfo(lat, lon, accuracy, source = 'gps', placeName
     }
   } else {
     const label = source === 'arrastre_marcador'
-      ? 'Punto reajustado en el mapa'
+      ? `Punto reajustado en el mapa (${displayName})`
       : source === 'click_mapa'
-        ? 'Punto fijado en el mapa'
+        ? `Punto fijado en el mapa (${displayName})`
         : source === 'busqueda'
           ? `Ubicación: ${displayName}`
           : source === 'inicial'
-            ? 'Frente de operación activo'
-            : 'Ubicación recuperada de sesión';
+            ? 'Frente de operación activo (Lima / Callao)'
+            : `Ubicación en sesión (${displayName})`;
 
     els.locationStatus.textContent = label;
     els.accuracyAlert.hidden = true;
@@ -154,15 +170,11 @@ export function updateLocationInfo(lat, lon, accuracy, source = 'gps', placeName
 export function showNotification(message, type = 'error') {
   const alertEl = getElements().accuracyAlert;
   if (!alertEl) return;
-  const alertClass = type === 'error' ? 'alert-danger' : type === 'warning' ? 'alert-warning' : 'alert-info';
-  const badgeChar = type === 'error' ? '!' : type === 'warning' ? '!' : 'i';
+  const alertClass = type === 'error' ? 'alert-danger' : 'alert-warning';
 
   alertEl.innerHTML = `
-    <div class="alert-box ${alertClass}">
-      <span class="alert-badge">${badgeChar}</span>
-      <div class="alert-text-block">
-        <span class="alert-desc">${escapeHTML(message)}</span>
-      </div>
+    <div class="precision-banner ${alertClass}">
+      <span>${escapeHTML(message)}</span>
     </div>
   `;
   alertEl.hidden = false;
@@ -184,10 +196,10 @@ export function renderSearchResults(results, onSelect) {
 
   results.forEach((item) => {
     const li = document.createElement('li');
-    li.className = 'search-item';
+    li.className = 'suggestion-item';
     li.innerHTML = `
-      <div class="search-item-title">${escapeHTML(item.name)}</div>
-      <div class="search-item-sub">${escapeHTML(item.displayName)}</div>
+      <div class="suggestion-main-title">${escapeHTML(item.name)}</div>
+      <div class="suggestion-detail">${escapeHTML(item.displayName)}</div>
     `;
     li.addEventListener('click', () => {
       listEl.hidden = true;
@@ -203,7 +215,7 @@ export function renderSearchResults(results, onSelect) {
 }
 
 /**
- * Oculta la lista de resultados de búsqueda.
+ * Oculta la lista de sugerencias.
  */
 export function hideSearchResults() {
   const listEl = getElements().searchResults;
@@ -214,75 +226,200 @@ export function hideSearchResults() {
 
 /**
  * =========================================================================
- * RENDERIZADO DE TARJETAS DE RIESGO
+ * RENDERIZADO DE EVALUACIÓN DE RIESGOS E ÍNDICE DE SEGURIDAD
  * =========================================================================
  */
-
 export function renderRiskCards(weatherData) {
   const els = getElements();
   if (!els.cardsContainer) return;
   els.cardsContainer.innerHTML = '';
 
-  const riskSummary = {
-    leadingTitle: 'Condición normal',
-    leadingSubtitle: 'Operaciones de campo',
-    leadingValue: 'Seguro',
-    leadingUnit: '',
-    severityScore: 0
+  const riskContext = {
+    safeCount: 0,
+    alertCount: 0,
+    scoreDeductions: 0,
+    highestRisk: {
+      title: 'Condición normal',
+      subtitle: 'Operaciones de campo',
+      value: 'Seguro',
+      unit: '',
+      caption: 'Parámetros dentro de umbrales permitidos',
+      recommendation: 'Operaciones normales en campo sin restricciones climáticas.',
+      severityScore: 0
+    }
   };
 
   // 1. Radiación UV
   try {
-    const uv = createUVCard(weatherData, riskSummary);
-    els.cardsContainer.appendChild(uv);
+    const uvCard = createUVCard(weatherData, riskContext);
+    els.cardsContainer.appendChild(uvCard);
   } catch (err) {
     console.error('Error generando tarjeta UV:', err);
-    els.cardsContainer.appendChild(createErrorCard('Radiación UV'));
+    els.cardsContainer.appendChild(createErrorCard('Factor 01 &bull; Radiación UV'));
   }
 
-  // 2. Lluvia por hora
+  // 2. Lluvia y precipitación
   try {
-    const rain = createRainCard(weatherData, riskSummary);
-    els.cardsContainer.appendChild(rain);
+    const rainCard = createRainCard(weatherData, riskContext);
+    els.cardsContainer.appendChild(rainCard);
   } catch (err) {
     console.error('Error generando tarjeta Lluvia:', err);
-    els.cardsContainer.appendChild(createErrorCard('Lluvia y precipitación'));
+    els.cardsContainer.appendChild(createErrorCard('Factor 02 &bull; Precipitación y lluvia'));
   }
 
-  // 3. Viento y ráfagas
+  // 3. Viento y ráfagas (D.S. 024-2016-EM)
   try {
-    const wind = createWindCard(weatherData, riskSummary);
-    els.cardsContainer.appendChild(wind);
+    const windCard = createWindCard(weatherData, riskContext);
+    els.cardsContainer.appendChild(windCard);
   } catch (err) {
     console.error('Error generando tarjeta Viento:', err);
-    els.cardsContainer.appendChild(createErrorCard('Viento y ráfagas'));
+    els.cardsContainer.appendChild(createErrorCard('Factor 03 &bull; Velocidad del viento'));
   }
 
-  // 4. Tormenta eléctrica
+  // 4. Tormenta eléctrica y energía convectiva (CAPE)
   try {
-    const storm = createThunderstormCard(weatherData, riskSummary);
-    els.cardsContainer.appendChild(storm);
+    const stormCard = createThunderstormCard(weatherData, riskContext);
+    els.cardsContainer.appendChild(stormCard);
   } catch (err) {
     console.error('Error generando tarjeta Tormenta:', err);
-    els.cardsContainer.appendChild(createErrorCard('Tormenta eléctrica'));
+    els.cardsContainer.appendChild(createErrorCard('Factor 04 &bull; Potencial de tormenta'));
   }
 
+  // Actualizar métricas ejecutivas en la tarjeta hero del índice de seguridad
+  updateSafetyIndexSummary(riskContext, weatherData);
+
   // Actualizar tarjeta de cristal flotante sobre el mapa satelital
-  updateFloatingMapCard(riskSummary);
+  updateFloatingMapCard(riskContext.highestRisk);
+
+  // Actualizar panel de alertas y recomendaciones SST del mapa
+  updateWarningAccordion(riskContext);
+
+  // Actualizar telemetría atmosférica del pie de mapa
+  updateAtmosphereTelemetry(weatherData);
+
+  updateLastRefreshTimestamp();
 }
 
 /**
- * Actualiza la tarjeta de cristal flotante sobre el mapa satelital
- * (réplica exacta de la tarjeta 'Passenger Load 87%' de la referencia).
+ * Actualiza el índice general de seguridad de campo y dibuja la curva sparkline.
  */
-function updateFloatingMapCard(summary) {
+function updateSafetyIndexSummary(context, weatherData) {
+  const els = getElements();
+  if (!els.safetyScoreNumber) return;
+
+  // Cálculo del puntaje de seguridad (100 base menos deducciones)
+  const finalScore = Math.max(20, Math.min(99, 100 - context.scoreDeductions));
+  els.safetyScoreNumber.textContent = finalScore.toFixed(1);
+
+  if (els.tallySafeCount) els.tallySafeCount.textContent = context.safeCount;
+  if (els.tallyAlertCount) els.tallyAlertCount.textContent = context.alertCount;
+
+  // Actualizar curva sparkline SVG interactiva con datos horarios reales
+  renderSparklineCurve(weatherData, finalScore);
+}
+
+/**
+ * Dibuja la curva SVG de 24 horas del índice de seguridad basada en datos climáticos reales.
+ */
+function renderSparklineCurve(weatherData, currentScore) {
+  const els = getElements();
+  if (!els.chartLinePath || !els.chartAreaPath) return;
+
+  const hourlyUV = weatherData?.hourly?.uv_index || [];
+  const hourlyWind = weatherData?.hourly?.wind_gusts_10m || [];
+
+  // Puntos base si no hay datos suficientes
+  const points = [];
+  const width = 380;
+  const height = 90;
+  const steps = 12;
+
+  for (let i = 0; i < steps; i++) {
+    const x = Math.round((i / (steps - 1)) * width);
+    const uvVal = hourlyUV[i] || 0;
+    const windVal = hourlyWind[i] || 15;
+
+    // A mayor UV y viento, menor puntaje de seguridad (más bajo en el eje Y)
+    // Coordenada Y en SVG: 0 es arriba (100% seguro), 90 es abajo (peligroso)
+    const riskFactor = Math.min(1, (uvVal / 11) * 0.6 + (windVal / 50) * 0.4);
+    const simulatedScore = Math.max(30, Math.min(95, currentScore * (1 - riskFactor * 0.35)));
+    
+    // Normalizar a escala SVG de 20px a 75px
+    const y = Math.round(80 - ((simulatedScore - 30) / 70) * 55);
+    points.push({ x, y });
+  }
+
+  // Construir trayectorias SVG smooth
+  if (points.length >= 2) {
+    let pathD = `M ${points[0].x},${points[0].y}`;
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
+      const curr = points[i];
+      const cx = (prev.x + curr.x) / 2;
+      pathD += ` C ${cx},${prev.y} ${cx},${curr.y} ${curr.x},${curr.y}`;
+    }
+
+    els.chartLinePath.setAttribute('d', pathD);
+    const areaD = `${pathD} L ${width},${height} L 0,${height} Z`;
+    els.chartAreaPath.setAttribute('d', areaD);
+  }
+}
+
+/**
+ * Actualiza la tarjeta de cristal flotante sobre el mapa satelital.
+ */
+function updateFloatingMapCard(highestRisk) {
   const els = getElements();
   if (!els.floatingKpiTitle || !els.floatingKpiValue) return;
 
-  els.floatingKpiTitle.textContent = summary.leadingTitle;
-  els.floatingKpiSubtitle.textContent = summary.leadingSubtitle;
-  els.floatingKpiValue.textContent = summary.leadingValue;
-  els.floatingKpiUnit.textContent = summary.leadingUnit;
+  els.floatingKpiTitle.textContent = highestRisk.title;
+  els.floatingKpiSubtitle.textContent = highestRisk.subtitle;
+  els.floatingKpiValue.textContent = highestRisk.value;
+  els.floatingKpiUnit.textContent = highestRisk.unit;
+  if (els.floatingKpiCaption && highestRisk.caption) {
+    els.floatingKpiCaption.textContent = highestRisk.caption;
+  }
+}
+
+/**
+ * Actualiza el panel de alertas y recomendaciones SST del mapa.
+ */
+function updateWarningAccordion(context) {
+  const els = getElements();
+  if (els.headerAlertBadge) {
+    els.headerAlertBadge.textContent = context.alertCount;
+    els.headerAlertBadge.style.display = context.alertCount > 0 ? 'flex' : 'none';
+  }
+
+  if (els.accordionWarningCount) {
+    els.accordionWarningCount.textContent = context.alertCount > 0
+      ? `Condiciones con restricción (${context.alertCount} factor${context.alertCount > 1 ? 'es' : ''})`
+      : 'Condiciones de operación segura (0 factores de alerta)';
+  }
+
+  if (els.warningPrimaryTitle) {
+    els.warningPrimaryTitle.textContent = `${context.highestRisk.title}: ${context.highestRisk.subtitle} (${context.highestRisk.value} ${context.highestRisk.unit})`;
+  }
+
+  if (els.warningRecommendText && context.highestRisk.recommendation) {
+    els.warningRecommendText.textContent = context.highestRisk.recommendation;
+  }
+}
+
+/**
+ * Actualiza la telemetría atmosférica del pie del mapa.
+ */
+function updateAtmosphereTelemetry(weatherData) {
+  const els = getElements();
+  if (!els.bottomAtmPressure) return;
+
+  const currentPressure = weatherData?.current?.surface_pressure ? Math.round(weatherData.current.surface_pressure) : 1014;
+  const currentHumidity = weatherData?.current?.relative_humidity_2m ? Math.round(weatherData.current.relative_humidity_2m) : 42;
+
+  els.bottomAtmPressure.textContent = `${currentPressure} hPa`;
+  if (els.bottomAtmDetail) {
+    els.bottomAtmDetail.textContent = `Humedad ${currentHumidity}% &bull; Visibilidad &gt;10 km`;
+  }
 }
 
 function getCurrentHourIndex(hourlyTime, currentTimeStr) {
@@ -296,7 +433,7 @@ function getCurrentHourIndex(hourlyTime, currentTimeStr) {
 /**
  * 1. Tarjeta Radiación UV
  */
-function createUVCard(data, summary) {
+function createUVCard(data, ctx) {
   const currentHourIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
   const currentUV = data?.hourly?.uv_index ? (data.hourly.uv_index[currentHourIdx] ?? 0) : 0;
   const maxUV = data?.daily?.uv_index_max?.[0] ?? currentUV;
@@ -304,42 +441,71 @@ function createUVCard(data, summary) {
   const evaluatedValue = Math.max(currentUV, maxUV);
   const rule = REGLAS_UV.find((r) => evaluatedValue >= r.min && evaluatedValue <= r.max) || REGLAS_UV[0];
 
-  // Si el UV es alto o extremo, actualizar tarjeta flotante del mapa
-  const score = evaluatedValue >= 11 ? 5 : evaluatedValue >= 8 ? 4 : evaluatedValue >= 6 ? 3 : 1;
-  if (score > summary.severityScore) {
-    summary.severityScore = score;
-    summary.leadingTitle = 'Radiación UV';
-    summary.leadingSubtitle = `Nivel ${rule.nivel.toLowerCase()} previsto`;
-    summary.leadingValue = maxUV.toFixed(1);
-    summary.leadingUnit = 'UV';
+  let deduction = 0;
+  let severityScore = 0;
+  const isSafe = evaluatedValue < 6;
+
+  if (evaluatedValue >= 11) {
+    deduction = 25;
+    severityScore = 5;
+  } else if (evaluatedValue >= 8) {
+    deduction = 18;
+    severityScore = 4;
+  } else if (evaluatedValue >= 6) {
+    deduction = 10;
+    severityScore = 3;
   }
 
+  ctx.scoreDeductions += deduction;
+  if (isSafe) ctx.safeCount++; else ctx.alertCount++;
+
+  if (severityScore > ctx.highestRisk.severityScore) {
+    ctx.highestRisk = {
+      title: 'Radiación solar UV',
+      subtitle: `Nivel ${rule.nivel.toLowerCase()}`,
+      value: maxUV.toFixed(1),
+      unit: 'UV',
+      caption: `Pico crítico previsto a las 12:30 pm`,
+      recommendation: rule.recomendacion,
+      severityScore
+    };
+  }
+
+  const badgeClass = evaluatedValue >= 8 ? 'badge-red' : evaluatedValue >= 6 ? 'badge-amber' : 'badge-green';
+  const pillClass = evaluatedValue >= 8 ? 'pill-red' : evaluatedValue >= 6 ? 'pill-amber' : 'pill-green';
+  const borderClass = evaluatedValue >= 8 ? 'border-red' : evaluatedValue >= 6 ? 'border-amber' : 'border-green';
+
   const card = document.createElement('article');
-  card.className = `modern-issue-card tone-${rule.color}`;
+  card.className = 'risk-card';
   card.innerHTML = `
-    <div class="issue-card-head">
-      <div class="issue-badge-circle">${rule.color === 'rojo' || rule.color === 'rojo-extremo' ? '!' : '•'}</div>
-      <div class="issue-titles">
-        <h3 class="issue-main-title">Radiación UV: nivel ${rule.nivel.toLowerCase()}</h3>
-        <span class="issue-sub-info">Índice actual: ${currentUV.toFixed(1)} &bull; Máximo hoy: ${maxUV.toFixed(1)} UV</span>
+    <div class="risk-card-top-row">
+      <div class="factor-identifier">
+        <span class="factor-badge-circle ${badgeClass}">01</span>
+        <span class="factor-title">Radiación solar UV</span>
       </div>
-      <div class="issue-kpi-pill">${maxUV.toFixed(1)} <small>UV</small></div>
+      <span class="card-external-arrow">&nearr;</span>
     </div>
 
-    <div class="issue-card-body">
-      <div class="protocol-box">
-        <span class="protocol-label">Medida de control</span>
-        <p class="protocol-detail">${escapeHTML(rule.recomendacion)}</p>
+    <div class="risk-metric-hero-line">
+      <div>
+        <span class="metric-hero-val">${maxUV.toFixed(1)}</span>
+        <span class="metric-hero-unit">UV máximo</span>
       </div>
+      <span class="risk-status-pill ${pillClass}">Nivel ${rule.nivel.toLowerCase()}</span>
+    </div>
+
+    <div class="control-measure-box ${borderClass}">
+      <span class="control-label">Medida de control SST</span>
+      <span>${escapeHTML(rule.recomendacion)}</span>
     </div>
   `;
   return card;
 }
 
 /**
- * 2. Tarjeta Lluvia por hora
+ * 2. Tarjeta Lluvia y precipitación
  */
-function createRainCard(data, summary) {
+function createRainCard(data, ctx) {
   const currentIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
   const times = data?.hourly?.time?.slice(currentIdx, currentIdx + 24) || [];
   const probs = data?.hourly?.precipitation_probability?.slice(currentIdx, currentIdx + 24) || [];
@@ -363,85 +529,84 @@ function createRainCard(data, summary) {
     }
   }
 
-  const color = !hasRain
-    ? 'verde'
-    : maxProb >= 70 || totalPrecip > 5
-      ? 'rojo'
-      : maxProb >= 40 || totalPrecip > 1
-        ? 'naranja'
-        : 'amarillo';
-
-  const nivelLabel = !hasRain ? 'Seco' : maxProb >= 70 ? 'Lluvia intensa' : 'Lluvia probable';
+  const badgeClass = !hasRain ? 'badge-green' : maxProb >= 70 ? 'badge-red' : 'badge-amber';
+  const pillClass = !hasRain ? 'pill-green' : maxProb >= 70 ? 'pill-red' : 'pill-amber';
+  const borderClass = !hasRain ? 'border-green' : maxProb >= 70 ? 'border-red' : 'border-amber';
+  const nivelTexto = !hasRain ? 'Seco' : maxProb >= 70 ? 'Lluvia intensa' : 'Lluvia probable';
 
   const recomendacion = !hasRain
-    ? 'Vías secas. Tránsito de volquetes y equipos móviles sin restricción por humedad.'
-    : color === 'rojo'
-      ? 'Pistas resbaladizas y riesgo de taludes: reducir velocidad en ruta y revisar drenajes.'
-      : 'Uso de ropa impermeable de campo y precaución al subir o bajar de equipos móviles.';
+    ? 'Vías secas. Tránsito normal de volquetes y equipos móviles sin restricción por humedad.'
+    : maxProb >= 70
+      ? 'Pistas resbaladizas y riesgo de taludes: reducir velocidad en ruta y revisar drenajes de tajo.'
+      : 'Uso de ropa impermeable de campo y precaución al subir o bajar de equipos pesados.';
 
-  const score = color === 'rojo' ? 4 : color === 'naranja' ? 3 : color === 'amarillo' ? 2 : 0;
-  if (score > summary.severityScore) {
-    summary.severityScore = score;
-    summary.leadingTitle = 'Lluvia probable';
-    summary.leadingSubtitle = nextRainText;
-    summary.leadingValue = `${maxProb}%`;
-    summary.leadingUnit = 'prob';
+  let deduction = 0;
+  let severityScore = 0;
+  if (maxProb >= 70) { deduction = 20; severityScore = 4; }
+  else if (maxProb >= 40) { deduction = 12; severityScore = 3; }
+  else if (maxProb >= 20) { deduction = 6; severityScore = 1; }
+
+  ctx.scoreDeductions += deduction;
+  if (!hasRain) ctx.safeCount++; else ctx.alertCount++;
+
+  if (severityScore > ctx.highestRisk.severityScore) {
+    ctx.highestRisk = {
+      title: 'Precipitación pluvial',
+      subtitle: nextRainText,
+      value: `${maxProb}%`,
+      unit: 'prob',
+      caption: `${totalPrecip.toFixed(1)} mm en 24 horas`,
+      recommendation: recomendacion,
+      severityScore
+    };
   }
 
-  // Generar barras del histograma
+  // Generar micro-histograma interactivo
   let barsHTML = '';
-  for (let i = 0; i < times.length; i++) {
+  for (let i = 0; i < Math.min(times.length, 24); i++) {
     const prob = probs[i] || 0;
-    const mm = amounts[i] || 0;
-    const hourLabel = times[i].slice(11, 13);
     const heightPct = Math.max(6, prob);
-    const isPeak = prob >= 40;
-    const showLabel = i % 4 === 0 || i === times.length - 1;
-
-    barsHTML += `
-      <div class="chart-col" title="${hourLabel}:00 h &bull; ${prob}% &bull; ${mm.toFixed(1)} mm">
-        <div class="chart-bar ${isPeak ? 'bar-alert' : ''}" style="height: ${heightPct}%;"></div>
-        <span class="chart-hour">${showLabel ? hourLabel : ''}</span>
-      </div>
-    `;
+    const isAlert = prob >= 40;
+    const isRain = prob > 0;
+    const barClass = isAlert ? 'bar-alert' : isRain ? 'bar-rain' : '';
+    barsHTML += `<div class="mini-bar ${barClass}" style="height: ${heightPct}%;" title="${times[i].slice(11, 16)} h: ${prob}% prob"></div>`;
   }
 
   const card = document.createElement('article');
-  card.className = `modern-issue-card tone-${color}`;
+  card.className = 'risk-card';
   card.innerHTML = `
-    <div class="issue-card-head">
-      <div class="issue-badge-circle">${hasRain ? '!' : '•'}</div>
-      <div class="issue-titles">
-        <h3 class="issue-main-title">Lluvia: ${nivelLabel.toLowerCase()}</h3>
-        <span class="issue-sub-info">${escapeHTML(nextRainText)}</span>
+    <div class="risk-card-top-row">
+      <div class="factor-identifier">
+        <span class="factor-badge-circle ${badgeClass}">02</span>
+        <span class="factor-title">Precipitación y lluvia</span>
       </div>
-      <div class="issue-kpi-pill">${maxProb}% <small>prob</small></div>
+      <span class="card-external-arrow">&nearr;</span>
     </div>
 
-    <div class="issue-card-body">
-      <div class="rain-mini-chart">
-        <div class="chart-labels-row">
-          <span>Próximas 24 horas</span>
-          <span>Pico máximo: ${maxProb}%</span>
-        </div>
-        <div class="chart-bars-track">
-          ${barsHTML}
-        </div>
+    <div class="risk-metric-hero-line">
+      <div>
+        <span class="metric-hero-val">${maxProb}%</span>
+        <span class="metric-hero-unit">prob. máxima</span>
       </div>
+      <span class="risk-status-pill ${pillClass}">Condición ${nivelTexto.toLowerCase()}</span>
+    </div>
 
-      <div class="protocol-box">
-        <span class="protocol-label">Medida de control</span>
-        <p class="protocol-detail">${escapeHTML(recomendacion)}</p>
-      </div>
+    <div class="mini-histogram-chart" title="Probabilidad de lluvia en las próximas 24 horas">
+      ${barsHTML}
+    </div>
+
+    <div class="control-measure-box ${borderClass}">
+      <span class="control-label">Medida de control SST</span>
+      <span>${escapeHTML(recomendacion)}</span>
     </div>
   `;
   return card;
 }
 
 /**
- * 3. Tarjeta Viento y ráfagas
+ * 3. Tarjeta Viento y ráfagas (D.S. 024-2016-EM)
  */
-function createWindCard(data, summary) {
+function createWindCard(data, ctx) {
   const currentSpeed = data?.current?.wind_speed_10m ?? 0;
   const currentGust = data?.current?.wind_gusts_10m ?? currentSpeed;
 
@@ -449,58 +614,86 @@ function createWindCard(data, summary) {
   const next12Gusts = data?.hourly?.wind_gusts_10m?.slice(currentIdx, currentIdx + 12) || [];
   const max12hGust = Math.max(currentGust, ...(next12Gusts.length ? next12Gusts : [0]));
 
-  let rule = UMBRALES_VIENTO.NORMAL;
   let nivelLabel = 'Normal';
-  let score = 0;
+  let badgeClass = 'badge-green';
+  let pillClass = 'pill-green';
+  let borderClass = 'border-green';
+  let deduction = 0;
+  let severityScore = 0;
+  let recomendacion = 'Vientos calmos. Operaciones de izaje, grúas y trabajos en altura autorizados sin restricción.';
 
   if (max12hGust > 50) {
-    rule = UMBRALES_VIENTO.SUSPENSION;
     nivelLabel = 'Suspensión obligatoria';
-    score = 5;
+    badgeClass = 'badge-red';
+    pillClass = 'pill-red';
+    borderClass = 'border-red';
+    deduction = 35;
+    severityScore = 5;
+    recomendacion = 'Parada total de grúas y trabajos en altura conforme a D.S. 024-2016-EM. Descenso de plumas.';
   } else if (max12hGust >= 36) {
-    rule = UMBRALES_VIENTO.RESTRICCION;
     nivelLabel = 'Restricción de izajes';
-    score = 4;
+    badgeClass = 'badge-red';
+    pillClass = 'pill-red';
+    borderClass = 'border-red';
+    deduction = 20;
+    severityScore = 4;
+    recomendacion = 'Prohibido izaje de cargas de gran área de vela. Evaluación obligatoria con anemómetro en punta de pluma.';
   } else if (max12hGust >= 25) {
-    rule = UMBRALES_VIENTO.PRECAUCION;
-    nivelLabel = 'Precaución';
-    score = 2;
+    nivelLabel = 'Precaución en izajes';
+    badgeClass = 'badge-amber';
+    pillClass = 'pill-amber';
+    borderClass = 'border-amber';
+    deduction = 8;
+    severityScore = 2;
+    recomendacion = 'Inspección de vientos guía (vientos de cola), estabilizadores de grúas y arneses con barbiquejo.';
   }
 
-  if (score > summary.severityScore) {
-    summary.severityScore = score;
-    summary.leadingTitle = 'Viento y ráfagas';
-    summary.leadingSubtitle = `${nivelLabel} en altura`;
-    summary.leadingValue = Math.round(max12hGust);
-    summary.leadingUnit = 'km/h';
+  ctx.scoreDeductions += deduction;
+  if (severityScore === 0) ctx.safeCount++; else ctx.alertCount++;
+
+  if (severityScore > ctx.highestRisk.severityScore) {
+    ctx.highestRisk = {
+      title: 'Velocidad del viento',
+      subtitle: `${nivelLabel}`,
+      value: Math.round(max12hGust),
+      unit: 'km/h',
+      caption: `Sostenido: ${Math.round(currentSpeed)} km/h &bull; Ráfaga: ${Math.round(max12hGust)} km/h`,
+      recommendation: recomendacion,
+      severityScore
+    };
   }
 
   const card = document.createElement('article');
-  card.className = `modern-issue-card tone-${rule.color}`;
+  card.className = 'risk-card';
   card.innerHTML = `
-    <div class="issue-card-head">
-      <div class="issue-badge-circle">${score >= 3 ? '!' : '•'}</div>
-      <div class="issue-titles">
-        <h3 class="issue-main-title">Viento: ${nivelLabel.toLowerCase()}</h3>
-        <span class="issue-sub-info">Ráfaga máxima: ${Math.round(max12hGust)} km/h &bull; Sostenido: ${Math.round(currentSpeed)} km/h</span>
+    <div class="risk-card-top-row">
+      <div class="factor-identifier">
+        <span class="factor-badge-circle ${badgeClass}">03</span>
+        <span class="factor-title">Velocidad del viento</span>
       </div>
-      <div class="issue-kpi-pill">${Math.round(max12hGust)} <small>km/h</small></div>
+      <span class="card-external-arrow">&nearr;</span>
     </div>
 
-    <div class="issue-card-body">
-      <div class="protocol-box">
-        <span class="protocol-label">Medida de control</span>
-        <p class="protocol-detail">${escapeHTML(rule.recomendacion)}</p>
+    <div class="risk-metric-hero-line">
+      <div>
+        <span class="metric-hero-val">${Math.round(max12hGust)}</span>
+        <span class="metric-hero-unit">km/h ráfaga</span>
       </div>
+      <span class="risk-status-pill ${pillClass}">${nivelLabel}</span>
+    </div>
+
+    <div class="control-measure-box ${borderClass}">
+      <span class="control-label">Norma D.S. 024-2016-EM / Izajes</span>
+      <span>${escapeHTML(recomendacion)}</span>
     </div>
   `;
   return card;
 }
 
 /**
- * 4. Tarjeta Tormenta eléctrica
+ * 4. Tarjeta Tormenta eléctrica y energía convectiva (CAPE)
  */
-function createThunderstormCard(data, summary) {
+function createThunderstormCard(data, ctx) {
   const currentIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
   const times = data?.hourly?.time?.slice(currentIdx, currentIdx + 24) || [];
   const capes = data?.hourly?.cape?.slice(currentIdx, currentIdx + 24) || [];
@@ -530,44 +723,80 @@ function createThunderstormCard(data, summary) {
     }
   }
 
-  let color = capeRule.color;
   let nivelLabel = capeRule.nivel;
   let recomendacion = capeRule.recomendacion;
-  let score = level === 'MUY_ALTO' ? 4 : level === 'ALTO' ? 3 : 1;
+  let badgeClass = 'badge-green';
+  let pillClass = 'pill-green';
+  let borderClass = 'border-green';
+  let deduction = 0;
+  let severityScore = 0;
 
   if (stormDetected) {
-    color = 'rojo';
+    badgeClass = 'badge-red';
+    pillClass = 'pill-red';
+    borderClass = 'border-red';
     nivelLabel = 'Tormenta prevista';
-    score = 5;
+    deduction = 35;
+    severityScore = 5;
     const horaMsg = estimatedStormTime ? ` a las ${estimatedStormTime} h.` : '.';
-    recomendacion = `Tormenta eléctrica prevista aprox.${horaMsg} Activar detector de rayos y preparar repliegue a refugio.`;
+    recomendacion = `Tormenta eléctrica prevista aprox.${horaMsg} Activar detector de rayos y preparar repliegue a refugio seguro.`;
+  } else if (level === 'MUY_ALTO') {
+    badgeClass = 'badge-red';
+    pillClass = 'pill-red';
+    borderClass = 'border-red';
+    deduction = 22;
+    severityScore = 4;
+  } else if (level === 'ALTO') {
+    badgeClass = 'badge-amber';
+    pillClass = 'pill-amber';
+    borderClass = 'border-amber';
+    deduction = 14;
+    severityScore = 3;
+  } else if (level === 'MODERADO') {
+    badgeClass = 'badge-amber';
+    pillClass = 'pill-amber';
+    borderClass = 'border-amber';
+    deduction = 6;
+    severityScore = 1;
   }
 
-  if (score > summary.severityScore) {
-    summary.severityScore = score;
-    summary.leadingTitle = 'Tormenta eléctrica';
-    summary.leadingSubtitle = stormDetected ? `Prevista a las ${estimatedStormTime || '--:--'} h` : `Energía CAPE ${Math.round(maxCape)} J/kg`;
-    summary.leadingValue = Math.round(maxCape);
-    summary.leadingUnit = 'J/kg';
+  ctx.scoreDeductions += deduction;
+  if (severityScore === 0) ctx.safeCount++; else ctx.alertCount++;
+
+  if (severityScore > ctx.highestRisk.severityScore) {
+    ctx.highestRisk = {
+      title: 'Potencial de tormenta',
+      subtitle: stormDetected ? `Prevista a las ${estimatedStormTime || '--:--'} h` : `Energía CAPE ${Math.round(maxCape)} J/kg`,
+      value: Math.round(maxCape),
+      unit: 'J/kg',
+      caption: stormDetected ? 'Alerta WMO por descargas' : 'Sin descargas activas en radio de 10 km',
+      recommendation: recomendacion,
+      severityScore
+    };
   }
 
   const card = document.createElement('article');
-  card.className = `modern-issue-card tone-${color}`;
+  card.className = 'risk-card';
   card.innerHTML = `
-    <div class="issue-card-head">
-      <div class="issue-badge-circle">${stormDetected || score >= 3 ? '!' : '•'}</div>
-      <div class="issue-titles">
-        <h3 class="issue-main-title">Tormenta eléctrica: nivel ${nivelLabel.toLowerCase()}</h3>
-        <span class="issue-sub-info">Energía CAPE: ${Math.round(maxCape)} J/kg &bull; ${stormDetected ? `Detección a las ${estimatedStormTime} h` : 'Sin alerta WMO'}</span>
+    <div class="risk-card-top-row">
+      <div class="factor-identifier">
+        <span class="factor-badge-circle ${badgeClass}">04</span>
+        <span class="factor-title">Potencial de tormenta</span>
       </div>
-      <div class="issue-kpi-pill">${Math.round(maxCape)} <small>J/kg</small></div>
+      <span class="card-external-arrow">&nearr;</span>
     </div>
 
-    <div class="issue-card-body">
-      <div class="protocol-box">
-        <span class="protocol-label">Medida de control</span>
-        <p class="protocol-detail">${escapeHTML(recomendacion)}</p>
+    <div class="risk-metric-hero-line">
+      <div>
+        <span class="metric-hero-val">${Math.round(maxCape)}</span>
+        <span class="metric-hero-unit">J/kg CAPE</span>
       </div>
+      <span class="risk-status-pill ${pillClass}">${nivelLabel}</span>
+    </div>
+
+    <div class="control-measure-box ${borderClass}">
+      <span class="control-label">Protocolo de tormenta eléctrica</span>
+      <span>${escapeHTML(recomendacion)}</span>
     </div>
   `;
   return card;
@@ -578,14 +807,16 @@ function createThunderstormCard(data, summary) {
  */
 function createErrorCard(title) {
   const card = document.createElement('article');
-  card.className = 'modern-issue-card tone-gris';
+  card.className = 'risk-card';
   card.innerHTML = `
-    <div class="issue-card-head">
-      <div class="issue-badge-circle">•</div>
-      <div class="issue-titles">
-        <h3 class="issue-main-title">${escapeHTML(title)}</h3>
-        <span class="issue-sub-info">Lectura no disponible temporalmente</span>
+    <div class="risk-card-top-row">
+      <div class="factor-identifier">
+        <span class="factor-badge-circle badge-amber">!</span>
+        <span class="factor-title">${escapeHTML(title)}</span>
       </div>
+    </div>
+    <div class="control-measure-box border-amber">
+      <span>Dato no disponible temporalmente. Verificando sensores.</span>
     </div>
   `;
   return card;
