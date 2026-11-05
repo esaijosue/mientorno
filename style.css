@@ -2,42 +2,43 @@
  * style.css - Plataforma de Monitoreo Ambiental de Misión Crítica
  * Proyecto: MiEntorno
  * 
- * Sistema visual inspirado 100% en interfaces aeroespaciales y centros de control de alta gama.
- * - Mapa satelital cinemático de fondo completo (100vw x 100vh)
- * - Zona izquierda oscurecida con degradado de cristal ahumado (smoked glass)
- * - Tarjetas translúcidas flotantes (backdrop-filter: blur(24px))
- * - Paleta cromática refinada y sobria, libre de saturaciones excesivas
+ * Sistema visual inspirado 100% en interfaces de alta gama (estilo Imagen 2 de referencia).
+ * - Paleta neutra en tonos carbón y grafito profundo (sin tintes azulados artificiales)
+ * - Mapa satelital de fondo nítido, claro y vibrante (la zona GPS y el relieve se aprecian con total claridad)
+ * - Zona izquierda oscurecida con degradado de cristal ahumado neutro
+ * - Tarjetas translúcidas con efecto frosted glass (backdrop-filter: blur(24px))
+ * - Barra de desplazamiento del navegador completamente oculta
  */
 
 :root {
-  /* Fondo general y gradientes de cristal ahumado */
-  --bg-app: #070a0f;
-  --bg-panel-overlay: linear-gradient(to right, rgba(7, 10, 15, 0.95) 0%, rgba(7, 10, 15, 0.88) 75%, rgba(7, 10, 15, 0.15) 100%);
-  --bg-header-overlay: linear-gradient(to bottom, rgba(7, 10, 15, 0.94) 0%, rgba(7, 10, 15, 0.72) 75%, transparent 100%);
-  --bg-card-glass: rgba(18, 23, 35, 0.65);
-  --bg-card-glass-hover: rgba(22, 28, 44, 0.75);
-  --bg-pill-glass: rgba(20, 26, 40, 0.82);
+  /* Fondo general y gradientes de cristal ahumado neutro (tonos grafito/carbón de Imagen 2) */
+  --bg-app: #0d0f14;
+  --bg-panel-overlay: linear-gradient(to right, rgba(13, 15, 20, 0.96) 0%, rgba(13, 15, 20, 0.88) 78%, rgba(13, 15, 20, 0) 100%);
+  --bg-header-overlay: linear-gradient(to bottom, rgba(13, 15, 20, 0.96) 0%, rgba(13, 15, 20, 0.82) 75%, transparent 100%);
+  --bg-card-glass: rgba(22, 25, 31, 0.76);
+  --bg-card-glass-hover: rgba(28, 32, 40, 0.82);
+  --bg-pill-glass: rgba(24, 27, 34, 0.85);
 
-  /* Bordes de alta fidelidad sutiles */
+  /* Bordes sutiles de alta fidelidad */
   --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-glass: rgba(255, 255, 255, 0.11);
   --border-card: rgba(255, 255, 255, 0.08);
+  --border-glass: rgba(255, 255, 255, 0.12);
 
-  /* Escala de texto sobria */
+  /* Escala de texto sobria y neutra */
   --text-pure: #ffffff;
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   --text-dimmed: #475569;
 
-  /* Estados operativos sobrios y elegantes (sin tonos chillones) */
-  --color-safe: #34d399;
-  --color-safe-bg: rgba(52, 211, 153, 0.12);
-  --color-warning: #fbbf24;
-  --color-warning-bg: rgba(251, 191, 36, 0.12);
-  --color-alert: #f87171;
-  --color-alert-bg: rgba(248, 113, 113, 0.14);
-  --color-cyan: #38bdf8;
+  /* Colores de estado sobrios (estilo Imagen 2) */
+  --color-safe: #22c55e;
+  --color-safe-bg: rgba(34, 197, 94, 0.14);
+  --color-warning: #f59e0b;
+  --color-warning-bg: rgba(245, 158, 11, 0.14);
+  --color-alert: #ef4444;
+  --color-alert-bg: rgba(239, 68, 68, 0.15);
+  --color-accent: #38bdf8;
 
   /* Tipografías */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -52,7 +53,7 @@
 
   /* Sombras */
   --shadow-float: 0 16px 40px rgba(0, 0, 0, 0.65);
-  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.45);
 }
 
 /* Reseteo general */
@@ -78,7 +79,7 @@ body.theme-control-room {
 }
 
 /* =========================================================================
-   1. MAPA SATELITAL DE FONDO COMPLETO (100% VIEWPORT)
+   1. MAPA SATELITAL DE FONDO COMPLETO (NÍTIDO, CLARO Y BRILLANTE)
    ========================================================================= */
 .fullscreen-map-canvas {
   position: fixed;
@@ -89,21 +90,9 @@ body.theme-control-room {
   background: #06090e;
 }
 
-/* Filtro cinemático de alta gama para que los mosaicos satelitales tengan el tono
-   oscuro, desaturado y de alto contraste de la referencia */
+/* El mapa satelital se muestra claro, nítido y con colores vivos (como solicitó el usuario) */
 .leaflet-tile {
-  filter: brightness(0.48) contrast(1.3) grayscale(0.55) saturate(0.8) !important;
-}
-
-/* Viñeta cinemática para dar profundidad focal */
-.map-cinematic-overlay {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 2;
-  pointer-events: none;
-  background: radial-gradient(circle at 65% 45%, rgba(0, 0, 0, 0.05) 0%, rgba(7, 10, 15, 0.65) 100%);
+  filter: brightness(0.96) contrast(1.08) saturate(1.05) !important;
 }
 
 /* Marcador satelital de radar pulsante */
@@ -125,7 +114,7 @@ body.theme-control-room {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 1px dashed rgba(56, 189, 248, 0.6);
+  border: 1.5px dashed rgba(56, 189, 248, 0.7);
   animation: radarSpin 8s linear infinite;
 }
 
@@ -140,12 +129,12 @@ body.theme-control-room {
 
 .sat-marker-dot {
   position: relative;
-  width: 12px;
-  height: 12px;
+  width: 13px;
+  height: 13px;
   border-radius: 50%;
-  background: var(--color-cyan);
+  background: var(--color-accent);
   border: 2px solid #ffffff;
-  box-shadow: 0 0 12px var(--color-cyan);
+  box-shadow: 0 0 12px var(--color-accent);
   z-index: 2;
 }
 
@@ -201,21 +190,40 @@ body.theme-control-room {
   flex-direction: column;
 }
 
+.brand-line-primary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .brand-main-title {
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--text-pure);
   letter-spacing: -0.02em;
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
-.brand-sub-badge {
-  font-size: 0.7rem;
-  color: var(--text-secondary);
+.brand-separator {
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 300;
+  font-size: 0.95rem;
+}
+
+.brand-sub-title {
+  font-size: 0.85rem;
+  color: #cbd5e1;
   font-weight: 400;
 }
 
-/* Buscador global con hint de atajo */
+.brand-author-tag {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+/* Buscador global */
 .header-search-wrapper {
   position: relative;
   flex: 1;
@@ -225,7 +233,7 @@ body.theme-control-room {
 .header-search-box {
   display: flex;
   align-items: center;
-  background: rgba(18, 23, 35, 0.7);
+  background: rgba(22, 25, 31, 0.75);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-pill);
   padding: 7px 16px;
@@ -235,8 +243,8 @@ body.theme-control-room {
 }
 
 .header-search-box:focus-within {
-  border-color: var(--color-cyan);
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06);
 }
 
 .search-icon {
@@ -274,7 +282,7 @@ body.theme-control-room {
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  background: rgba(18, 23, 35, 0.95);
+  background: rgba(22, 25, 31, 0.95);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-float);
@@ -316,7 +324,7 @@ body.theme-control-room {
   margin-top: 2px;
 }
 
-/* Grupo de controles a la derecha */
+/* Controles a la derecha */
 .header-controls-group {
   display: flex;
   align-items: center;
@@ -328,9 +336,9 @@ body.theme-control-room {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: rgba(56, 189, 248, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  color: var(--color-cyan);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-pure);
   font-family: var(--font-sans);
   font-size: 0.82rem;
   font-weight: 500;
@@ -342,7 +350,7 @@ body.theme-control-room {
 }
 
 .btn-action-pill:hover {
-  background: rgba(56, 189, 248, 0.22);
+  background: rgba(255, 255, 255, 0.15);
   transform: translateY(-1px);
 }
 
@@ -381,7 +389,7 @@ body.theme-control-room {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(18, 23, 35, 0.7);
+  background: rgba(22, 25, 31, 0.75);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   display: flex;
@@ -406,23 +414,6 @@ body.theme-control-room {
   to { transform: rotate(360deg); }
 }
 
-.notification-badge {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  background: var(--color-alert);
-  color: white;
-  font-size: 0.65rem;
-  font-weight: 700;
-  width: 17px;
-  height: 17px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid #070a0f;
-}
-
 /* =========================================================================
    3. CONTENIDO FLOTANTE SOBRE EL MAPA
    ========================================================================= */
@@ -438,7 +429,8 @@ body.theme-control-room {
 }
 
 /* -------------------------------------------------------------------------
-   PANEL LATERAL IZQUIERDO: FONDO OSCURECIDO Y TARJETAS SEMITRANSPARENTES
+   PANEL LATERAL IZQUIERDO: DEGRADADO OSCURECIDO Y TARJETAS TRANSLÚCIDAS
+   Barra de desplazamiento completamente oculta como solicitó el usuario
    ------------------------------------------------------------------------- */
 .intelligence-floating-panel {
   pointer-events: auto;
@@ -453,9 +445,19 @@ body.theme-control-room {
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  /* Ocultar barra de desplazamiento manteniendo el scroll funcional */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE y Edge */
 }
 
-/* Contadores de estado dual (Online 12 / Offline 4) */
+.intelligence-floating-panel::-webkit-scrollbar {
+  display: none; /* Chrome, Safari y Edge Chromium */
+  width: 0;
+  height: 0;
+}
+
+/* Contadores de estado dual (Online 12 / Offline 4 de Imagen 2) */
 .dual-status-kpi-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -603,7 +605,7 @@ body.theme-control-room {
   color: var(--text-secondary);
 }
 
-/* Gráfico sparkline interactivo */
+/* Gráfico sparkline interactivo con estilo exacto de Imagen 2 */
 .efficiency-chart-container {
   width: 100%;
   margin-top: 6px;
@@ -640,14 +642,14 @@ body.theme-control-room {
 }
 
 .alert-warning {
-  background: rgba(251, 191, 36, 0.1);
-  border: 1px solid rgba(251, 191, 36, 0.25);
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
   color: #fbbf24;
 }
 
 .alert-danger {
-  background: rgba(248, 113, 113, 0.1);
-  border: 1px solid rgba(248, 113, 113, 0.25);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
   color: #fca5a5;
 }
 
@@ -795,7 +797,7 @@ body.theme-control-room {
 }
 
 .mini-bar.bar-rain {
-  background: var(--color-cyan);
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .mini-bar.bar-alert {
@@ -882,7 +884,7 @@ body.theme-control-room {
 }
 
 .map-glass-pill:hover {
-  background: rgba(32, 40, 62, 0.9);
+  background: rgba(35, 40, 50, 0.9);
   border-color: rgba(255, 255, 255, 0.22);
 }
 
@@ -969,7 +971,7 @@ body.theme-control-room {
 
 .glass-caption-note {
   font-size: 0.7rem;
-  color: var(--color-cyan);
+  color: #cbd5e1;
 }
 
 /* -------------------------------------------------------------------------
@@ -982,8 +984,8 @@ body.theme-control-room {
   right: 28px;
   z-index: 500;
   width: 340px;
-  background: rgba(28, 22, 26, 0.75);
-  border: 1px solid rgba(248, 113, 113, 0.2);
+  background: rgba(28, 24, 26, 0.78);
+  border: 1px solid rgba(239, 68, 68, 0.22);
   border-radius: var(--radius-xl);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
@@ -1039,10 +1041,10 @@ body.theme-control-room {
   font-weight: 500;
 }
 
-/* Tarjeta vino/rojo oscuro suave de alerta */
+/* Tarjeta vino/carbón cálido de alerta */
 .warning-alert-box {
-  background: rgba(50, 18, 24, 0.65);
-  border: 1px solid rgba(248, 113, 113, 0.25);
+  background: rgba(45, 20, 24, 0.65);
+  border: 1px solid rgba(239, 68, 68, 0.25);
   border-radius: var(--radius-md);
   padding: 14px;
   display: flex;
@@ -1096,7 +1098,7 @@ body.theme-control-room {
   flex-direction: column;
   gap: 4px;
   padding-left: 6px;
-  border-left: 2px solid rgba(248, 113, 113, 0.35);
+  border-left: 2px solid rgba(239, 68, 68, 0.35);
 }
 
 .impact-title {
@@ -1119,13 +1121,13 @@ body.theme-control-room {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #38bdf8;
+  color: #e2e8f0;
   font-size: 0.72rem;
   font-weight: 600;
 }
 
 .recommend-sparkle {
-  color: #38bdf8;
+  color: #fbbf24;
 }
 
 .recommend-body {
@@ -1203,7 +1205,7 @@ body.theme-control-room {
 }
 
 .map-btn-circle:hover {
-  background: rgba(45, 55, 80, 0.9);
+  background: rgba(45, 50, 60, 0.9);
   transform: translateY(-1px);
 }
 
@@ -1226,7 +1228,7 @@ body.theme-control-room {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(18, 23, 35, 0.92);
+  background: rgba(20, 23, 29, 0.92);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--radius-pill);
   padding: 6px 10px;
@@ -1307,7 +1309,7 @@ body.theme-control-room {
   }
 
   .header-search-wrapper {
-    max-width: 170px;
+    max-width: 160px;
   }
 
   .search-kbd-hint {
@@ -1325,7 +1327,7 @@ body.theme-control-room {
     max-height: calc(100vh - 56px);
     border-right: none;
     padding: 14px;
-    background: rgba(7, 10, 15, 0.94);
+    background: rgba(13, 15, 20, 0.95);
   }
 
   .map-floating-content-layer {

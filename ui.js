@@ -319,25 +319,30 @@ function renderSparklineCurve(weatherData, currentScore) {
   const els = getElements();
   if (!els.chartLinePath || !els.chartAreaPath) return;
 
+  const width = 380;
+  const height = 90;
+  const steps = 18;
+
   const hourlyUV = weatherData?.hourly?.uv_index || [];
   const hourlyWind = weatherData?.hourly?.wind_gusts_10m || [];
 
   const points = [];
-  const width = 380;
-  const height = 90;
-  const steps = 12;
-
   for (let i = 0; i < steps; i++) {
     const x = Math.round((i / (steps - 1)) * width);
-    const uvVal = hourlyUV[i] || 0;
-    const windVal = hourlyWind[i] || 15;
+    const hourIdx = Math.floor((i / steps) * 24);
+    const uvVal = hourlyUV[hourIdx] || 0;
+    const windVal = hourlyWind[hourIdx] || 15;
 
-    // A mayor UV y viento, menor puntaje de seguridad (más bajo en el eje Y)
-    const riskFactor = Math.min(1, (uvVal / 11) * 0.6 + (windVal / 50) * 0.4);
-    const simulatedScore = Math.max(30, Math.min(95, currentScore * (1 - riskFactor * 0.35)));
+    // Simulación de fluctuación diaria: a mediodía la radiación UV genera un valle de alerta
+    const middayArc = Math.sin((i / (steps - 1)) * Math.PI);
+    const dip = middayArc * (uvVal > 7 ? 20 : 10);
+    const windWobble = Math.sin(i * 1.5) * (windVal > 25 ? 5 : 2);
     
-    // Escala SVG normalizada
-    const y = Math.round(75 - ((simulatedScore - 30) / 70) * 50);
+    const baseScore = currentScore || 78.3;
+    const projectedScore = Math.max(38, Math.min(94, baseScore - dip + windWobble + (i > 11 ? 10 : 0)));
+
+    // Mapeo a Y en SVG (80% umbral permisible a Y = 35)
+    const y = Math.round(75 - ((projectedScore - 38) / 56) * 50);
     points.push({ x, y });
   }
 
