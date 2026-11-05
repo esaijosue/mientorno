@@ -316,24 +316,61 @@ function iniciarApp() {
     });
   });
 
+  // Botón buscador móvil desplegable
+  const btnSearchMobile = document.getElementById('btn-search-mobile-toggle');
+  const searchWrapper = document.getElementById('header-search-wrapper');
+  const searchInput = document.getElementById('search-input');
+  if (btnSearchMobile && searchWrapper) {
+    btnSearchMobile.addEventListener('click', (e) => {
+      e.stopPropagation();
+      searchWrapper.classList.toggle('mobile-search-active');
+      if (searchWrapper.classList.contains('mobile-search-active') && searchInput) {
+        searchInput.focus();
+      }
+    });
+  }
+
+  // Tirador táctil del panel inferior móvil
+  const dragHandle = document.querySelector('.mobile-sheet-drag-handle');
+  if (dragHandle) {
+    dragHandle.addEventListener('click', () => {
+      if (document.body.classList.contains('mobile-dashboard-focus')) {
+        document.body.classList.remove('mobile-dashboard-focus');
+        document.body.classList.add('mobile-map-focus');
+        updateActiveDock('map');
+      } else {
+        document.body.classList.remove('mobile-map-focus');
+        document.body.classList.add('mobile-dashboard-focus');
+        updateActiveDock('dashboard');
+      }
+      setTimeout(resizeMap, 200);
+    });
+  }
+
   // Configurar barra dock inferior móvil
   const dockBtns = document.querySelectorAll('.dock-action-btn');
+  function updateActiveDock(targetName) {
+    dockBtns.forEach(b => {
+      b.classList.toggle('active', b.dataset.target === targetName);
+    });
+  }
+
   dockBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      dockBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
       const target = btn.dataset.target;
+      updateActiveDock(target);
+
       if (target === 'dashboard') {
-        document.body.classList.remove('mobile-mode-map');
-        document.body.classList.add('mobile-mode-dashboard');
+        document.body.classList.remove('mobile-map-focus');
+        document.body.classList.add('mobile-dashboard-focus');
+        setTimeout(resizeMap, 150);
       } else if (target === 'map') {
-        document.body.classList.remove('mobile-mode-dashboard');
-        document.body.classList.add('mobile-mode-map');
+        document.body.classList.remove('mobile-dashboard-focus');
+        document.body.classList.add('mobile-map-focus');
         setTimeout(resizeMap, 150);
       } else if (target === 'alerts') {
-        document.body.classList.remove('mobile-mode-dashboard');
-        document.body.classList.add('mobile-mode-map');
+        document.body.classList.remove('mobile-dashboard-focus');
+        document.body.classList.add('mobile-map-focus');
         setTimeout(resizeMap, 150);
         const accordion = document.getElementById('warning-accordion');
         if (accordion) {
@@ -345,9 +382,10 @@ function iniciarApp() {
     });
   });
 
-  // Modo móvil inicial por defecto si la pantalla es <= 768px
+  // Modo móvil inicial por defecto si la pantalla es <= 768px (mapa satelital interactivo prioritario)
   if (window.innerWidth <= 768) {
-    document.body.classList.add('mobile-mode-dashboard');
+    document.body.classList.add('mobile-map-focus');
+    updateActiveDock('map');
   }
 
   // Iniciar temporizador de actualización periódica de 10 minutos
@@ -359,11 +397,12 @@ function iniciarApp() {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
       if (window.innerWidth <= 768) {
-        if (!document.body.classList.contains('mobile-mode-map') && !document.body.classList.contains('mobile-mode-dashboard')) {
-          document.body.classList.add('mobile-mode-dashboard');
+        if (!document.body.classList.contains('mobile-map-focus') && !document.body.classList.contains('mobile-dashboard-focus')) {
+          document.body.classList.add('mobile-map-focus');
+          updateActiveDock('map');
         }
       } else {
-        document.body.classList.remove('mobile-mode-map', 'mobile-mode-dashboard');
+        document.body.classList.remove('mobile-map-focus', 'mobile-dashboard-focus');
       }
       resizeMap();
     }, 150);

@@ -60,18 +60,24 @@
           autocomplete="off"
           aria-label="Buscar ubicación"
         >
-        <span class="search-kbd-hint">Ctrl+K</span>
       </div>
       <ul id="search-results" class="search-dropdown-menu" hidden></ul>
     </div>
 
     <!-- Controles de cabecera -->
     <div class="header-controls-group">
+      <button id="btn-search-mobile-toggle" class="btn-icon-pill mobile-only-search-btn" type="button" title="Buscar mina, puerto o ciudad">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+
       <button id="btn-location" class="btn-action-pill btn-gps-trigger" type="button" title="Obtener mi ubicación GPS">
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
           <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
         </svg>
-        <span>Usar mi GPS</span>
+        <span class="btn-gps-text">Usar mi GPS</span>
       </button>
 
       <div class="telemetry-pill">
@@ -91,8 +97,12 @@
        3. CONTENIDO FLOTANTE SOBRE EL MAPA
        ===================================================================== -->
   <div class="app-floating-workspace">
-    <!-- PANEL LATERAL IZQUIERDO COMPACTO (TODO VISIBLE EN PANTALLA) -->
+    <!-- PANEL LATERAL IZQUIERDO COMPACTO / SHEET MÓVIL INTERACTIVO -->
     <aside id="panel-dashboard" class="intelligence-floating-panel">
+      <!-- Tirador táctil solo para móvil -->
+      <div class="mobile-sheet-drag-handle" aria-hidden="true" title="Desliza para ver más">
+        <span class="drag-bar"></span>
+      </div>
       <!-- Fila de contadores duales compactos (Online 12 / Offline 4) -->
       <div class="dual-status-kpi-row">
         <div class="status-counter-card">
@@ -258,7 +268,6 @@
 
             <div class="warning-recommendation-box">
               <div class="recommend-head">
-                <span class="recommend-sparkle">&#10022;</span>
                 <span class="recommend-label">Medida de control recomendada:</span>
               </div>
               <p id="warning-recommend-text" class="recommend-body">

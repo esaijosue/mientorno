@@ -469,7 +469,7 @@ function createUVCard(data, ctx) {
         <span class="metric-hero-val">${maxUV.toFixed(1)}</span>
         <span class="metric-hero-unit">UV</span>
       </div>
-      <span class="risk-status-pill ${pillClass}">Nivel ${rule.nivel.toLowerCase()}</span>
+      <span class="risk-status-pill ${pillClass}">${rule.nivel}</span>
     </div>
 
     <div class="control-measure-box">
@@ -562,7 +562,7 @@ function createRainCard(data, ctx) {
         <span class="metric-hero-val">${maxProb}%</span>
         <span class="metric-hero-unit">prob.</span>
       </div>
-      <span class="risk-status-pill ${pillClass}">Condición ${nivelTexto.toLowerCase()}</span>
+      <span class="risk-status-pill ${pillClass}">${nivelTexto}</span>
     </div>
 
     <div class="control-measure-box">
@@ -640,7 +640,7 @@ function createWindCard(data, ctx) {
         <span class="metric-hero-val">${Math.round(max12hGust)}</span>
         <span class="metric-hero-unit">km/h</span>
       </div>
-      <span class="risk-status-pill ${pillClass}">Nivel ${nivelLabel.toLowerCase()}</span>
+      <span class="risk-status-pill ${pillClass}">${nivelLabel}</span>
     </div>
 
     <div class="control-measure-box">
@@ -741,7 +741,7 @@ function createThunderstormCard(data, ctx) {
         <span class="metric-hero-val">${Math.round(maxCape)}</span>
         <span class="metric-hero-unit">J/kg</span>
       </div>
-      <span class="risk-status-pill ${pillClass}">${nivelLabel.toLowerCase()}</span>
+      <span class="risk-status-pill ${pillClass}">${nivelLabel}</span>
     </div>
 
     <div class="control-measure-box">

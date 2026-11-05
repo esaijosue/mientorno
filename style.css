@@ -95,6 +95,11 @@ body.theme-control-room {
   filter: brightness(0.96) contrast(1.08) saturate(1.05) !important;
 }
 
+/* Ocultar barra de atribución para máxima limpieza visual */
+.leaflet-control-attribution {
+  display: none !important;
+}
+
 /* Viñeta fotográfica suave: centro transparente/despejado y oscurecimiento difuminado hacia los bordes */
 .map-photographic-vignette {
   position: fixed;
@@ -425,6 +430,14 @@ body.theme-control-room {
   animation: spinSlow 1s linear infinite;
 }
 
+.mobile-only-search-btn {
+  display: none;
+}
+
+.mobile-sheet-drag-handle {
+  display: none;
+}
+
 @keyframes spinSlow {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
@@ -693,12 +706,11 @@ body.theme-control-room {
   background: var(--bg-card-glass);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-md);
-  padding: 10px 12px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 6px;
-  min-height: 110px;
+  gap: 8px;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   box-shadow: var(--shadow-card);
@@ -815,19 +827,16 @@ body.theme-control-room {
   background: var(--color-alert);
 }
 
-/* Caja de medidas de control SST compacta */
+/* Caja de medidas de control SST compacta sin truncamiento artificial */
 .control-measure-box {
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: var(--radius-sm);
-  padding: 6px 8px;
-  font-size: 0.68rem;
-  color: var(--text-secondary);
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  padding: 8px 10px;
+  font-size: 0.71rem;
+  color: #cbd5e1;
+  line-height: 1.35;
+  display: block;
 }
 
 .control-label {
@@ -1331,22 +1340,22 @@ body.theme-control-room {
 }
 
 /* =========================================================================
-   6. RESPONSIVE DESIGN (TABLETS Y MÓVILES DE ALTA GAMA)
+   6. RESPONSIVE DESIGN (PC, TABLETS Y CELULARES)
    ========================================================================= */
 
-/* Laptops compactas y monitores medianos (1025px a 1200px) */
-@media (max-width: 1200px) {
+/* Laptops y pantallas medianas (1025px a 1240px) */
+@media (max-width: 1240px) {
   .intelligence-floating-panel {
-    width: 410px;
+    width: 420px;
     padding: 14px 16px;
   }
 
   .map-floating-content-layer {
-    left: 410px;
+    left: 420px;
   }
 
   .floating-warning-accordion {
-    width: 275px;
+    width: 270px;
   }
 }
 
@@ -1358,17 +1367,21 @@ body.theme-control-room {
   }
 
   .header-search-wrapper {
-    max-width: 260px;
+    max-width: 250px;
   }
 
   .app-floating-workspace {
     top: 56px;
   }
 
+  /* Panel lateral en tablet: 360px fijo con espacio satelital abierto a la derecha */
   .intelligence-floating-panel {
-    width: 350px;
+    width: 360px;
     padding: 12px 14px;
     gap: 10px;
+    background: rgba(12, 14, 20, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
 
   .risk-cards-grid {
@@ -1377,48 +1390,48 @@ body.theme-control-room {
   }
 
   .risk-card {
-    padding: 8px 10px;
-    min-height: 105px;
+    padding: 10px 12px;
   }
 
   .metric-hero-val {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
   }
 
   .hero-number {
-    font-size: 2.1rem;
+    font-size: 2.2rem;
   }
 
   .map-floating-content-layer {
-    left: 350px;
+    left: 360px;
   }
 
   .map-hero-title {
-    font-size: 1.5rem;
+    font-size: 1.55rem;
   }
 
   .frosted-glass-metric-card {
     top: 75px;
     left: 18px;
-    width: 180px;
-    padding: 12px;
+    width: 185px;
+    padding: 12px 14px;
   }
 
   .glass-hero-val {
-    font-size: 2rem;
+    font-size: 2.1rem;
   }
 
+  /* En tablet el acordeón se posiciona abajo a la derecha para no tapar el mapa */
   .floating-warning-accordion {
     top: auto;
-    bottom: 20px;
-    right: 20px;
-    width: 260px;
-    max-height: calc(100vh - 160px);
+    bottom: 24px;
+    right: 24px;
+    width: 280px;
+    max-height: calc(100vh - 180px);
   }
 
   .map-floating-navigation-controls {
-    bottom: 20px;
-    right: 295px;
+    bottom: 24px;
+    right: 318px;
   }
 
   .mobile-bottom-dock-bar {
@@ -1426,198 +1439,288 @@ body.theme-control-room {
   }
 }
 
-/* Teléfonos móviles y pantallas pequeñas (<= 768px) */
+/* Teléfonos móviles y smartphones (<= 768px) */
 @media (max-width: 768px) {
   .app-top-header {
-    padding: 0 10px;
+    padding: 0 12px;
     height: 52px;
-    gap: 6px;
+    gap: 8px;
   }
 
   .brand-logo-img {
     height: 26px;
+    width: auto;
   }
 
   .brand-main-title {
-    font-size: 0.92rem;
+    font-size: 0.95rem;
   }
 
   .brand-separator {
     font-size: 0.75rem;
-    margin: 0 1px;
+    margin: 0 2px;
   }
 
   .brand-sub-title {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
+    color: #cbd5e1;
   }
 
   .brand-author-tag {
-    display: none; /* Se muestra con elegancia en el pie del tablero */
+    display: none; /* Se muestra prominentemente en el pie del tablero */
+  }
+
+  /* En móvil el buscador se activa mediante botón iconográfico limpio */
+  .mobile-only-search-btn {
+    display: flex !important;
+  }
+
+  .header-search-wrapper {
+    display: none;
+  }
+
+  .header-search-wrapper.mobile-search-active {
+    display: block !important;
+    position: fixed;
+    top: 52px;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    max-width: 100vw;
+    background: #0c0e14;
+    padding: 10px 14px;
+    z-index: 2000;
+    border-bottom: 1px solid var(--border-subtle);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+  }
+
+  .header-search-wrapper.mobile-search-active .header-search-box {
+    width: 100%;
+  }
+
+  .header-search-wrapper.mobile-search-active .search-dropdown-menu {
+    width: calc(100% - 28px);
+    left: 14px;
   }
 
   .telemetry-pill {
     display: none;
   }
 
-  .header-search-wrapper {
-    max-width: 130px;
-  }
-
-  .header-search-box {
-    padding: 4px 8px;
-    gap: 6px;
-  }
-
-  .header-search-input {
-    font-size: 0.72rem;
-  }
-
-  .search-kbd-hint {
+  .btn-gps-text {
     display: none;
   }
 
   .btn-gps-trigger {
-    padding: 5px 8px;
-    font-size: 0.7rem;
-    gap: 3px;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .btn-icon-pill {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
   }
 
+  /* Workspace flotante en móvil */
   .app-floating-workspace {
     top: 52px;
     left: 0;
     right: 0;
     bottom: 0;
     position: fixed;
-    display: block;
     pointer-events: none;
+    z-index: 100;
   }
 
-  /* Vista de Tablero móvil */
-  body.mobile-mode-dashboard .intelligence-floating-panel {
-    display: flex;
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    max-width: 100%;
-    height: 100%;
-    padding: 12px 14px 85px 14px;
-    background: rgba(12, 14, 20, 0.96);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    border-right: none;
+  /* Viñeta fotográfica móvil: centro 100% transparente para ver mapa nítido */
+  .map-photographic-vignette {
+    background: radial-gradient(circle at 50% 36%, transparent 28%, rgba(12, 14, 20, 0.3) 65%, rgba(12, 14, 20, 0.8) 100%) !important;
   }
 
-  body.mobile-mode-dashboard .map-floating-content-layer {
-    display: none;
-  }
-
-  body.mobile-mode-dashboard .map-photographic-vignette {
-    background: rgba(12, 14, 20, 0.95);
-  }
-
-  /* Vista de Mapa móvil (Estilo idéntico a referencia iPhone) */
-  body.mobile-mode-map .intelligence-floating-panel {
-    display: none;
-  }
-
-  body.mobile-mode-map .map-floating-content-layer {
-    display: block;
+  /* Capa flotante sobre el mapa siempre activa en móvil */
+  .map-floating-content-layer {
+    display: block !important;
     position: absolute;
     inset: 0;
     left: 0;
     pointer-events: none;
   }
 
-  body.mobile-mode-map .floating-map-hero-header {
+  .floating-map-hero-header {
     position: absolute;
-    top: 12px;
+    top: 10px;
     left: 14px;
     right: 14px;
     pointer-events: none;
     gap: 6px;
   }
 
-  body.mobile-mode-map .map-hero-title {
-    font-size: 1.35rem;
+  .map-hero-title {
+    font-size: 1.25rem;
     line-height: 1.1;
   }
 
-  body.mobile-mode-map .map-glass-pill {
+  .map-glass-pill {
     padding: 5px 12px;
     font-size: 0.74rem;
   }
 
-  body.mobile-mode-map .frosted-glass-metric-card {
+  /* Tarjeta de métrica prioritaria flotando sobre el mapa */
+  .frosted-glass-metric-card {
     position: absolute;
-    top: 72px;
+    top: 64px;
     left: 14px;
-    width: 175px;
+    width: 165px;
     padding: 10px 12px;
     border-radius: 12px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
 
-  body.mobile-mode-map .glass-hero-val {
-    font-size: 1.9rem;
+  .glass-hero-val {
+    font-size: 1.85rem;
   }
 
-  body.mobile-mode-map .floating-warning-accordion {
+  .glass-metric-label {
+    font-size: 0.7rem;
+  }
+
+  .glass-metric-sub {
+    font-size: 0.65rem;
+  }
+
+  /* Acordeón de alertas SST en móvil */
+  .floating-warning-accordion {
     position: absolute;
     top: auto;
-    bottom: 80px;
+    bottom: 110px;
     left: 12px;
     right: 12px;
     width: auto;
     max-width: 440px;
     margin: 0 auto;
     max-height: 240px;
+    z-index: 500;
   }
 
-  body.mobile-mode-map .accordion-header {
+  .accordion-header {
     padding: 8px 12px;
   }
 
-  body.mobile-mode-map .accordion-main-title {
+  .accordion-main-title {
     font-size: 0.78rem;
   }
 
-  body.mobile-mode-map .accordion-body {
+  .accordion-body {
     padding: 8px 10px;
     max-height: 180px;
     gap: 6px;
   }
 
-  body.mobile-mode-map .map-floating-navigation-controls {
+  /* Controles de zoom y GPS en mapa */
+  .map-floating-navigation-controls {
     position: absolute;
-    bottom: 175px;
+    bottom: 110px;
     right: 12px;
     gap: 6px;
   }
 
-  body.mobile-mode-map .map-btn-circle {
+  .map-btn-circle {
     width: 36px;
     height: 36px;
   }
 
-  body.mobile-mode-map .map-photographic-vignette {
-    background: radial-gradient(circle at 50% 40%, transparent 28%, rgba(12, 14, 20, 0.3) 65%, rgba(12, 14, 20, 0.75) 100%);
+  /* Tirador táctil visual del panel móvil */
+  .mobile-sheet-drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 0 8px 0;
+    cursor: pointer;
+    touch-action: none;
   }
 
-  /* Ajuste de cuadrícula de tarjetas de riesgo */
+  .drag-bar {
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.28);
+    transition: background 0.2s ease;
+  }
+
+  .mobile-sheet-drag-handle:hover .drag-bar {
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  /* -----------------------------------------------------------------------
+     PANEL INFERIOR INTERACTIVO (BOTTOM SHEET) EN MÓVIL
+     El mapa satelital SIEMPRE permanece visible como fondo
+     ----------------------------------------------------------------------- */
+  .intelligence-floating-panel {
+    pointer-events: auto;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 18px 18px 0 0;
+    background: rgba(13, 16, 22, 0.94);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    border-right: none;
+    box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.75);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 600;
+  }
+
+  /* Estado 1: Modo Mapa enfocado (el panel reposa en la parte inferior mostrando KPIs rápidos) */
+  body.mobile-map-focus .intelligence-floating-panel {
+    height: 95px;
+    padding: 6px 14px 10px 14px;
+    overflow-y: hidden;
+  }
+
+  body.mobile-map-focus .safety-efficiency-card,
+  body.mobile-map-focus .factors-section-header,
+  body.mobile-map-focus .risk-cards-grid,
+  body.mobile-map-focus .panel-dashboard-footer {
+    display: none;
+  }
+
+  /* Estado 2: Modo Tablero enfocado (el panel se desliza al 72% para ver tarjetas de riesgo) */
+  body.mobile-dashboard-focus .intelligence-floating-panel {
+    height: 72vh;
+    padding: 6px 14px 80px 14px;
+    overflow-y: auto;
+  }
+
+  body.mobile-dashboard-focus .floating-warning-accordion {
+    display: none;
+  }
+
+  body.mobile-dashboard-focus .map-floating-navigation-controls {
+    bottom: auto;
+    top: 12px;
+  }
+
+  /* Cuadrícula de tarjetas de riesgo en móvil */
   .risk-cards-grid {
     grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
 
   .risk-card {
-    padding: 9px 11px;
-    min-height: 100px;
+    padding: 10px 12px;
   }
 
   .metric-hero-val {
@@ -1667,7 +1770,7 @@ body.theme-control-room {
   }
 
   .brand-sub-title {
-    font-size: 0.68rem;
+    font-size: 0.7rem;
   }
 }
 
@@ -1676,9 +1779,5 @@ body.theme-control-room {
   .brand-separator,
   .brand-sub-title {
     display: none;
-  }
-
-  .header-search-wrapper {
-    max-width: 105px;
   }
 }
