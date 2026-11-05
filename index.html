@@ -41,12 +41,11 @@
           <span class="brand-separator">|</span>
           <span class="brand-sub-title">Monitoreo de campo</span>
         </div>
-        <span class="brand-author-tag">Desarrollado por Esai Josue Huaman Meza</span>
       </div>
     </div>
 
-    <!-- Buscador global integrado con atajo de teclado Ctrl+K -->
-    <div class="header-search-wrapper">
+    <!-- Buscador global integrado -->
+    <div class="header-search-wrapper" id="header-search-wrapper">
       <div class="header-search-box">
         <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"></circle>
@@ -80,10 +79,14 @@
         <span class="btn-gps-text">Usar mi GPS</span>
       </button>
 
-      <div class="telemetry-pill">
-        <span class="live-dot-beacon"></span>
-        <span id="coords-display" class="coords-telemetry-text">Lat: -12.0464, Lon: -77.0428</span>
-      </div>
+      <a href="acerca.html" class="header-nav-link" title="Ficha técnica, metodología de cálculo y marco regulatorio SST">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <span>Metodología</span>
+      </a>
 
       <button id="btn-refresh" class="btn-icon-pill" type="button" title="Sincronizar datos climáticos en tiempo real">
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
@@ -99,9 +102,15 @@
   <div class="app-floating-workspace">
     <!-- PANEL LATERAL IZQUIERDO COMPACTO / SHEET MÓVIL INTERACTIVO -->
     <aside id="panel-dashboard" class="intelligence-floating-panel">
-      <!-- Tirador táctil solo para móvil -->
-      <div class="mobile-sheet-drag-handle" aria-hidden="true" title="Desliza para ver más">
-        <span class="drag-bar"></span>
+      <!-- Encabezado de control móvil -->
+      <div class="mobile-sheet-header">
+        <div class="mobile-sheet-drag-handle" aria-hidden="true" title="Desliza para alternar vista">
+          <span class="drag-bar"></span>
+        </div>
+        <button id="btn-close-dashboard-mobile" class="btn-close-sheet" type="button" aria-label="Volver al mapa satelital">
+          <span>Volver al mapa</span>
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
       </div>
       <!-- Fila de contadores duales compactos (Online 12 / Offline 4) -->
       <div class="dual-status-kpi-row">
@@ -177,6 +186,19 @@
 
       <!-- Alerta de precisión GPS (solo si > 500m) -->
       <div id="accuracy-alert" class="accuracy-banner-container" hidden></div>
+
+      <!-- Alerta y protocolo SST destacado en el tablero -->
+      <div id="dashboard-sst-alert-banner" class="dashboard-sst-alert-banner" hidden>
+        <div class="dash-alert-head">
+          <span class="dash-alert-badge">!</span>
+          <span id="dash-alert-title" class="dash-alert-title">Atención requerida en faena</span>
+        </div>
+        <p id="dash-alert-desc" class="dash-alert-desc"></p>
+        <div class="dash-alert-protocol">
+          <span class="protocol-tag">Medida de control SST:</span>
+          <p id="dash-alert-protocol-text" class="protocol-text"></p>
+        </div>
+      </div>
 
       <!-- Encabezado sutil -->
       <div class="factors-section-header">

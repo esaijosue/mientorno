@@ -319,13 +319,36 @@ function iniciarApp() {
   // Botón buscador móvil desplegable
   const btnSearchMobile = document.getElementById('btn-search-mobile-toggle');
   const searchWrapper = document.getElementById('header-search-wrapper');
-  const searchInput = document.getElementById('search-input');
   if (btnSearchMobile && searchWrapper) {
     btnSearchMobile.addEventListener('click', (e) => {
       e.stopPropagation();
       searchWrapper.classList.toggle('mobile-search-active');
       if (searchWrapper.classList.contains('mobile-search-active') && searchInput) {
         searchInput.focus();
+      }
+    });
+  }
+
+  // Botón para cerrar el tablero en móvil y volver al mapa satelital
+  const btnCloseMobile = document.getElementById('btn-close-dashboard-mobile');
+  if (btnCloseMobile) {
+    btnCloseMobile.addEventListener('click', () => {
+      document.body.classList.remove('mobile-dashboard-focus');
+      document.body.classList.add('mobile-map-focus');
+      updateActiveDock('map');
+      setTimeout(resizeMap, 150);
+    });
+  }
+
+  // Al hacer clic en la tarjeta de riesgo flotante sobre el mapa en móvil, abrir el tablero
+  const floatingCard = document.getElementById('map-floating-card');
+  if (floatingCard) {
+    floatingCard.addEventListener('click', () => {
+      if (window.innerWidth <= 768) {
+        document.body.classList.remove('mobile-map-focus');
+        document.body.classList.add('mobile-dashboard-focus');
+        updateActiveDock('dashboard');
+        setTimeout(resizeMap, 150);
       }
     });
   }
@@ -369,12 +392,21 @@ function iniciarApp() {
         document.body.classList.add('mobile-map-focus');
         setTimeout(resizeMap, 150);
       } else if (target === 'alerts') {
-        document.body.classList.remove('mobile-dashboard-focus');
-        document.body.classList.add('mobile-map-focus');
-        setTimeout(resizeMap, 150);
-        const accordion = document.getElementById('warning-accordion');
-        if (accordion) {
-          accordion.classList.remove('collapsed');
+        if (window.innerWidth <= 768) {
+          document.body.classList.remove('mobile-map-focus');
+          document.body.classList.add('mobile-dashboard-focus');
+          setTimeout(() => {
+            resizeMap();
+            const banner = document.getElementById('dashboard-sst-alert-banner');
+            if (banner && !banner.hidden) {
+              banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }, 150);
+        } else {
+          const accordion = document.getElementById('warning-accordion');
+          if (accordion) {
+            accordion.classList.remove('collapsed');
+          }
         }
       } else if (target === 'gps') {
         solicitarGeolocalizacion(false);

@@ -48,6 +48,10 @@ export function initUI() {
     warningPrimaryTitle: document.getElementById('warning-primary-title'),
     warningRecommendText: document.getElementById('warning-recommend-text'),
     headerAlertBadge: document.getElementById('header-alert-badge'),
+    dashboardAlertBanner: document.getElementById('dashboard-sst-alert-banner'),
+    dashAlertTitle: document.getElementById('dash-alert-title'),
+    dashAlertDesc: document.getElementById('dash-alert-desc'),
+    dashAlertProtocolText: document.getElementById('dash-alert-protocol-text'),
     chartAreaPath: document.getElementById('chart-area-path'),
     chartLinePath: document.getElementById('chart-line-path'),
     dockBtnDashboard: document.getElementById('dock-btn-dashboard'),
@@ -92,8 +96,8 @@ export function setLocationButtonLoading(isLoading, text = null) {
   if (!btn) return;
   btn.disabled = isLoading;
   btn.innerHTML = isLoading
-    ? `<div class="spinner-dot-ring" aria-hidden="true"></div><span>${text || 'Obteniendo GPS...'}</span>`
-    : `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg><span>${text || 'Usar mi GPS'}</span>`;
+    ? `<div class="spinner-dot-ring" aria-hidden="true"></div><span class="btn-gps-text">${text || 'Obteniendo GPS...'}</span>`
+    : `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg><span class="btn-gps-text">${text || 'Usar mi GPS'}</span>`;
 }
 
 /**
@@ -284,10 +288,10 @@ export function renderRiskCards(weatherData) {
   }
 
   // Actualizar métricas ejecutivas en la tarjeta hero del índice de seguridad
-  updateSafetyIndexSummary(riskContext, weatherData);
+  const finalScore = updateSafetyIndexSummary(riskContext, weatherData);
 
-  // Actualizar tarjeta de cristal flotante sobre el mapa satelital
-  updateFloatingMapCard(riskContext.highestRisk);
+  // Actualizar tarjeta de cristal flotante sobre el mapa satelital (estado macro sin duplicar métricas)
+  updateFloatingMapCard(riskContext, finalScore);
 
   // Actualizar panel de alertas y recomendaciones SST del mapa
   updateWarningAccordion(riskContext);
@@ -300,7 +304,7 @@ export function renderRiskCards(weatherData) {
  */
 function updateSafetyIndexSummary(context, weatherData) {
   const els = getElements();
-  if (!els.safetyScoreNumber) return;
+  if (!els.safetyScoreNumber) return 100;
 
   const finalScore = Math.max(20, Math.min(99, 100 - context.scoreDeductions));
   els.safetyScoreNumber.textContent = finalScore.toFixed(1);
@@ -310,6 +314,7 @@ function updateSafetyIndexSummary(context, weatherData) {
 
   // Actualizar curva sparkline SVG interactiva con datos horarios reales
   renderSparklineCurve(weatherData, finalScore);
+  return finalScore;
 }
 
 /**
@@ -363,17 +368,25 @@ function renderSparklineCurve(weatherData, currentScore) {
 
 /**
  * Actualiza la tarjeta de cristal flotante sobre el mapa satelital.
+ * Muestra el estado operativo macro de la faena sin duplicar métricas individuales.
  */
-function updateFloatingMapCard(highestRisk) {
+function updateFloatingMapCard(context, score) {
   const els = getElements();
   if (!els.floatingKpiTitle || !els.floatingKpiValue) return;
 
-  els.floatingKpiTitle.textContent = highestRisk.title;
-  els.floatingKpiSubtitle.textContent = highestRisk.subtitle;
-  els.floatingKpiValue.textContent = highestRisk.value;
-  els.floatingKpiUnit.textContent = highestRisk.unit;
-  if (els.floatingKpiCaption && highestRisk.caption) {
-    els.floatingKpiCaption.textContent = highestRisk.caption;
+  const hasAlerts = context.alertCount > 0;
+  const currentScore = score !== undefined ? score : Math.max(20, Math.min(99, 100 - context.scoreDeductions));
+
+  els.floatingKpiTitle.textContent = 'Estado operativo';
+  els.floatingKpiSubtitle.textContent = hasAlerts
+    ? `Faena con restricción (${context.alertCount} factor${context.alertCount > 1 ? 'es' : ''})`
+    : 'Operación regular en faena';
+  els.floatingKpiValue.textContent = currentScore.toFixed(1);
+  els.floatingKpiUnit.textContent = '%';
+  if (els.floatingKpiCaption) {
+    els.floatingKpiCaption.textContent = hasAlerts
+      ? 'Protocolos D.S. 024-2016-EM activos'
+      : 'Parámetros dentro de umbrales permitidos';
   }
 }
 
@@ -399,6 +412,24 @@ function updateWarningAccordion(context) {
 
   if (els.warningRecommendText && context.highestRisk.recommendation) {
     els.warningRecommendText.textContent = context.highestRisk.recommendation;
+  }
+
+  // Actualizar banner en el tablero principal
+  if (els.dashboardAlertBanner) {
+    if (context.alertCount > 0 && context.highestRisk.severityScore > 0) {
+      els.dashboardAlertBanner.hidden = false;
+      if (els.dashAlertTitle) {
+        els.dashAlertTitle.textContent = `Alerta prioritaria: ${context.highestRisk.title} (${context.highestRisk.value} ${context.highestRisk.unit})`;
+      }
+      if (els.dashAlertDesc) {
+        els.dashAlertDesc.textContent = `${context.highestRisk.subtitle}. Personal y cuadrillas en operaciones de campo expuestas a esta condición.`;
+      }
+      if (els.dashAlertProtocolText) {
+        els.dashAlertProtocolText.textContent = context.highestRisk.recommendation;
+      }
+    } else {
+      els.dashboardAlertBanner.hidden = true;
+    }
   }
 }
 
@@ -459,7 +490,7 @@ function createUVCard(data, ctx) {
     <div class="risk-card-top-row">
       <div class="factor-identifier">
         <span class="factor-badge-circle">01</span>
-        <span class="factor-title">Radiación UV</span>
+        <span class="factor-title">Radiación solar UV</span>
       </div>
       <span class="card-external-arrow">&nearr;</span>
     </div>
@@ -472,15 +503,22 @@ function createUVCard(data, ctx) {
       <span class="risk-status-pill ${pillClass}">${rule.nivel}</span>
     </div>
 
+    <div class="metric-secondary-telemetry">
+      <span>Índice actual: ${currentUV.toFixed(1)}</span>
+      <span class="telemetry-sep">&bull;</span>
+      <span>Pico crítico previsto a las 12:30 pm</span>
+    </div>
+
     <div class="control-measure-box">
-      <span>${escapeHTML(rule.recomendacion)}</span>
+      <span class="control-box-label">Medida de control SST:</span>
+      <p class="control-box-text">${escapeHTML(rule.recomendacion)}</p>
     </div>
   `;
   return card;
 }
 
 /**
- * 2. Tarjeta Lluvia y precipitación
+ * 2. Tarjeta Lluvia y precipitación pluvial
  */
 function createRainCard(data, ctx) {
   const currentIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
@@ -539,7 +577,7 @@ function createRainCard(data, ctx) {
   let barsHTML = '';
   for (let i = 0; i < Math.min(times.length, 24); i++) {
     const prob = probs[i] || 0;
-    const heightPct = Math.max(6, prob);
+    const heightPct = Math.max(8, prob);
     const isAlert = prob >= 40;
     const isRain = prob > 0;
     const barClass = isAlert ? 'bar-alert' : isRain ? 'bar-rain' : '';
@@ -552,7 +590,7 @@ function createRainCard(data, ctx) {
     <div class="risk-card-top-row">
       <div class="factor-identifier">
         <span class="factor-badge-circle">02</span>
-        <span class="factor-title">Precipitación</span>
+        <span class="factor-title">Precipitación pluvial</span>
       </div>
       <span class="card-external-arrow">&nearr;</span>
     </div>
@@ -565,8 +603,19 @@ function createRainCard(data, ctx) {
       <span class="risk-status-pill ${pillClass}">${nivelTexto}</span>
     </div>
 
+    <div class="metric-secondary-telemetry">
+      <span>${totalPrecip.toFixed(1)} mm acumulados</span>
+      <span class="telemetry-sep">&bull;</span>
+      <span>${hasRain ? nextRainText : 'Próximas 24 horas'}</span>
+    </div>
+
+    <div class="mini-histogram-chart" title="Probabilidad horaria de precipitación">
+      ${barsHTML}
+    </div>
+
     <div class="control-measure-box">
-      <span>${escapeHTML(recomendacion)}</span>
+      <span class="control-box-label">Medida de control SST:</span>
+      <p class="control-box-text">${escapeHTML(recomendacion)}</p>
     </div>
   `;
   return card;
@@ -643,8 +692,15 @@ function createWindCard(data, ctx) {
       <span class="risk-status-pill ${pillClass}">${nivelLabel}</span>
     </div>
 
+    <div class="metric-secondary-telemetry">
+      <span>Sostenido: ${Math.round(currentSpeed)} km/h</span>
+      <span class="telemetry-sep">&bull;</span>
+      <span>Límite de izajes: 32 km/h</span>
+    </div>
+
     <div class="control-measure-box">
-      <span>${escapeHTML(recomendacion)}</span>
+      <span class="control-box-label">Protocolo D.S. 024-2016-EM / Izajes:</span>
+      <p class="control-box-text">${escapeHTML(recomendacion)}</p>
     </div>
   `;
   return card;
@@ -744,8 +800,13 @@ function createThunderstormCard(data, ctx) {
       <span class="risk-status-pill ${pillClass}">${nivelLabel}</span>
     </div>
 
+    <div class="metric-secondary-telemetry">
+      <span>${stormDetected ? 'Descargas previstas a las ' + (estimatedStormTime || '--:--') + ' h' : 'Sin descargas activas en radio de 10 km'}</span>
+    </div>
+
     <div class="control-measure-box">
-      <span>${escapeHTML(recomendacion)}</span>
+      <span class="control-box-label">Protocolo de tormenta eléctrica:</span>
+      <p class="control-box-text">${escapeHTML(recomendacion)}</p>
     </div>
   `;
   return card;
