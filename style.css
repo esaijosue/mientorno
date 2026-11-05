@@ -2,36 +2,36 @@
  * style.css - Plataforma de Monitoreo Ambiental de Misión Crítica
  * Proyecto: MiEntorno
  * 
- * Sistema visual inspirado 100% en interfaces de alta gama (estilo Imagen 2 de referencia).
- * - Paleta neutra en tonos carbón y grafito profundo (sin tintes azulados artificiales)
- * - Mapa satelital de fondo nítido, claro y vibrante (la zona GPS y el relieve se aprecian con total claridad)
- * - Zona izquierda oscurecida con degradado de cristal ahumado neutro
- * - Tarjetas translúcidas con efecto frosted glass (backdrop-filter: blur(24px))
- * - Barra de desplazamiento del navegador completamente oculta
+ * Sistema visual inspirado 100% en interfaces de alta gama (estilo Imagen 2 y 3 de referencia).
+ * - Header sólido y uniforme en toda la pantalla (sin transparencias irregulares)
+ * - Viñeta fotográfica suave sobre el mapa (centro claro/nítido, oscurecimiento difuminado hacia los bordes)
+ * - Sidebar compacto en cuadrícula 2x2 para que toda la información crítica entre en pantalla
+ * - Barra de desplazamiento totalmente invisible
+ * - Paleta neutra en tonos carbón y grafito (libre de tintes azulados artificiales)
  */
 
 :root {
-  /* Fondo general y gradientes de cristal ahumado neutro (tonos grafito/carbón de Imagen 2) */
-  --bg-app: #0d0f14;
-  --bg-panel-overlay: linear-gradient(to right, rgba(13, 15, 20, 0.96) 0%, rgba(13, 15, 20, 0.88) 78%, rgba(13, 15, 20, 0) 100%);
-  --bg-header-overlay: linear-gradient(to bottom, rgba(13, 15, 20, 0.96) 0%, rgba(13, 15, 20, 0.82) 75%, transparent 100%);
-  --bg-card-glass: rgba(22, 25, 31, 0.76);
-  --bg-card-glass-hover: rgba(28, 32, 40, 0.82);
-  --bg-pill-glass: rgba(24, 27, 34, 0.85);
+  /* Fondo general y superficies neutras de Imagen 3 (grafito/carbón) */
+  --bg-app: #0c0e14;
+  --bg-header: #0c0e14;
+  --bg-sidebar: rgba(12, 15, 21, 0.94);
+  --bg-card-glass: rgba(20, 24, 30, 0.78);
+  --bg-card-glass-hover: rgba(26, 30, 38, 0.85);
+  --bg-pill-glass: rgba(22, 26, 33, 0.86);
 
-  /* Bordes sutiles de alta fidelidad */
+  /* Bordes sutiles de precisión */
   --border-subtle: rgba(255, 255, 255, 0.07);
   --border-card: rgba(255, 255, 255, 0.08);
   --border-glass: rgba(255, 255, 255, 0.12);
 
-  /* Escala de texto sobria y neutra */
+  /* Escala de texto sobria */
   --text-pure: #ffffff;
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   --text-dimmed: #475569;
 
-  /* Colores de estado sobrios (estilo Imagen 2) */
+  /* Estados operativos sobrios */
   --color-safe: #22c55e;
   --color-safe-bg: rgba(34, 197, 94, 0.14);
   --color-warning: #f59e0b;
@@ -44,16 +44,16 @@
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Geometría */
+  /* Radios */
   --radius-sm: 8px;
   --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
   --radius-pill: 9999px;
 
   /* Sombras */
   --shadow-float: 0 16px 40px rgba(0, 0, 0, 0.65);
-  --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.45);
+  --shadow-card: 0 6px 24px rgba(0, 0, 0, 0.4);
 }
 
 /* Reseteo general */
@@ -73,13 +73,13 @@ html, body {
 body.theme-control-room {
   font-family: var(--font-sans);
   color: var(--text-primary);
-  line-height: 1.45;
+  line-height: 1.4;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* =========================================================================
-   1. MAPA SATELITAL DE FONDO COMPLETO (NÍTIDO, CLARO Y BRILLANTE)
+   1. MAPA SATELITAL DE FONDO COMPLETO
    ========================================================================= */
 .fullscreen-map-canvas {
   position: fixed;
@@ -90,9 +90,32 @@ body.theme-control-room {
   background: #06090e;
 }
 
-/* El mapa satelital se muestra claro, nítido y con colores vivos (como solicitó el usuario) */
+/* El mapa satelital se visualiza nítido, claro y con relieve definido */
 .leaflet-tile {
   filter: brightness(0.96) contrast(1.08) saturate(1.05) !important;
+}
+
+/* Viñeta fotográfica suave: centro transparente/despejado y oscurecimiento difuminado hacia los bordes */
+.map-photographic-vignette {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, 
+      rgba(12, 14, 20, 0.88) 0%, 
+      rgba(12, 14, 20, 0.72) 320px, 
+      rgba(12, 14, 20, 0.35) 480px, 
+      rgba(12, 14, 20, 0.0) 650px, 
+      rgba(12, 14, 20, 0.0) 100%
+    ),
+    radial-gradient(ellipse 85% 80% at 65% 50%, 
+      transparent 35%, 
+      rgba(12, 14, 20, 0.25) 65%, 
+      rgba(12, 14, 20, 0.75) 100%
+    );
 }
 
 /* Marcador satelital de radar pulsante */
@@ -149,23 +172,21 @@ body.theme-control-room {
 }
 
 /* =========================================================================
-   2. BARRA SUPERIOR FLOTANTE CON EFECTO DE CRISTAL
+   2. BARRA SUPERIOR SÓLIDA, LIMPIA Y UNIFORME
    ========================================================================= */
 .app-top-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 64px;
+  height: 60px;
   z-index: 1000;
-  background: var(--bg-header-overlay);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--bg-header); /* Sólido en toda la pantalla */
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 28px;
+  padding: 0 24px;
   gap: 16px;
 }
 
@@ -177,7 +198,7 @@ body.theme-control-room {
 }
 
 .brand-logo-img {
-  height: 34px;
+  height: 32px;
   width: auto;
   max-width: 120px;
   object-fit: contain;
@@ -220,31 +241,30 @@ body.theme-control-room {
   font-size: 0.68rem;
   color: var(--text-muted);
   font-weight: 400;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 /* Buscador global */
 .header-search-wrapper {
   position: relative;
   flex: 1;
-  max-width: 440px;
+  max-width: 420px;
 }
 
 .header-search-box {
   display: flex;
   align-items: center;
-  background: rgba(22, 25, 31, 0.75);
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-pill);
-  padding: 7px 16px;
+  padding: 6px 14px;
   gap: 10px;
-  backdrop-filter: blur(20px);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .header-search-box:focus-within {
   border-color: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
 }
 
 .search-icon {
@@ -267,7 +287,7 @@ body.theme-control-room {
 }
 
 .search-kbd-hint {
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   color: var(--text-muted);
   background: rgba(255, 255, 255, 0.06);
   padding: 2px 6px;
@@ -282,11 +302,10 @@ body.theme-control-room {
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  background: rgba(22, 25, 31, 0.95);
+  background: rgba(20, 24, 30, 0.98);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-float);
-  backdrop-filter: blur(24px);
   list-style: none;
   max-height: 280px;
   overflow-y: auto;
@@ -324,7 +343,7 @@ body.theme-control-room {
   margin-top: 2px;
 }
 
-/* Controles a la derecha */
+/* Controles de cabecera a la derecha */
 .header-controls-group {
   display: flex;
   align-items: center;
@@ -336,21 +355,20 @@ body.theme-control-room {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   color: var(--text-pure);
   font-family: var(--font-sans);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 500;
-  padding: 7px 15px;
+  padding: 6px 14px;
   border-radius: var(--radius-pill);
   cursor: pointer;
-  backdrop-filter: blur(16px);
   transition: all 0.18s ease;
 }
 
 .btn-action-pill:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.14);
   transform: translateY(-1px);
 }
 
@@ -365,9 +383,8 @@ body.theme-control-room {
   gap: 8px;
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--border-subtle);
-  padding: 7px 14px;
+  padding: 6px 12px;
   border-radius: var(--radius-pill);
-  backdrop-filter: blur(16px);
 }
 
 .live-dot-beacon {
@@ -386,17 +403,16 @@ body.theme-control-room {
 
 .btn-icon-pill {
   position: relative;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background: rgba(22, 25, 31, 0.75);
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  backdrop-filter: blur(16px);
   transition: all 0.18s ease;
 }
 
@@ -419,7 +435,7 @@ body.theme-control-room {
    ========================================================================= */
 .app-floating-workspace {
   position: fixed;
-  top: 64px;
+  top: 60px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -429,69 +445,61 @@ body.theme-control-room {
 }
 
 /* -------------------------------------------------------------------------
-   PANEL LATERAL IZQUIERDO: DEGRADADO OSCURECIDO Y TARJETAS TRANSLÚCIDAS
-   Barra de desplazamiento completamente oculta como solicitó el usuario
+   PANEL LATERAL IZQUIERDO: INTEGRACIÓN FLOTANTE SIN LÍNEAS ARTIFICIALES
    ------------------------------------------------------------------------- */
 .intelligence-floating-panel {
   pointer-events: auto;
-  width: 440px;
+  width: 460px;
   height: 100%;
   overflow-y: auto;
-  background: var(--bg-panel-overlay);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-right: 1px solid var(--border-subtle);
-  padding: 24px;
+  background: transparent;
+  border-right: none;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 
-  /* Ocultar barra de desplazamiento manteniendo el scroll funcional */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE y Edge */
+  /* Barra de desplazamiento totalmente oculta */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .intelligence-floating-panel::-webkit-scrollbar {
-  display: none; /* Chrome, Safari y Edge Chromium */
+  display: none;
   width: 0;
   height: 0;
 }
 
-/* Contadores de estado dual (Online 12 / Offline 4 de Imagen 2) */
+/* Contadores duales compactos (Online 12 / Offline 4 de Imagen 3) */
 .dual-status-kpi-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 10px;
 }
 
 .status-counter-card {
   background: var(--bg-card-glass);
   border: 1px solid var(--border-card);
-  border-radius: var(--radius-lg);
-  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 8px;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  gap: 4px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   box-shadow: var(--shadow-card);
-  transition: border-color 0.18s ease;
-}
-
-.status-counter-card:hover {
-  border-color: var(--border-glass);
 }
 
 .counter-head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
 }
 
 .kpi-icon-circle {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -510,13 +518,13 @@ body.theme-control-room {
 }
 
 .counter-label {
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   color: var(--text-secondary);
   font-weight: 500;
 }
 
 .counter-number {
-  font-size: 2.2rem;
+  font-size: 1.8rem;
   font-weight: 300;
   color: var(--text-pure);
   line-height: 1;
@@ -524,18 +532,18 @@ body.theme-control-room {
 }
 
 /* -------------------------------------------------------------------------
-   TARJETA HERO: ÍNDICE DE SEGURIDAD EN FAENA (OPERATIONAL EFFICIENCY 78.3%)
+   TARJETA HERO COMPACTA: ÍNDICE DE SEGURIDAD EN FAENA (78.3%)
    ------------------------------------------------------------------------- */
 .safety-efficiency-card {
   background: var(--bg-card-glass);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-lg);
-  padding: 20px 20px 16px 20px;
+  padding: 14px 16px 12px 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  gap: 8px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   box-shadow: var(--shadow-card);
 }
 
@@ -546,20 +554,20 @@ body.theme-control-room {
 }
 
 .efficiency-title {
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   font-weight: 500;
   color: var(--text-pure);
 }
 
 .efficiency-subtitle {
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .external-link-arrow {
   color: var(--text-muted);
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
 .efficiency-hero-row {
@@ -574,7 +582,7 @@ body.theme-control-room {
 }
 
 .hero-number {
-  font-size: 3.2rem;
+  font-size: 2.6rem;
   font-weight: 300;
   color: var(--text-pure);
   letter-spacing: -0.04em;
@@ -582,7 +590,7 @@ body.theme-control-room {
 }
 
 .hero-unit {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 300;
   color: var(--text-secondary);
   margin-left: 2px;
@@ -595,50 +603,49 @@ body.theme-control-room {
 }
 
 .target-label {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
 }
 
 .target-value {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--text-secondary);
 }
 
-/* Gráfico sparkline interactivo con estilo exacto de Imagen 2 */
+/* Sparkline compacto */
 .efficiency-chart-container {
   width: 100%;
-  margin-top: 6px;
+  margin-top: 2px;
 }
 
 .efficiency-chart-svg {
   width: 100%;
-  height: 75px;
+  height: 60px;
   overflow: visible;
 }
 
 .chart-time-axis {
   display: flex;
   justify-content: space-between;
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   color: var(--text-dimmed);
-  margin-top: 6px;
+  margin-top: 4px;
   font-family: var(--font-mono);
 }
 
 /* Alerta de precisión GPS si > 500m */
 .accuracy-banner-container {
-  margin-top: -4px;
+  margin-top: -2px;
 }
 
 .precision-banner {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  font-size: 0.78rem;
-  backdrop-filter: blur(16px);
+  gap: 3px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
 }
 
 .alert-warning {
@@ -658,40 +665,42 @@ body.theme-control-room {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 2px 2px;
+  padding: 0 2px;
 }
 
 .factors-title {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 500;
   color: var(--text-secondary);
 }
 
 .factors-timestamp {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
 }
 
-/* Flujo de tarjetas de riesgo */
-.risk-cards-stream {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+/* =========================================================================
+   CUADRÍCULA COMPACTA 2X2 DE TARJETAS DE RIESGO (ESTILO IMAGEN 3)
+   Permite que todas las tarjetas entren directamente en la pantalla
+   ========================================================================= */
+.risk-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
-/* =========================================================================
-   TARJETAS DE RIESGO INDIVIDUALES (TRANSLÚCIDAS Y LIMPIAS)
-   ========================================================================= */
 .risk-card {
   background: var(--bg-card-glass);
   border: 1px solid var(--border-card);
-  border-radius: var(--radius-lg);
-  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  justify-content: space-between;
+  gap: 6px;
+  min-height: 110px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   box-shadow: var(--shadow-card);
   transition: transform 0.18s ease, border-color 0.18s ease;
 }
@@ -703,64 +712,68 @@ body.theme-control-room {
 
 .risk-card-top-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
 }
 
 .factor-identifier {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .factor-badge-circle {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 600;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text-secondary);
 }
 
 .factor-title {
-  font-size: 0.88rem;
+  font-size: 0.78rem;
   font-weight: 500;
   color: var(--text-pure);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card-external-arrow {
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: 0.85rem;
 }
 
 .risk-metric-hero-line {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+  margin-top: 2px;
 }
 
 .metric-hero-val {
-  font-size: 1.8rem;
+  font-size: 1.45rem;
   font-weight: 300;
   color: var(--text-pure);
   font-family: var(--font-sans);
 }
 
 .metric-hero-unit {
-  font-size: 0.82rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
   font-weight: 400;
-  margin-left: 4px;
+  margin-left: 3px;
 }
 
 .risk-status-pill {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 500;
-  padding: 3px 10px;
+  padding: 2px 8px;
   border-radius: var(--radius-pill);
 }
 
@@ -779,45 +792,47 @@ body.theme-control-room {
   color: var(--color-alert);
 }
 
-/* Micro-histograma de lluvia */
+/* Micro-histograma de lluvia compacto */
 .mini-histogram-chart {
   display: flex;
   align-items: flex-end;
-  gap: 3px;
-  height: 36px;
-  padding-top: 4px;
+  gap: 2px;
+  height: 24px;
 }
 
 .mini-bar {
   flex: 1;
   background: rgba(255, 255, 255, 0.08);
   border-radius: 2px 2px 0 0;
-  transition: height 0.3s ease;
   min-height: 2px;
 }
 
 .mini-bar.bar-rain {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.35);
 }
 
 .mini-bar.bar-alert {
   background: var(--color-alert);
 }
 
-/* Caja de medidas de control SST (limpia y discreta) */
+/* Caja de medidas de control SST compacta */
 .control-measure-box {
   background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: var(--radius-sm);
-  padding: 11px 13px;
-  font-size: 0.77rem;
+  padding: 6px 8px;
+  font-size: 0.68rem;
   color: var(--text-secondary);
-  line-height: 1.45;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .control-label {
   display: block;
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 600;
   color: var(--text-muted);
   margin-bottom: 2px;
@@ -830,13 +845,11 @@ body.theme-control-room {
 .map-floating-content-layer {
   position: absolute;
   inset: 0;
-  left: 440px;
+  left: 460px;
   pointer-events: none;
 }
 
-/* -------------------------------------------------------------------------
-   TÍTULO FLOTANTE SOBRE EL MAPA (TRAFFIC MANAGEMENT)
-   ------------------------------------------------------------------------- */
+/* Título flotante sobre el mapa satelital */
 .floating-map-hero-header {
   position: absolute;
   top: 24px;
@@ -870,11 +883,11 @@ body.theme-control-room {
   gap: 8px;
   background: var(--bg-pill-glass);
   border: 1px solid var(--border-glass);
-  padding: 8px 16px;
+  padding: 7px 15px;
   border-radius: var(--radius-pill);
   color: var(--text-pure);
   font-family: var(--font-sans);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 500;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
@@ -905,20 +918,18 @@ body.theme-control-room {
   box-shadow: 0 0 8px var(--color-safe);
 }
 
-/* -------------------------------------------------------------------------
-   TARJETA DE CRISTAL FLOTANTE SOBRE EL MAPA (PASSENGER LOAD 87%)
-   ------------------------------------------------------------------------- */
+/* Tarjeta de cristal flotante sobre el mapa (Passenger Load 87%) */
 .frosted-glass-metric-card {
   pointer-events: auto;
   position: absolute;
   top: 110px;
   left: 32px;
   z-index: 500;
-  width: 230px;
+  width: 220px;
   background: var(--bg-card-glass);
   border: 1px solid var(--border-glass);
-  border-radius: var(--radius-xl);
-  padding: 18px 20px;
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   box-shadow: var(--shadow-float);
@@ -934,18 +945,18 @@ body.theme-control-room {
 }
 
 .glass-metric-label {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
   font-weight: 500;
 }
 
 .glass-arrow {
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .glass-metric-sub {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
 }
 
@@ -953,42 +964,40 @@ body.theme-control-room {
   display: flex;
   align-items: baseline;
   gap: 4px;
-  margin: 6px 0 2px 0;
+  margin: 4px 0 2px 0;
 }
 
 .glass-hero-val {
-  font-size: 2.8rem;
+  font-size: 2.6rem;
   font-weight: 300;
   color: var(--text-pure);
   line-height: 1;
 }
 
 .glass-hero-unit {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 300;
   color: var(--text-secondary);
 }
 
 .glass-caption-note {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: #cbd5e1;
 }
 
-/* -------------------------------------------------------------------------
-   PANEL ACORDEÓN DE ALERTAS Y CONTROLES SST
-   ------------------------------------------------------------------------- */
+/* Panel acordeón de alertas SST (sidebar derecho compacto) */
 .floating-warning-accordion {
   pointer-events: auto;
   position: absolute;
   top: 24px;
   right: 28px;
   z-index: 500;
-  width: 340px;
-  background: rgba(28, 24, 26, 0.78);
+  width: 295px;
+  background: rgba(24, 20, 22, 0.82);
   border: 1px solid rgba(239, 68, 68, 0.22);
-  border-radius: var(--radius-xl);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   box-shadow: var(--shadow-float);
   overflow: hidden;
   transition: all 0.25s ease;
@@ -998,14 +1007,28 @@ body.theme-control-room {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 10px 14px;
   cursor: pointer;
   background: rgba(255, 255, 255, 0.02);
   border-bottom: 1px solid var(--border-subtle);
 }
 
+.accordion-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.warning-header-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+}
+
 .accordion-main-title {
-  font-size: 0.95rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-pure);
 }
@@ -1024,47 +1047,54 @@ body.theme-control-room {
 }
 
 .accordion-body {
-  padding: 16px 20px;
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  max-height: 480px;
+  gap: 8px;
+  max-height: calc(100vh - 180px);
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.accordion-body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .warning-subheading {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   color: var(--text-secondary);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 500;
 }
 
-/* Tarjeta vino/carbón cálido de alerta */
 .warning-alert-box {
   background: rgba(45, 20, 24, 0.65);
   border: 1px solid rgba(239, 68, 68, 0.25);
-  border-radius: var(--radius-md);
-  padding: 14px;
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
 }
 
 .warning-box-head {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 7px;
 }
 
 .warning-badge-pill {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: #ef4444;
   color: white;
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -1079,59 +1109,66 @@ body.theme-control-room {
 }
 
 .warning-bold-title {
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: #fca5a5;
   line-height: 1.25;
 }
 
 .warning-time-ago {
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   color: rgba(255, 255, 255, 0.5);
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
-.warning-impact-list {
-  font-size: 0.74rem;
+.warning-impact-compact {
+  font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.85);
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: baseline;
+  gap: 5px;
   padding-left: 6px;
-  border-left: 2px solid rgba(239, 68, 68, 0.35);
+  border-left: 2px solid rgba(239, 68, 68, 0.4);
+  line-height: 1.3;
 }
 
-.impact-title {
-  font-size: 0.7rem;
+.impact-label {
+  font-size: 0.68rem;
   color: rgba(255, 255, 255, 0.6);
   font-weight: 500;
+  flex-shrink: 0;
+}
+
+.impact-text {
+  color: #f1f5f9;
 }
 
 .warning-recommendation-box {
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: var(--radius-sm);
-  padding: 10px;
+  padding: 6px 8px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .recommend-head {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   color: #e2e8f0;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 600;
 }
 
 .recommend-sparkle {
   color: #fbbf24;
+  font-size: 0.72rem;
 }
 
 .recommend-body {
-  font-size: 0.74rem;
+  font-size: 0.7rem;
   color: var(--text-primary);
   line-height: 1.35;
 }
@@ -1139,17 +1176,17 @@ body.theme-control-room {
 .warning-secondary-protocol {
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 12px;
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .protocol-row-head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .protocol-indicator {
@@ -1160,24 +1197,22 @@ body.theme-control-room {
 }
 
 .protocol-title {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 500;
   color: var(--text-pure);
 }
 
 .protocol-desc {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--text-secondary);
-  line-height: 1.35;
+  line-height: 1.3;
 }
 
-/* -------------------------------------------------------------------------
-   CONTROLES FLOTANTES DE ZOOM Y GPS EN MAPA
-   ------------------------------------------------------------------------- */
+/* Controles de navegación y zoom en mapa */
 .map-floating-navigation-controls {
   pointer-events: auto;
   position: absolute;
-  bottom: 28px;
+  bottom: 24px;
   right: 28px;
   z-index: 500;
   display: flex;
@@ -1186,8 +1221,8 @@ body.theme-control-room {
 }
 
 .map-btn-circle {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background: var(--bg-card-glass);
   border: 1px solid var(--border-glass);
@@ -1282,7 +1317,7 @@ body.theme-control-room {
 @media (max-width: 1024px) {
   .intelligence-floating-panel {
     width: 380px;
-    padding: 18px;
+    padding: 14px;
   }
 
   .map-floating-content-layer {
@@ -1327,7 +1362,11 @@ body.theme-control-room {
     max-height: calc(100vh - 56px);
     border-right: none;
     padding: 14px;
-    background: rgba(13, 15, 20, 0.95);
+    background: rgba(12, 15, 21, 0.96);
+  }
+
+  .risk-cards-grid {
+    grid-template-columns: 1fr;
   }
 
   .map-floating-content-layer {

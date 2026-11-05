@@ -6,7 +6,7 @@
   <title>MiEntorno &bull; Monitoreo de campo</title>
   <meta name="description" content="Plataforma de evaluación y monitoreo de riesgos climáticos y físicos en tiempo real para faenas mineras, energéticas, construcción y puertos del Perú.">
   
-  <!-- Favicon con logo oficial -->
+  <!-- Favicon oficial con logo del usuario -->
   <link rel="icon" type="image/webp" href="logo.webp">
 
   <!-- Tipografía Inter oficial -->
@@ -22,12 +22,15 @@
 </head>
 <body class="theme-control-room">
   <!-- =====================================================================
-       1. MAPA SATELITAL DE FONDO COMPLETO (100% PANTALLA, NÍTIDO Y CLARO)
+       1. MAPA SATELITAL DE FONDO COMPLETO
        ===================================================================== -->
   <div id="map" class="fullscreen-map-canvas"></div>
 
+  <!-- Viñeta fotográfica suave: centro nítido/claro y oscurecimiento difuminado hacia los bordes -->
+  <div class="map-photographic-vignette" aria-hidden="true"></div>
+
   <!-- =====================================================================
-       2. BARRA SUPERIOR FLOTANTE CON EFECTO DE CRISTAL
+       2. BARRA SUPERIOR SÓLIDA, LIMPIA Y UNIFORME
        ===================================================================== -->
   <header class="app-top-header">
     <div class="header-brand-section">
@@ -88,14 +91,14 @@
        3. CONTENIDO FLOTANTE SOBRE EL MAPA
        ===================================================================== -->
   <div class="app-floating-workspace">
-    <!-- PANEL LATERAL IZQUIERDO: DEGRADADO OSCURECIDO Y TARJETAS TRANSLÚCIDAS -->
+    <!-- PANEL LATERAL IZQUIERDO COMPACTO (TODO VISIBLE EN PANTALLA) -->
     <aside id="panel-dashboard" class="intelligence-floating-panel">
-      <!-- Fila de contadores duales (Online 12 / Offline 4) -->
+      <!-- Fila de contadores duales compactos (Online 12 / Offline 4) -->
       <div class="dual-status-kpi-row">
         <div class="status-counter-card">
           <div class="counter-head">
             <div class="kpi-icon-circle kpi-green">
-              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3">
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
             </div>
@@ -107,7 +110,7 @@
         <div class="status-counter-card">
           <div class="counter-head">
             <div class="kpi-icon-circle kpi-red">
-              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5">
                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
               </svg>
             </div>
@@ -117,7 +120,7 @@
         </div>
       </div>
 
-      <!-- Tarjeta Hero: Índice de seguridad en faena (Operational Efficiency 78.3%) -->
+      <!-- Tarjeta Hero compacta: Índice de seguridad en faena (78.3%) -->
       <section class="safety-efficiency-card">
         <div class="efficiency-card-head">
           <div>
@@ -138,20 +141,18 @@
           </div>
         </div>
 
-        <!-- Gráfico Sparkline de curva 24h interactivo con estilo Image 2 -->
+        <!-- Gráfico Sparkline de curva 24h interactivo -->
         <div class="efficiency-chart-container">
-          <svg id="efficiency-sparkline-svg" class="efficiency-chart-svg" viewBox="0 0 380 90" preserveAspectRatio="none">
+          <svg id="efficiency-sparkline-svg" class="efficiency-chart-svg" viewBox="0 0 380 75" preserveAspectRatio="none">
             <defs>
               <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#ffffff" stop-opacity="0.14"/>
                 <stop offset="90%" stop-color="#ffffff" stop-opacity="0.0"/>
               </linearGradient>
             </defs>
-            <!-- Línea horizontal de referencia 80% -->
-            <line x1="0" y1="35" x2="380" y2="35" stroke="rgba(255,255,255,0.12)" stroke-dasharray="3,3" stroke-width="1"/>
-            <!-- Área y línea SVG generadas dinámicamente -->
-            <path id="chart-area-path" class="chart-area-fill" fill="url(#chartGradient)" d="M0,60 L60,65 L120,70 L180,45 L240,25 L300,50 L380,40 L380,90 L0,90 Z"/>
-            <path id="chart-line-path" class="chart-line-stroke" fill="none" stroke="#e2e8f0" stroke-width="1.8" d="M0,60 L60,65 L120,70 L180,45 L240,25 L300,50 L380,40"/>
+            <line x1="0" y1="28" x2="380" y2="28" stroke="rgba(255,255,255,0.12)" stroke-dasharray="3,3" stroke-width="1"/>
+            <path id="chart-area-path" class="chart-area-fill" fill="url(#chartGradient)" d="M0,50 L60,55 L120,60 L180,35 L240,20 L300,40 L380,30 L380,75 L0,75 Z"/>
+            <path id="chart-line-path" class="chart-line-stroke" fill="none" stroke="#e2e8f0" stroke-width="1.8" d="M0,50 L60,55 L120,60 L180,35 L240,20 L300,40 L380,30"/>
           </svg>
           <div class="chart-time-axis">
             <span>06:00</span>
@@ -167,21 +168,21 @@
       <!-- Alerta de precisión GPS (solo si > 500m) -->
       <div id="accuracy-alert" class="accuracy-banner-container" hidden></div>
 
-      <!-- Encabezado de sección sutil -->
+      <!-- Encabezado sutil -->
       <div class="factors-section-header">
         <span class="factors-title">Factores evaluados en tiempo real</span>
         <span id="last-updated" class="factors-timestamp">Sincronizado</span>
       </div>
 
-      <!-- Contenedor dinámico de las 4 tarjetas de riesgo -->
-      <div id="cards-container" class="risk-cards-stream" aria-label="Tarjetas de evaluación de riesgo"></div>
+      <!-- Cuadrícula 2x2 compacta de tarjetas de riesgo (todo entra en pantalla) -->
+      <div id="cards-container" class="risk-cards-grid" aria-label="Tarjetas de evaluación de riesgo"></div>
     </aside>
 
     <!-- ZONA FLOTANTE SOBRE EL MAPA A LA DERECHA -->
     <div class="map-floating-content-layer">
       <!-- Título flotante sobre el mapa satelital (Traffic Management) -->
       <div class="floating-map-hero-header">
-        <h1 class="map-hero-title">Monitoreo de Campo</h1>
+        <h1 class="map-hero-title">Monitoreo de campo</h1>
         <div class="map-pills-row">
           <button id="map-location-pill" class="map-glass-pill" type="button" title="Haz clic para buscar otra faena">
             <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
@@ -216,9 +217,13 @@
       </div>
 
       <!-- Panel Acordeón de Alertas y Controles SST (Warning) -->
+      <!-- Panel Acordeón de Alertas y Controles SST (sidebar derecho) -->
       <aside class="floating-warning-accordion" id="warning-accordion">
         <div class="accordion-header" id="accordion-toggle-btn">
-          <span class="accordion-main-title">Alertas y controles SST</span>
+          <div class="accordion-header-left">
+            <span class="warning-header-dot"></span>
+            <span class="accordion-main-title">Alertas y controles SST</span>
+          </div>
           <svg class="accordion-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="18 15 12 9 6 15"></polyline>
           </svg>
@@ -226,7 +231,7 @@
 
         <div class="accordion-body" id="accordion-content">
           <div class="warning-subheading">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
               <line x1="12" y1="9" x2="12" y2="13"/>
               <line x1="12" y1="17" x2="12.01" y2="17"/>
@@ -234,7 +239,7 @@
             <span id="accordion-warning-count">Condiciones con restricción (1 factor)</span>
           </div>
 
-          <!-- Tarjeta de alerta en tono carbón cálido ahumado -->
+          <!-- Tarjeta de alerta principal compacta -->
           <div class="warning-alert-box">
             <div class="warning-box-head">
               <span class="warning-badge-pill">1</span>
@@ -244,10 +249,9 @@
               </div>
             </div>
 
-            <div class="warning-impact-list">
-              <span class="impact-title">Personal y cuadrillas expuestas:</span>
-              <div class="impact-item">&bull; Cuadrillas en cielo abierto (tajo, plataformas y patios)</div>
-              <div class="impact-item">&bull; Supervisores de línea de fuego e izajes</div>
+            <div class="warning-impact-compact">
+              <span class="impact-label">Personal expuesto:</span>
+              <span class="impact-text">Cuadrillas en cielo abierto e izajes.</span>
             </div>
 
             <div class="warning-recommendation-box">
@@ -256,7 +260,7 @@
                 <span class="recommend-label">Medida de control recomendada:</span>
               </div>
               <p id="warning-recommend-text" class="recommend-body">
-                Rotación horaria de turnos a la sombra, suministro continuo de agua fresca y aplicación estricta de fotoprotector SPF 50+.
+                Rotación horaria a la sombra y aplicación estricta de fotoprotector SPF 50+.
               </p>
             </div>
           </div>
@@ -265,9 +269,9 @@
           <div class="warning-secondary-protocol">
             <div class="protocol-row-head">
               <span class="protocol-indicator"></span>
-              <span class="protocol-title">Protocolo de izaje y grúas (D.S. 024-2016-EM)</span>
+              <span class="protocol-title">Protocolo de izaje (D.S. 024-2016-EM)</span>
             </div>
-            <p class="protocol-desc">Operación permitida con precaución. Límite mandatorio de parada técnica: 32 km/h.</p>
+            <p class="protocol-desc">Operación con precaución. Límite de parada técnica: 32 km/h.</p>
           </div>
         </div>
       </aside>

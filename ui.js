@@ -459,7 +459,7 @@ function createUVCard(data, ctx) {
     <div class="risk-card-top-row">
       <div class="factor-identifier">
         <span class="factor-badge-circle">01</span>
-        <span class="factor-title">Radiación solar UV</span>
+        <span class="factor-title">Radiación UV</span>
       </div>
       <span class="card-external-arrow">&nearr;</span>
     </div>
@@ -467,13 +467,12 @@ function createUVCard(data, ctx) {
     <div class="risk-metric-hero-line">
       <div>
         <span class="metric-hero-val">${maxUV.toFixed(1)}</span>
-        <span class="metric-hero-unit">UV máximo</span>
+        <span class="metric-hero-unit">UV</span>
       </div>
       <span class="risk-status-pill ${pillClass}">Nivel ${rule.nivel.toLowerCase()}</span>
     </div>
 
     <div class="control-measure-box">
-      <span class="control-label">Medida de control SST</span>
       <span>${escapeHTML(rule.recomendacion)}</span>
     </div>
   `;
@@ -553,7 +552,7 @@ function createRainCard(data, ctx) {
     <div class="risk-card-top-row">
       <div class="factor-identifier">
         <span class="factor-badge-circle">02</span>
-        <span class="factor-title">Precipitación y lluvia</span>
+        <span class="factor-title">Precipitación</span>
       </div>
       <span class="card-external-arrow">&nearr;</span>
     </div>
@@ -561,17 +560,12 @@ function createRainCard(data, ctx) {
     <div class="risk-metric-hero-line">
       <div>
         <span class="metric-hero-val">${maxProb}%</span>
-        <span class="metric-hero-unit">prob. máxima</span>
+        <span class="metric-hero-unit">prob.</span>
       </div>
       <span class="risk-status-pill ${pillClass}">Condición ${nivelTexto.toLowerCase()}</span>
     </div>
 
-    <div class="mini-histogram-chart" title="Probabilidad de lluvia en las próximas 24 horas">
-      ${barsHTML}
-    </div>
-
     <div class="control-measure-box">
-      <span class="control-label">Medida de control SST</span>
       <span>${escapeHTML(recomendacion)}</span>
     </div>
   `;
@@ -596,19 +590,19 @@ function createWindCard(data, ctx) {
   let recomendacion = 'Vientos calmos. Operaciones de izaje, grúas y trabajos en altura autorizados sin restricción.';
 
   if (max12hGust > 50) {
-    nivelLabel = 'Suspensión obligatoria';
+    nivelLabel = 'Suspensión';
     pillClass = 'pill-red';
     deduction = 35;
     severityScore = 5;
     recomendacion = 'Parada total de grúas y trabajos en altura conforme a D.S. 024-2016-EM. Descenso de plumas.';
   } else if (max12hGust >= 36) {
-    nivelLabel = 'Restricción de izajes';
+    nivelLabel = 'Restricción';
     pillClass = 'pill-red';
     deduction = 20;
     severityScore = 4;
-    recomendacion = 'Prohibido izaje de cargas de gran área de vela. Evaluación obligatoria con anemómetro en punta de pluma.';
+    recomendacion = 'Prohibido izaje de cargas con gran área de vela. Evaluación obligatoria con anemómetro en punta de pluma.';
   } else if (max12hGust >= 25) {
-    nivelLabel = 'Precaución en izajes';
+    nivelLabel = 'Precaución';
     pillClass = 'pill-amber';
     deduction = 8;
     severityScore = 2;
@@ -636,7 +630,7 @@ function createWindCard(data, ctx) {
     <div class="risk-card-top-row">
       <div class="factor-identifier">
         <span class="factor-badge-circle">03</span>
-        <span class="factor-title">Velocidad del viento</span>
+        <span class="factor-title">Viento y ráfagas</span>
       </div>
       <span class="card-external-arrow">&nearr;</span>
     </div>
@@ -644,13 +638,12 @@ function createWindCard(data, ctx) {
     <div class="risk-metric-hero-line">
       <div>
         <span class="metric-hero-val">${Math.round(max12hGust)}</span>
-        <span class="metric-hero-unit">km/h ráfaga</span>
+        <span class="metric-hero-unit">km/h</span>
       </div>
-      <span class="risk-status-pill ${pillClass}">${nivelLabel}</span>
+      <span class="risk-status-pill ${pillClass}">Nivel ${nivelLabel.toLowerCase()}</span>
     </div>
 
     <div class="control-measure-box">
-      <span class="control-label">Norma D.S. 024-2016-EM / Izajes</span>
       <span>${escapeHTML(recomendacion)}</span>
     </div>
   `;
@@ -738,7 +731,7 @@ function createThunderstormCard(data, ctx) {
     <div class="risk-card-top-row">
       <div class="factor-identifier">
         <span class="factor-badge-circle">04</span>
-        <span class="factor-title">Potencial de tormenta</span>
+        <span class="factor-title">Tormenta (CAPE)</span>
       </div>
       <span class="card-external-arrow">&nearr;</span>
     </div>
@@ -746,13 +739,12 @@ function createThunderstormCard(data, ctx) {
     <div class="risk-metric-hero-line">
       <div>
         <span class="metric-hero-val">${Math.round(maxCape)}</span>
-        <span class="metric-hero-unit">J/kg CAPE</span>
+        <span class="metric-hero-unit">J/kg</span>
       </div>
-      <span class="risk-status-pill ${pillClass}">${nivelLabel}</span>
+      <span class="risk-status-pill ${pillClass}">${nivelLabel.toLowerCase()}</span>
     </div>
 
     <div class="control-measure-box">
-      <span class="control-label">Protocolo de tormenta eléctrica</span>
       <span>${escapeHTML(recomendacion)}</span>
     </div>
   `;

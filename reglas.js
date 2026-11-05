@@ -74,9 +74,9 @@ export const REGLAS_UV = [
   {
     min: 8,
     max: 10.9,
-    nivel: 'Muy Alto',
+    nivel: 'Muy alto',
     color: 'rojo',
-    badge: 'MUY ALTO',
+    badge: 'Muy alto',
     recomendacion: 'Protección extrema: rotación de cuadrillas a la sombra y reaplicación horaria de fotoprotector.'
   },
   {
@@ -84,7 +84,7 @@ export const REGLAS_UV = [
     max: Infinity,
     nivel: 'Extremo',
     color: 'rojo-extremo',
-    badge: 'EXTREMO',
+    badge: 'Extremo',
     recomendacion: 'Riesgo crítico de quemaduras solares: suspender trabajos a cielo abierto no esenciales entre 11:00 y 15:00 h.'
   }
 ];
@@ -99,28 +99,28 @@ export const UMBRALES_VIENTO = {
   NORMAL: {
     maxRafaga: 24.9,
     color: 'verde',
-    badge: 'NORMAL',
+    badge: 'Normal',
     recomendacion: 'Condiciones de viento seguras para trabajos en altura, andamios e izajes mecánicos regulares.'
   },
   PRECAUCION: {
     minRafaga: 25,
     maxRafaga: 35,
     color: 'amarillo',
-    badge: 'PRECAUCIÓN',
+    badge: 'Precaución',
     recomendacion: 'Inspeccionar estabilización de cargas suspendidas y uso permanente de barbiquejo.'
   },
   RESTRICCION: {
     minRafaga: 36,
     maxRafaga: 50,
     color: 'naranja',
-    badge: 'RESTRINGIDO',
+    badge: 'Restringido',
     recomendacion: 'Trabajo en altura e izaje con restricción: suspender cargas de gran volumen y evaluar plataformas.'
   },
   SUSPENSION: {
     minRafaga: 50.1,
     color: 'rojo',
-    badge: 'CRÍTICO / SUSPENSIÓN',
-    recomendacion: 'SUSPENSIÓN INMEDIATA de trabajos en altura (andamios/techos) y maniobras de grúa por ráfagas peligrosas.'
+    badge: 'Crítico / suspensión',
+    recomendacion: 'Suspensión inmediata de trabajos en altura (andamios/techos) y maniobras de grúa por ráfagas peligrosas.'
   }
 };
 
@@ -135,7 +135,7 @@ export const UMBRALES_CAPE = {
     maxCape: 499,
     nivel: 'Bajo',
     color: 'verde',
-    badge: 'BAJO',
+    badge: 'Bajo',
     recomendacion: 'Atmósfera estable. Riesgo convectivo mínimo para el personal de campo.'
   },
   MODERADO: {
@@ -143,7 +143,7 @@ export const UMBRALES_CAPE = {
     maxCape: 1499,
     nivel: 'Moderado',
     color: 'amarillo',
-    badge: 'MODERADO',
+    badge: 'Moderado',
     recomendacion: 'Inestabilidad atmosférica moderada. Monitorear formación de nubes cumulonimbus.'
   },
   ALTO: {
@@ -151,14 +151,14 @@ export const UMBRALES_CAPE = {
     maxCape: 2499,
     nivel: 'Alto',
     color: 'naranja',
-    badge: 'ALTO',
+    badge: 'Alto',
     recomendacion: 'Fuerte energía convectiva: verificar operatividad de detectores de tormenta y refugios Faraday.'
   },
   MUY_ALTO: {
     minCape: 2500,
-    nivel: 'Muy Alto',
+    nivel: 'Muy alto',
     color: 'rojo',
-    badge: 'MUY ALTO',
+    badge: 'Muy alto',
     recomendacion: 'Condición severa de convección: riesgo inminente de descargas a tierra y caída de rayos.'
   }
 };
