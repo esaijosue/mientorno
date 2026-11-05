@@ -1,54 +1,48 @@
 /**
- * style.css - Panel de control satelital de alta resolución para operaciones de campo
+ * style.css - Réplica fiel del diseño móvil de referencia (panel satelital con tarjetas de cristal flotantes)
  * Proyecto: MiEntorno
  * 
- * Estilo visual oscuro inspirado en salas de operaciones y gestión de tráfico/faena.
- * Fondo mate obsidiana, tipografía Inter en mayúsculas y minúsculas naturales (sentence case),
- * y mapa satelital Esri de alta definición con controles flotantes de vidrio.
+ * Estética de operaciones móviles: mapa satelital inmersivo Esri, tarjetas flotantes con efecto
+ * frosted glass (backdrop-filter), cajón inferior con tarjetas de alerta tintadas y tipografía Inter.
  */
 
 :root {
-  /* Paleta base de centro de operaciones */
-  --bg-app: #0a0c10;
-  --bg-panel: #11141d;
-  --bg-card: #151824;
-  --bg-card-subtle: #0d1017;
-  --bg-input: #11141e;
-  --bg-overlay: rgba(13, 16, 24, 0.82);
+  /* Paleta base de operaciones oscuras */
+  --bg-canvas: #090b10;
+  --bg-drawer: #10141d;
+  --bg-card: #151925;
+  --bg-input: #151926;
+  --bg-glass: rgba(20, 26, 38, 0.72);
 
-  /* Bordes de precisión sutiles */
-  --border-glass: rgba(255, 255, 255, 0.08);
-  --border-card: rgba(255, 255, 255, 0.07);
+  /* Bordes de vidrio sutiles */
+  --border-glass: rgba(255, 255, 255, 0.12);
+  --border-card: rgba(255, 255, 255, 0.08);
   --border-focus: #38bdf8;
 
   /* Escala de texto */
-  --text-pure: #f8fafc;
-  --text-main: #e2e8f0;
+  --text-pure: #ffffff;
+  --text-main: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
 
-  /* Acentos y estados operativos */
+  /* Acentos de estado */
   --accent-cyan: #38bdf8;
   --status-green: #10b981;
   --status-yellow: #f59e0b;
   --status-orange: #f97316;
   --status-red: #ef4444;
-  --status-gray: #64748b;
 
   /* Tipografías */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Monaco, Consolas, monospace;
 
-  /* Radios */
+  /* Radios y geometría */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
+  --radius-drawer: 26px;
   --radius-pill: 9999px;
-
-  /* Sombras */
-  --shadow-panel: 0 4px 20px rgba(0, 0, 0, 0.5);
-  --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.35);
 }
 
 /* Reseteo y base */
@@ -60,768 +54,308 @@
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--bg-app);
+  background-color: var(--bg-canvas);
   color: var(--text-main);
-  line-height: 1.5;
+  line-height: 1.45;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding-bottom: 58px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Contenedor principal de pantalla completa */
-.app-container {
+/* Envoltura general de la aplicación */
+.mobile-app-shell {
   width: 100%;
   max-width: 1600px;
   margin: 0 auto;
-  padding: clamp(10px, 1.8vw, 20px);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  position: relative;
 }
 
 /* =========================================================================
-   BARRA SUPERIOR DE NAVEGACIÓN Y ESTADO
+   BARRA SUPERIOR FLOTANTE ESTILO APLICACIÓN MÓVIL
    ========================================================================= */
-.top-nav-bar {
+.app-top-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
-  background: var(--bg-panel);
-  border: 1px solid var(--border-glass);
-  border-radius: var(--radius-lg);
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.nav-brand-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.brand-symbol {
-  width: 34px;
-  height: 34px;
-  border-radius: var(--radius-md);
-  background: rgba(56, 189, 248, 0.1);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  color: var(--accent-cyan);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.brand-text-block {
-  display: flex;
-  flex-direction: column;
-}
-
-.brand-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--text-pure);
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-}
-
-.brand-subtitle {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-}
-
-/* Pestañas de píldora estilo centro de control */
-.nav-pill-tabs {
-  display: inline-flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.04);
-  padding: 3px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-glass);
-}
-
-.nav-tab {
-  padding: 6px 14px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-pill);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.nav-tab.active {
-  background: #1e2433;
-  color: var(--text-pure);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-}
-
-.nav-status-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.status-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: var(--radius-pill);
-  font-size: 0.72rem;
-  font-weight: 500;
-}
-
-.chip-online {
-  background: rgba(16, 185, 129, 0.1);
-  color: var(--status-green);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-}
-
-.chip-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--status-green);
-}
-
-.coords-pill {
-  font-family: var(--font-mono);
-  font-size: 0.74rem;
-  color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.03);
-  padding: 4px 10px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-glass);
-}
-
-/* =========================================================================
-   DISPOSICIÓN PRINCIPAL EN 2 COLUMNAS (DASHBOARD)
-   ========================================================================= */
-.dashboard-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 100%;
-}
-
-@media (min-width: 1024px) {
-  .dashboard-grid {
-    display: grid;
-    grid-template-columns: 460px 1fr;
-    gap: 20px;
-    align-items: start;
-  }
-}
-
-@media (min-width: 1360px) {
-  .dashboard-grid {
-    grid-template-columns: 490px 1fr;
-    gap: 24px;
-  }
-}
-
-/* =========================================================================
-   PANEL IZQUIERDO: BÚSQUEDA, ESTADO Y TARJETAS
-   ========================================================================= */
-.left-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  width: 100%;
-}
-
-/* Caja de búsqueda y GPS */
-.search-actions-box {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background: var(--bg-panel);
-  padding: 12px;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-glass);
-}
-
-.search-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.search-svg {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
-  color: var(--text-muted);
-  pointer-events: none;
-}
-
-.search-input {
-  width: 100%;
-  padding: 10px 14px 10px 38px;
-  font-family: var(--font-sans);
-  font-size: 0.88rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-glass);
-  background: var(--bg-input);
-  color: var(--text-pure);
-  outline: none;
-  transition: border-color 0.15s ease;
-}
-
-.search-input:focus {
-  border-color: var(--border-focus);
-}
-
-.search-input::placeholder {
-  color: var(--text-muted);
-  font-size: 0.84rem;
-}
-
-/* Resultados desplegables de búsqueda */
-.search-results-dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  background: #141724;
-  border: 1px solid var(--border-glass);
-  border-radius: var(--radius-md);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.7);
-  list-style: none;
+  padding: 12px 18px;
+  position: sticky;
+  top: 0;
   z-index: 1000;
-  max-height: 220px;
-  overflow-y: auto;
+  background: rgba(9, 11, 16, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border-glass);
 }
 
-.search-item {
-  padding: 9px 12px;
-  cursor: pointer;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-.search-item:last-child {
-  border-bottom: none;
-}
-
-.search-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.search-item-title {
-  font-weight: 600;
-  font-size: 0.84rem;
+.nav-circle-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-glass);
   color: var(--text-pure);
-}
-
-.search-item-sub {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Botón de ubicación GPS */
-.btn-primary-gps {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 11px 16px;
-  font-family: var(--font-sans);
-  font-size: 0.88rem;
-  font-weight: 600;
-  background: #1c2232;
-  color: var(--text-pure);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
-.btn-primary-gps:hover:not(:disabled) {
-  background: #242c40;
+.nav-circle-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
   border-color: var(--accent-cyan);
 }
 
-.btn-primary-gps:active:not(:disabled) {
-  transform: translateY(1px);
-}
-
-.spinner-ring {
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-top-color: var(--accent-cyan);
-  border-radius: 50%;
+.nav-circle-btn.spinning svg {
   animation: spin 0.8s linear infinite;
-  display: inline-block;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-/* Alertas de precisión */
-.alert-banner {
-  width: 100%;
-}
-
-.alert-box {
+.top-title-group {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 9px 12px;
-  border-radius: var(--radius-md);
-  font-size: 0.8rem;
-  line-height: 1.4;
-  border: 1px solid transparent;
+  text-align: center;
 }
 
-.alert-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.dot-green { background: var(--status-green); }
-.dot-amber { background: var(--status-yellow); }
-.dot-red { background: var(--status-red); }
-.dot-blue { background: var(--accent-cyan); }
-
-.alert-warning {
-  background: rgba(245, 158, 11, 0.08);
-  border-color: rgba(245, 158, 11, 0.25);
-  color: #fde68a;
-}
-
-.alert-success {
-  background: rgba(16, 185, 129, 0.08);
-  border-color: rgba(16, 185, 129, 0.25);
-  color: #a7f3d0;
-}
-
-.alert-info {
-  background: rgba(56, 189, 248, 0.08);
-  border-color: rgba(56, 189, 248, 0.25);
-  color: #bae6fd;
-}
-
-.alert-danger {
-  background: rgba(239, 68, 68, 0.08);
-  border-color: rgba(239, 68, 68, 0.25);
-  color: #fecaca;
-}
-
-/* Encabezado del panel de tarjetas */
-.cards-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 4px 2px;
-}
-
-.panel-heading {
+.app-main-title {
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--text-pure);
   letter-spacing: -0.01em;
+  line-height: 1.1;
 }
 
-.panel-subheading {
-  font-size: 0.74rem;
-  color: var(--text-muted);
-}
-
-.refresh-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.timestamp-text {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--text-muted);
-}
-
-.btn-refresh-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border-glass);
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.btn-refresh-icon:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-pure);
-}
-
-.btn-refresh-icon.spinning svg {
-  animation: spin 0.8s linear infinite;
-}
-
-/* =========================================================================
-   TARJETAS DE RIESGO
-   ========================================================================= */
-.cards-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 100%;
-}
-
-.risk-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.risk-card-head {
-  padding: 12px 14px 6px 14px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.risk-card-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-pure);
-}
-
-.risk-card-subtitle {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-}
-
-/* Badges de estado */
-.badge-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 9px;
-  border-radius: var(--radius-pill);
-  font-size: 0.72rem;
-  font-weight: 500;
-}
-
-.badge-indicator {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-
-.badge-verde {
-  background: rgba(16, 185, 129, 0.12);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.25);
-}
-.badge-verde .badge-indicator { background: var(--status-green); }
-
-.badge-amarillo {
-  background: rgba(245, 158, 11, 0.12);
-  color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.25);
-}
-.badge-amarillo .badge-indicator { background: var(--status-yellow); }
-
-.badge-naranja {
-  background: rgba(249, 115, 22, 0.12);
-  color: #fb923c;
-  border: 1px solid rgba(249, 115, 22, 0.25);
-}
-.badge-naranja .badge-indicator { background: var(--status-orange); }
-
-.badge-rojo {
-  background: rgba(239, 68, 68, 0.12);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.25);
-}
-.badge-rojo .badge-indicator { background: var(--status-red); }
-
-.badge-rojo-extremo {
-  background: rgba(168, 85, 247, 0.12);
-  color: #c084fc;
-  border: 1px solid rgba(168, 85, 247, 0.25);
-}
-.badge-rojo-extremo .badge-indicator { background: #a855f7; }
-
-.badge-gris {
-  background: rgba(100, 116, 139, 0.12);
-  color: #94a3b8;
-  border: 1px solid rgba(100, 116, 139, 0.25);
-}
-.badge-gris .badge-indicator { background: var(--status-gray); }
-
-/* Fila de métricas */
-.risk-card-metric-row {
-  padding: 4px 14px 12px 14px;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.metric-main {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-}
-
-.metric-number {
-  font-size: 2.3rem;
-  font-weight: 300;
-  color: var(--text-pure);
-  line-height: 1;
-  letter-spacing: -0.03em;
-}
-
-.metric-unit {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-}
-
-.metric-secondary {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  text-align: right;
-}
-
-.metric-sub-label {
+.app-subtitle {
   font-size: 0.68rem;
-  color: var(--text-muted);
-}
-
-.metric-sub-value {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--text-main);
-}
-
-.text-warn {
-  color: #fb923c !important;
-}
-
-/* Pie de tarjeta: Recomendación operativa */
-.risk-card-action {
-  background: var(--bg-card-subtle);
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
-  padding: 9px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.action-tag {
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: var(--accent-cyan);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.action-text {
-  font-size: 0.8rem;
-  line-height: 1.35;
   color: var(--text-secondary);
 }
 
 /* =========================================================================
-   HISTOGRAMA DE LLUVIA
+   DISPOSICIÓN PRINCIPAL (MÓVIL EN CASCADA / ESCRITORIO EN 2 COLUMNAS)
    ========================================================================= */
-.histogram-container {
-  padding: 4px 14px 12px 14px;
-}
-
-.histogram-legend {
+.app-layout-body {
   display: flex;
-  justify-content: space-between;
-  font-size: 0.68rem;
-  color: var(--text-muted);
-  margin-bottom: 6px;
-}
-
-.histogram-track {
-  display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  height: 48px;
-  padding-bottom: 14px;
-  position: relative;
-}
-
-.histogram-col {
+  flex-direction: column;
   flex: 1;
-  height: 100%;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  position: relative;
 }
 
-.histogram-bar {
-  width: 100%;
-  background: rgba(56, 189, 248, 0.4);
-  border-radius: 2px 2px 0 0;
-  transition: height 0.2s ease;
+@media (min-width: 1024px) {
+  .app-layout-body {
+    display: grid;
+    grid-template-columns: 1fr 480px;
+    gap: 20px;
+    padding: 16px 20px;
+    align-items: start;
+  }
+
+  .satellite-map-section {
+    order: 2;
+    position: sticky;
+    top: 70px;
+  }
+
+  .bottom-sheet-panel {
+    order: 1;
+    border-radius: var(--radius-xl) !important;
+  }
 }
 
-.histogram-bar:hover {
-  background: rgba(56, 189, 248, 0.85);
-}
-
-.bar-alert {
-  background: rgba(249, 115, 22, 0.7);
-}
-
-.histogram-label {
-  position: absolute;
-  bottom: -14px;
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  color: var(--text-muted);
-}
-
-.error-notice {
-  padding: 14px;
-  font-size: 0.78rem;
-  color: var(--text-muted);
+@media (min-width: 1360px) {
+  .app-layout-body {
+    grid-template-columns: 1fr 520px;
+  }
 }
 
 /* =========================================================================
-   COLUMNA DERECHA: MAPA SATELITAL DE ALTA DEFINICIÓN
+   SECCIÓN DE MAPA SATELITAL INMERSIVO Y ELEMENTOS FLOTANTES
    ========================================================================= */
-.map-view-panel {
-  width: 100%;
-}
-
-.map-card-wrapper {
+.satellite-map-section {
   position: relative;
-  border-radius: var(--radius-xl);
+  width: 100%;
   overflow: hidden;
-  border: 1px solid var(--border-glass);
-  box-shadow: var(--shadow-panel);
   background: #000000;
 }
 
-.sat-map-container {
+.sat-map-canvas {
   width: 100%;
-  height: clamp(320px, 46vh, 420px);
+  height: clamp(340px, 52vh, 460px);
   z-index: 1;
 }
 
 @media (min-width: 1024px) {
-  .sat-map-container {
-    height: calc(100vh - 120px);
-    min-height: 600px;
-    max-height: 820px;
+  .sat-map-canvas {
+    height: calc(100vh - 110px);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-glass);
   }
 }
 
-/* Elementos flotantes sobre el mapa satelital */
-.map-floating-overlay {
+/* Fila de píldoras flotantes en la parte superior del mapa */
+.map-pills-row {
   position: absolute;
   top: 14px;
   left: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   z-index: 500;
-  background: var(--bg-overlay);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius-md);
-  padding: 8px 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   pointer-events: none;
 }
 
-.floating-badge {
-  display: flex;
+.glass-pill {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  gap: 7px;
+  padding: 7px 14px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-pill);
   color: var(--text-pure);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.15s ease;
 }
 
-.badge-radar-dot {
+.glass-pill:hover {
+  background: rgba(30, 38, 54, 0.85);
+  border-color: var(--accent-cyan);
+}
+
+.pill-subtle {
+  cursor: default;
+  color: var(--text-secondary);
+}
+
+.chevron-icon {
+  color: var(--text-muted);
+}
+
+.pulse-emerald {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--accent-cyan);
-  box-shadow: 0 0 8px var(--accent-cyan);
+  background: var(--status-green);
+  box-shadow: 0 0 8px var(--status-green);
 }
 
-.floating-hint {
+/* =========================================================================
+   TARJETA FLOTANTE DE CRISTAL SOBRE EL MAPA (RÉPLICA EXACTA DE LA IMAGEN)
+   ========================================================================= */
+.map-floating-glass-card {
+  position: absolute;
+  bottom: 24px;
+  left: 16px;
+  width: 165px;
+  background: rgba(22, 28, 40, 0.68);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  padding: 14px;
+  z-index: 500;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+}
+
+.floating-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.floating-title {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-pure);
+  line-height: 1.1;
+}
+
+.arrow-diagonal {
+  color: var(--text-secondary);
+}
+
+.floating-sub {
   font-size: 0.68rem;
   color: var(--text-muted);
+  display: block;
   margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Controles flotantes circulares (+, centrar, -) */
-.map-floating-controls {
+.floating-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.floating-number {
+  font-size: 2.2rem;
+  font-weight: 300;
+  color: var(--text-pure);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.floating-unit {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Herramientas circulares flotantes sobre el mapa */
+.map-floating-circle-tools {
   position: absolute;
-  bottom: 18px;
-  left: 18px;
-  z-index: 500;
+  bottom: 24px;
+  right: 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  z-index: 500;
 }
 
-.map-btn-circle {
+.circle-tool-btn {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: var(--bg-overlay);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
   color: var(--text-pure);
   font-size: 1.1rem;
-  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
   transition: all 0.15s ease;
 }
 
-.map-btn-circle:hover {
-  background: rgba(30, 36, 50, 0.95);
+.circle-tool-btn:hover {
+  background: rgba(30, 38, 54, 0.9);
   border-color: var(--accent-cyan);
   color: var(--accent-cyan);
-  transform: scale(1.05);
 }
 
-/* Marcador satelital de radar pulsante */
+/* Marcador de radar satelital */
 .sat-marker-wrapper {
   background: transparent;
   border: none;
@@ -837,8 +371,8 @@ body {
 }
 
 .sat-marker-dot {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   background: #ffffff;
   border: 2px solid var(--accent-cyan);
   border-radius: 50%;
@@ -863,64 +397,432 @@ body {
 }
 
 /* =========================================================================
-   PIE DE PÁGINA REGLAMENTARIO
+   PANEL INFERIOR (BOTTOM SHEET / DRAWER DE RIESGOS)
    ========================================================================= */
-.app-footer-bar {
-  position: fixed;
-  bottom: 0;
+.bottom-sheet-panel {
+  background: var(--bg-drawer);
+  border-top: 1px solid var(--border-glass);
+  border-radius: var(--radius-drawer) var(--radius-drawer) 0 0;
+  padding: 12px 18px 24px 18px;
+  margin-top: -18px;
+  position: relative;
+  z-index: 600;
+  box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.drawer-handle {
+  width: 38px;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.18);
+  margin: 0 auto 4px auto;
+}
+
+/* Sección de búsqueda */
+.search-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-input-box {
+  position: relative;
+  width: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.search-text-field {
+  width: 100%;
+  padding: 10px 14px 10px 38px;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-card);
+  background: var(--bg-input);
+  color: var(--text-pure);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.search-text-field:focus {
+  border-color: var(--border-focus);
+}
+
+.search-text-field::placeholder {
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+
+.search-autocomplete-list {
+  position: absolute;
+  top: calc(100% + 4px);
   left: 0;
   right: 0;
-  background: rgba(10, 12, 16, 0.92);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-top: 1px solid var(--border-glass);
-  padding: 6px 16px;
+  background: #161b28;
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.7);
+  list-style: none;
   z-index: 1000;
+  max-height: 220px;
+  overflow-y: auto;
 }
 
-.footer-content {
-  max-width: 1600px;
-  margin: 0 auto;
-  display: flex;
+.search-item {
+  padding: 9px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.search-item:last-child {
+  border-bottom: none;
+}
+
+.search-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.search-item-title {
+  font-weight: 600;
+  font-size: 0.84rem;
+  color: var(--text-pure);
+}
+
+.search-item-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Botón GPS de acción rápida */
+.btn-gps-action {
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  font-weight: 600;
+  background: #181d2a;
+  color: var(--text-pure);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-gps-action:hover:not(:disabled) {
+  background: #202738;
+  border-color: var(--accent-cyan);
+}
+
+/* Encabezado del cajón */
+.sheet-header-row {
+  display: flex;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  flex-wrap: wrap;
+  padding-top: 4px;
 }
 
-.footer-legal {
+.sheet-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-pure);
+  letter-spacing: -0.01em;
+}
+
+.sheet-subtitle {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.sheet-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.coords-tag {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-card);
+}
+
+.btn-round-refresh {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-glass);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-round-refresh:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-pure);
+}
+
+/* =========================================================================
+   TARJETAS DE RIESGO TINTADAS (RÉPLICA EXACTA DE LA TARJETA DE ALERTA DE LA IMAGEN)
+   ========================================================================= */
+.cards-list-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.modern-issue-card {
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  transition: all 0.15s ease;
+}
+
+/* Tintes temáticos idénticos al de la captura */
+.tone-rojo {
+  background: rgba(45, 18, 24, 0.68);
+  border-color: rgba(239, 68, 68, 0.28);
+}
+
+.tone-rojo-extremo {
+  background: rgba(40, 16, 46, 0.68);
+  border-color: rgba(168, 85, 247, 0.28);
+}
+
+.tone-naranja {
+  background: rgba(45, 28, 16, 0.68);
+  border-color: rgba(249, 115, 22, 0.28);
+}
+
+.tone-amarillo {
+  background: rgba(42, 34, 16, 0.68);
+  border-color: rgba(245, 158, 11, 0.28);
+}
+
+.tone-verde {
+  background: rgba(16, 36, 26, 0.68);
+  border-color: rgba(16, 185, 129, 0.28);
+}
+
+.tone-gris {
+  background: rgba(26, 30, 40, 0.68);
+  border-color: rgba(100, 116, 139, 0.25);
+}
+
+/* Cabecera de la tarjeta */
+.issue-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.issue-badge-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.tone-rojo .issue-badge-circle, .tone-rojo-extremo .issue-badge-circle {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.tone-naranja .issue-badge-circle {
+  background: #f97316;
+  color: #ffffff;
+}
+
+.tone-amarillo .issue-badge-circle {
+  background: #f59e0b;
+  color: #000000;
+}
+
+.tone-verde .issue-badge-circle {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.tone-gris .issue-badge-circle {
+  background: #64748b;
+  color: #ffffff;
+}
+
+.issue-titles {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.issue-main-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-pure);
+  line-height: 1.2;
+}
+
+.issue-sub-info {
+  font-size: 0.72rem;
   color: var(--text-secondary);
 }
 
-.footer-credits {
+.issue-kpi-pill {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-pure);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.issue-kpi-pill small {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+}
+
+/* Bloque de protocolo / Medida de control */
+.protocol-box {
+  background: rgba(0, 0, 0, 0.25);
+  border-left: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 7px 10px;
+  margin-top: 4px;
+}
+
+.tone-rojo .protocol-box { border-left-color: #ef4444; }
+.tone-naranja .protocol-box { border-left-color: #f97316; }
+.tone-amarillo .protocol-box { border-left-color: #f59e0b; }
+.tone-verde .protocol-box { border-left-color: #10b981; }
+
+.protocol-label {
+  display: block;
+  font-size: 0.64rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.protocol-detail {
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--text-main);
+  margin-top: 1px;
+}
+
+/* Gráfico horario de lluvia */
+.rain-mini-chart {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px 16px 10px;
+  margin-bottom: 6px;
+}
+
+.chart-labels-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.66rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.chart-bars-track {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 42px;
+  position: relative;
+}
+
+.chart-col {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+}
+
+.chart-bar {
+  width: 100%;
+  background: rgba(56, 189, 248, 0.4);
+  border-radius: 2px 2px 0 0;
+  transition: height 0.2s ease;
+}
+
+.chart-bar:hover {
+  background: rgba(56, 189, 248, 0.9);
+}
+
+.bar-alert {
+  background: rgba(249, 115, 22, 0.7);
+}
+
+.chart-hour {
+  position: absolute;
+  bottom: -14px;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
   color: var(--text-muted);
 }
 
 /* =========================================================================
-   RESPONSIVE MÓVIL
+   PIE DE PÁGINA DISCRETO
    ========================================================================= */
-@media (max-width: 600px) {
-  .top-nav-bar {
-    padding: 8px 12px;
-  }
+.sheet-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 10px;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
 
-  .nav-pill-tabs {
-    display: none;
-  }
+.footer-note {
+  color: var(--text-secondary);
+}
 
-  .sat-map-container {
-    height: 280px;
-  }
-
-  .metric-number {
-    font-size: 1.9rem;
-  }
-
-  .footer-content {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
-  }
+.footer-meta {
+  color: var(--text-muted);
 }
