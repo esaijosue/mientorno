@@ -1,9 +1,9 @@
 /**
- * mapa.js - Inicialización y control del mapa satelital de alta resolución
+ * mapa.js - Inicialización y control del mapa satelital de fondo completo
  * Proyecto: MiEntorno
  * 
- * Capa satelital de alta definición (Esri World Imagery + Etiquetas de referencia)
- * con marcador de radar de campo y controles flotantes.
+ * Mapa satelital cinemático de fondo completo (Esri World Imagery + Etiquetas de referencia)
+ * con compensación óptica del centro para visibilidad óptima sobre el panel flotante.
  */
 
 import { PERU_DEFAULT_COORDS } from './reglas.js';
@@ -32,7 +32,7 @@ function createPulseMarkerIcon() {
 }
 
 /**
- * Inicializa el mapa Leaflet con vista satelital fotorrealista.
+ * Inicializa el mapa Leaflet con vista satelital fotorrealista que cubre toda la pantalla.
  * @param {string} containerId ID del contenedor HTML
  * @param {Function} onLocationChange Callback al mover marcador o hacer clic
  */
@@ -52,16 +52,16 @@ export function initMap(containerId, onLocationChange) {
     attributionControl: false
   }).setView([PERU_DEFAULT_COORDS.lat, PERU_DEFAULT_COORDS.lon], PERU_DEFAULT_COORDS.zoom);
 
-  // 1. Capa Satelital de Alta Resolución (Esri World Imagery - Gratis, global y sub-métrica)
+  // 1. Capa Satelital de Alta Resolución (Esri World Imagery)
   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     maxZoom: 19,
     attribution: 'Esri, Maxar, Earthstar Geographics'
   }).addTo(map);
 
-  // 2. Capa Híbrida de Referencia (Límites, carreteras y localidades sutiles)
+  // 2. Capa Híbrida de Referencia (Límites, carreteras y nombres de localidades)
   L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
     maxZoom: 19,
-    opacity: 0.75
+    opacity: 0.65
   }).addTo(map);
 
   // Atribución compacta
@@ -83,7 +83,7 @@ export function initMap(containerId, onLocationChange) {
 }
 
 /**
- * Mueve o ubica el marcador de radar en las coordenadas indicadas.
+ * Mueve o ubica el marcador de radar en las coordenadas indicadas con compensación de encuadre.
  */
 export function setMarkerPosition(lat, lon, accuracy = null, panTo = true, customZoom = null, onDragCallback = null) {
   if (typeof L === 'undefined' || !map) return;
@@ -95,7 +95,7 @@ export function setMarkerPosition(lat, lon, accuracy = null, panTo = true, custo
     marker = L.marker(coords, {
       draggable: true,
       icon: pulseIcon,
-      title: 'Punto de monitoreo de riesgos'
+      title: 'Punto de monitoreo de campo'
     }).addTo(map);
 
     marker.on('dragend', () => {
@@ -125,7 +125,7 @@ export function setMarkerPosition(lat, lon, accuracy = null, panTo = true, custo
       radius: accuracy,
       color: '#38bdf8',
       fillColor: '#38bdf8',
-      fillOpacity: 0.15,
+      fillOpacity: 0.12,
       weight: 1.5,
       dashArray: '3, 4'
     }).addTo(map);
@@ -140,7 +140,18 @@ export function setMarkerPosition(lat, lon, accuracy = null, panTo = true, custo
         targetZoom = Math.max(map.getZoom(), 15);
       }
     }
+
     map.setView(coords, targetZoom, { animate: true, duration: 0.8 });
+
+    // En pantallas de escritorio, desplazar ligeramente la vista para que el marcador
+    // se sitúe en la zona visible no cubierta por el panel lateral oscurecido
+    if (window.innerWidth > 1024) {
+      setTimeout(() => {
+        if (map) {
+          map.panBy([-150, 0], { animate: true, duration: 0.5 });
+        }
+      }, 400);
+    }
   }
 
   setTimeout(() => {
