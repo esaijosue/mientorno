@@ -11,7 +11,7 @@ import {
   AUTO_REFRESH_INTERVAL_MS
 } from './reglas.js';
 import { searchLocationNominatim, fetchWeatherData } from './api.js';
-import { initMap, setMarkerPosition, centerPeru } from './mapa.js';
+import { initMap, setMarkerPosition, centerPeru, resizeMap } from './mapa.js';
 import {
   initUI,
   setLocationButtonLoading,
@@ -283,6 +283,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Iniciar temporizador de actualización periódica de 10 minutos
   iniciarAutoRefresco();
+
+  // Ajuste responsive automático del mapa ante redimensionamiento o rotación de pantalla
+  let resizeTimeout = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      resizeMap();
+    }, 150);
+  });
+  window.addEventListener('orientationchange', () => {
+    setTimeout(resizeMap, 300);
+  });
 
   // 1. Cargar ubicación guardada previamente si existe para render instantáneo
   const saved = recuperarUbicacionLocalStorage();

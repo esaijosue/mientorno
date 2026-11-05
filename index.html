@@ -25,72 +25,81 @@
       </div>
     </header>
 
-    <!-- Panel de Búsqueda y Ubicación -->
-    <section class="control-panel" aria-label="Control de ubicación">
-      <!-- Búsqueda con Nominatim -->
-      <div class="search-box-container">
-        <div class="search-input-wrapper">
-          <span class="search-icon" aria-hidden="true">🔍</span>
-          <input
-            type="search"
-            id="search-input"
-            class="search-input"
-            placeholder="Buscar ciudad, mina, puerto o campamento en Perú..."
-            autocomplete="off"
-            aria-label="Buscar lugar por nombre"
-          >
-        </div>
-        <ul id="search-results" class="search-results-list" hidden></ul>
-      </div>
+    <!-- Disposición Principal Responsive (Dashboard / Móvil) -->
+    <div class="main-dashboard-layout">
+      <!-- Columna Lateral: Control y Mapa (Sticky en Desktop) -->
+      <aside class="sidebar-column">
+        <!-- Panel de Búsqueda y Ubicación -->
+        <section class="control-panel" aria-label="Control de ubicación">
+          <!-- Búsqueda con Nominatim -->
+          <div class="search-box-container">
+            <div class="search-input-wrapper">
+              <span class="search-icon" aria-hidden="true">🔍</span>
+              <input
+                type="search"
+                id="search-input"
+                class="search-input"
+                placeholder="Buscar ciudad, mina, puerto o campamento en Perú..."
+                autocomplete="off"
+                aria-label="Buscar lugar por nombre"
+              >
+            </div>
+            <ul id="search-results" class="search-results-list" hidden></ul>
+          </div>
 
-      <!-- Botón de Ubicación GPS -->
-      <button id="btn-location" class="btn-location" type="button">
-        <span class="icon">📍</span> Usar mi ubicación
-      </button>
-
-      <!-- Barra de Metadatos de Posición -->
-      <div class="location-meta-bar">
-        <span id="location-status" class="location-status">Esperando selección de ubicación...</span>
-        <span id="coords-display" class="coords-display">Lat: --.---- | Lon: --.----</span>
-      </div>
-
-      <!-- Alertas de precisión y notificaciones -->
-      <div id="accuracy-alert" class="alert-container" hidden></div>
-    </section>
-
-    <!-- Mapa Interactivo -->
-    <main class="map-card" aria-label="Mapa interactivo de ubicación">
-      <div class="map-header">
-        <span>📍 Mapa de Operaciones</span>
-        <span>Arrastra el marcador para afinar</span>
-      </div>
-      <div id="map" class="map-container"></div>
-    </main>
-
-    <!-- Sección de Tarjetas de Riesgo - Fase 2 -->
-    <section class="cards-section" aria-label="Tarjetas de riesgos">
-      <div class="cards-header-bar">
-        <div class="section-title">
-          <span>⚠️</span>
-          <span>Evaluación de Riesgos en Tiempo Real</span>
-        </div>
-        <div class="cards-actions">
-          <span id="last-updated" class="last-updated-text">Esperando ubicación...</span>
-          <button id="btn-refresh" class="btn-refresh" type="button" aria-label="Actualizar riesgos">
-            🔄 Actualizar
+          <!-- Botón de Ubicación GPS -->
+          <button id="btn-location" class="btn-location" type="button">
+            <span class="icon">📍</span> Usar mi ubicación
           </button>
-        </div>
-      </div>
 
-      <div id="cards-container" class="cards-grid">
-        <div class="welcome-card">
-          <h3>Calculando matriz de riesgos...</h3>
-          <p>
-            Obteniendo datos meteorológicos de alta precisión para el punto de operación.
-          </p>
-        </div>
+          <!-- Barra de Metadatos de Posición -->
+          <div class="location-meta-bar">
+            <span id="location-status" class="location-status">Esperando selección de ubicación...</span>
+            <span id="coords-display" class="coords-display">Lat: --.---- | Lon: --.----</span>
+          </div>
+
+          <!-- Alertas de precisión y notificaciones -->
+          <div id="accuracy-alert" class="alert-container" hidden></div>
+        </section>
+
+        <!-- Mapa Interactivo -->
+        <main class="map-card" aria-label="Mapa interactivo de ubicación">
+          <div class="map-header">
+            <span>📍 Mapa de Operaciones</span>
+            <span>Arrastra el marcador para afinar</span>
+          </div>
+          <div id="map" class="map-container"></div>
+        </main>
+      </aside>
+
+      <!-- Columna Principal: Tarjetas de Riesgo -->
+      <div class="content-column">
+        <!-- Sección de Tarjetas de Riesgo - Fase 2 -->
+        <section class="cards-section" aria-label="Tarjetas de riesgos">
+          <div class="cards-header-bar">
+            <div class="section-title">
+              <span>⚠️</span>
+              <span>Evaluación de Riesgos en Tiempo Real</span>
+            </div>
+            <div class="cards-actions">
+              <span id="last-updated" class="last-updated-text">Esperando ubicación...</span>
+              <button id="btn-refresh" class="btn-refresh" type="button" aria-label="Actualizar riesgos">
+                🔄 Actualizar
+              </button>
+            </div>
+          </div>
+
+          <div id="cards-container" class="cards-grid">
+            <div class="welcome-card">
+              <h3>Calculando matriz de riesgos...</h3>
+              <p>
+                Obteniendo datos meteorológicos de alta precisión para el punto de operación.
+              </p>
+            </div>
+          </div>
+        </section>
       </div>
-    </section>
+    </div>
   </div>
 
   <!-- Pie de página fijo reglamentario -->
