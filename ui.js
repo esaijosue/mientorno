@@ -699,7 +699,7 @@ function createWindCard(data, ctx) {
     </div>
 
     <div class="control-measure-box">
-      <span class="control-box-label">Protocolo D.S. 024-2016-EM / Izajes:</span>
+      <span class="control-box-label">Protocolo D.S. 024-2016-EM / izajes:</span>
       <p class="control-box-text">${escapeHTML(recomendacion)}</p>
     </div>
   `;

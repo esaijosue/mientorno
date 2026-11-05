@@ -22,7 +22,7 @@ export const PERU_DEFAULT_COORDS = {
 export const OPERATIONAL_DEFAULT_COORDS = {
   lat: -12.0464,
   lon: -77.0428,
-  name: 'Lima / Callao (Frente Operativo)'
+  name: 'Lima / Callao (frente operativo)'
 };
 
 // Umbral de precisión para considerar la ubicación como aproximada (en metros)
@@ -52,7 +52,7 @@ export const REGLAS_UV = [
     max: 2.9,
     nivel: 'Bajo',
     color: 'verde',
-    badge: 'BAJO',
+    badge: 'Bajo',
     recomendacion: 'Protección mínima requerida: uso de lentes de seguridad con filtro UV para trabajos exteriores.'
   },
   {
@@ -60,7 +60,7 @@ export const REGLAS_UV = [
     max: 5.9,
     nivel: 'Moderado',
     color: 'amarillo',
-    badge: 'MODERADO',
+    badge: 'Moderado',
     recomendacion: 'Usar bloqueador solar FPS 50+ cada 3 horas, cortavientos/sombrero de ala ancha y gafas oscuras.'
   },
   {
@@ -68,7 +68,7 @@ export const REGLAS_UV = [
     max: 7.9,
     nivel: 'Alto',
     color: 'naranja',
-    badge: 'ALTO',
+    badge: 'Alto',
     recomendacion: 'Manga larga, casco con cubrenuca y bloqueador cada 2 horas.'
   },
   {
