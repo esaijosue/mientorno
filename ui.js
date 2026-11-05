@@ -1,8 +1,8 @@
 /**
- * ui.js - Manejo del DOM, renderizado visual e interacción de usuario
+ * ui.js - Manejo del DOM, renderizado visual de alto impacto e interacción de usuario
  * Proyecto: MiEntorno
  * 
- * Fase 2: Tarjetas de riesgos SST con semáforo y una recomendación por línea
+ * Interfaz Ejecutiva de Centro de Control SST / HSE
  */
 
 import {
@@ -38,28 +38,41 @@ export function initUI() {
 }
 
 /**
- * Actualiza el estado del botón de geolocalización.
- * @param {boolean} isLoading Indicador de carga
- * @param {string} text Texto opcional
+ * Actualiza el estado del botón de geolocalización con animación fluida.
  */
 export function setLocationButtonLoading(isLoading, text = null) {
   if (!elements.btnLocation) return;
   elements.btnLocation.disabled = isLoading;
   elements.btnLocation.innerHTML = isLoading
-    ? `<span class="spinner" aria-hidden="true"></span> ${text || 'Obteniendo GPS...'}`
-    : `<span class="icon">📍</span> ${text || 'Usar mi ubicación'}`;
+    ? `
+      <div class="btn-spinner-ring" aria-hidden="true"></div>
+      <span>${text || 'Localizando GPS...'}</span>
+    `
+    : `
+      <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+      </svg>
+      <span>${text || 'Usar mi ubicación GPS'}</span>
+    `;
 }
 
 /**
  * Actualiza el estado del botón de actualización manual.
- * @param {boolean} isRefreshing
  */
 export function setRefreshButtonLoading(isRefreshing) {
   if (!elements.btnRefresh) return;
   elements.btnRefresh.disabled = isRefreshing;
   elements.btnRefresh.innerHTML = isRefreshing
-    ? `<span class="spinner-sm" aria-hidden="true"></span> Actualizando...`
-    : `🔄 Actualizar`;
+    ? `
+      <div class="btn-spinner-ring-sm" aria-hidden="true"></div>
+      <span>Sincronizando...</span>
+    `
+    : `
+      <svg class="refresh-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+      </svg>
+      <span>Actualizar</span>
+    `;
 }
 
 /**
@@ -74,52 +87,54 @@ export function updateLastRefreshTimestamp() {
 
 /**
  * Muestra el estado de la ubicación y la precisión en metros.
- * Aplica la regla: si la precisión es mayor a 500 m, avisa: "Ubicación aproximada. Ajusta el punto en el mapa".
- * @param {number} lat Latitud
- * @param {number} lon Longitud
- * @param {number|null} accuracy Precisión en metros
- * @param {string} source Origen del punto ('gps', 'arrastre_marcador', 'click_mapa', 'busqueda', 'storage')
  */
 export function updateLocationInfo(lat, lon, accuracy, source = 'gps') {
   if (!elements.locationStatus || !elements.coordsDisplay) return;
 
-  elements.coordsDisplay.textContent = `Lat: ${lat.toFixed(5)} | Lon: ${lon.toFixed(5)}`;
+  // Formato monospace de alta precisión
+  elements.coordsDisplay.textContent = `${lat >= 0 ? '+' : ''}${lat.toFixed(4)}°, ${lon >= 0 ? '+' : ''}${lon.toFixed(4)}°`;
 
   if (accuracy !== null && accuracy !== undefined) {
     const roundedAcc = Math.round(accuracy);
-    elements.locationStatus.textContent = `Precisión GPS: ±${roundedAcc} m`;
+    elements.locationStatus.textContent = `GPS fijado (±${roundedAcc} m)`;
 
     if (roundedAcc > ACCURACY_WARNING_THRESHOLD_METERS) {
       elements.accuracyAlert.innerHTML = `
-        <div class="alert alert-warning" role="alert">
-          <span class="alert-icon">⚠️</span>
-          <span><strong>Ubicación aproximada</strong> (${roundedAcc} m). Ajusta el punto en el mapa para mayor exactitud.</span>
+        <div class="modern-alert alert-warning-glow" role="alert">
+          <span class="alert-pulse-dot"></span>
+          <div class="alert-content">
+            <strong>Precisión aproximada (${roundedAcc} m):</strong> Arrastra el radar en el mapa para afinar la coordenada exacta de tu frente de trabajo.
+          </div>
         </div>
       `;
       elements.accuracyAlert.hidden = false;
     } else {
       elements.accuracyAlert.innerHTML = `
-        <div class="alert alert-success" role="alert">
-          <span class="alert-icon">✓</span>
-          <span>Ubicación GPS de alta precisión (±${roundedAcc} m).</span>
+        <div class="modern-alert alert-success-glow" role="alert">
+          <span class="alert-pulse-dot dot-emerald"></span>
+          <div class="alert-content">
+            Señal GPS de alta resolución operativa activa (±${roundedAcc} m).
+          </div>
         </div>
       `;
       elements.accuracyAlert.hidden = false;
     }
   } else {
     const label = source === 'arrastre_marcador'
-      ? 'Punto reajustado en el mapa'
+      ? 'Punto reajustado manualmente'
       : source === 'click_mapa'
-        ? 'Punto seleccionado manualmente en el mapa'
+        ? 'Punto fijado en mapa'
         : source === 'busqueda'
-          ? 'Ubicación seleccionada mediante búsqueda'
-          : 'Ubicación recuperada de sesión anterior';
+          ? 'Ubicación seleccionada por búsqueda'
+          : 'Ubicación de sesión recuperada';
 
     elements.locationStatus.textContent = label;
     elements.accuracyAlert.innerHTML = `
-      <div class="alert alert-info" role="alert">
-        <span class="alert-icon">📍</span>
-        <span>${label}. Puedes arrastrar el marcador para afinar la posición.</span>
+      <div class="modern-alert alert-info-glow" role="alert">
+        <span class="alert-pulse-dot dot-cyan"></span>
+        <div class="alert-content">
+          ${label}. Arrastra el radar para reajustar tu posición.
+        </div>
       </div>
     `;
     elements.accuracyAlert.hidden = false;
@@ -127,19 +142,17 @@ export function updateLocationInfo(lat, lon, accuracy, source = 'gps') {
 }
 
 /**
- * Muestra mensaje de error o notificación al usuario.
- * @param {string} message Mensaje en español
- * @param {'error'|'warning'|'info'} type Tipo de mensaje
+ * Muestra mensaje de notificación al usuario.
  */
 export function showNotification(message, type = 'error') {
   if (!elements.accuracyAlert) return;
-  const icon = type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️';
-  const alertClass = type === 'error' ? 'alert-danger' : type === 'warning' ? 'alert-warning' : 'alert-info';
+  const dotColor = type === 'error' ? 'dot-rose' : type === 'warning' ? 'dot-amber' : 'dot-cyan';
+  const glowClass = type === 'error' ? 'alert-danger-glow' : type === 'warning' ? 'alert-warning-glow' : 'alert-info-glow';
 
   elements.accuracyAlert.innerHTML = `
-    <div class="alert ${alertClass}" role="alert">
-      <span class="alert-icon">${icon}</span>
-      <span>${message}</span>
+    <div class="modern-alert ${glowClass}" role="alert">
+      <span class="alert-pulse-dot ${dotColor}"></span>
+      <div class="alert-content">${escapeHTML(message)}</div>
     </div>
   `;
   elements.accuracyAlert.hidden = false;
@@ -161,8 +174,16 @@ export function renderSearchResults(results, onSelect) {
     const li = document.createElement('li');
     li.className = 'search-item';
     li.innerHTML = `
-      <div class="search-item-title">${escapeHTML(item.name)}</div>
-      <div class="search-item-sub">${escapeHTML(item.displayName)}</div>
+      <div class="search-item-icon">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+      </div>
+      <div class="search-item-info">
+        <span class="search-item-title">${escapeHTML(item.name)}</span>
+        <span class="search-item-sub">${escapeHTML(item.displayName)}</span>
+      </div>
     `;
     li.addEventListener('click', () => {
       elements.searchResults.hidden = true;
@@ -188,122 +209,128 @@ export function hideSearchResults() {
 
 /**
  * =========================================================================
- * RENDERIZADO DE TARJETAS DE RIESGO - FASE 2
- * Regla: Si una tarjeta falla, muestra "Dato no disponible" y las demás siguen operando.
+ * RENDERIZADO DE TARJETAS DE RIESGO DE ALTO IMPACTO - FASE 2
  * =========================================================================
  */
 
-/**
- * Renderiza todas las tarjetas de riesgo evaluadas con Open-Meteo.
- * @param {object} weatherData Datos provenientes de api.fetchWeatherData
- */
 export function renderRiskCards(weatherData) {
   if (!elements.cardsContainer) return;
   elements.cardsContainer.innerHTML = '';
 
-  // 1. Tarjeta Radiación UV
+  // 1. Radiación UV
   try {
-    const uvCard = createUVCard(weatherData);
-    elements.cardsContainer.appendChild(uvCard);
+    elements.cardsContainer.appendChild(createUVCard(weatherData));
   } catch (err) {
     console.error('Error generando tarjeta UV:', err);
-    elements.cardsContainer.appendChild(createErrorCard('Radiación UV', '☀️'));
+    elements.cardsContainer.appendChild(createErrorCard('Radiación UV', 'solar'));
   }
 
-  // 2. Tarjeta Lluvia por hora
+  // 2. Lluvia por hora
   try {
-    const rainCard = createRainCard(weatherData);
-    elements.cardsContainer.appendChild(rainCard);
+    elements.cardsContainer.appendChild(createRainCard(weatherData));
   } catch (err) {
     console.error('Error generando tarjeta Lluvia:', err);
-    elements.cardsContainer.appendChild(createErrorCard('Lluvia por Hora', '🌧️'));
+    elements.cardsContainer.appendChild(createErrorCard('Lluvia y Precipitación', 'rain'));
   }
 
-  // 3. Tarjeta Viento y Ráfagas
+  // 3. Viento y Ráfagas
   try {
-    const windCard = createWindCard(weatherData);
-    elements.cardsContainer.appendChild(windCard);
+    elements.cardsContainer.appendChild(createWindCard(weatherData));
   } catch (err) {
     console.error('Error generando tarjeta Viento:', err);
-    elements.cardsContainer.appendChild(createErrorCard('Viento y Ráfagas', '💨'));
+    elements.cardsContainer.appendChild(createErrorCard('Viento y Ráfagas', 'wind'));
   }
 
-  // 4. Tarjeta Tormenta Eléctrica
+  // 4. Tormenta Eléctrica
   try {
-    const stormCard = createThunderstormCard(weatherData);
-    elements.cardsContainer.appendChild(stormCard);
+    elements.cardsContainer.appendChild(createThunderstormCard(weatherData));
   } catch (err) {
     console.error('Error generando tarjeta Tormenta:', err);
-    elements.cardsContainer.appendChild(createErrorCard('Tormenta Eléctrica', '⚡'));
+    elements.cardsContainer.appendChild(createErrorCard('Tormenta Eléctrica (CAPE)', 'storm'));
   }
 
   updateLastRefreshTimestamp();
 }
 
-/**
- * Determina el índice de la hora actual en el array horario de Open-Meteo.
- */
 function getCurrentHourIndex(hourlyTime, currentTimeStr) {
   if (!hourlyTime || !Array.isArray(hourlyTime)) return 0;
   if (!currentTimeStr) return 0;
-  const currentPrefix = currentTimeStr.slice(0, 13); // e.g. "2026-11-04T21"
+  const currentPrefix = currentTimeStr.slice(0, 13);
   const idx = hourlyTime.findIndex((t) => t.startsWith(currentPrefix));
   return idx !== -1 ? idx : 0;
 }
 
 /**
- * 1. Tarjeta Radiación UV:
- * Valor actual y máximo del día. Niveles OMS: 0-2 bajo, 3-5 moderado, 6-7 alto, 8-10 muy alto, 11+ extremo.
- * Una sola línea de recomendación por nivel.
+ * SVG Icons ejecutivos para cada tipo de riesgo
+ */
+const ICONS = {
+  solar: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
+  rain: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/><line x1="8" y1="19" x2="8" y2="21"/><line x1="8" y1="13" x2="8" y2="15"/><line x1="16" y1="19" x2="16" y2="21"/><line x1="16" y1="13" x2="16" y2="15"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="12" y1="15" x2="12" y2="17"/></svg>`,
+  wind: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>`,
+  storm: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+  shield: `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`
+};
+
+/**
+ * 1. Tarjeta Radiación UV
  */
 function createUVCard(data) {
   const currentHourIdx = getCurrentHourIndex(data.hourly?.time, data.current?.time);
   const currentUV = data.hourly?.uv_index ? (data.hourly.uv_index[currentHourIdx] ?? 0) : 0;
   const maxUV = data.daily?.uv_index_max?.[0] ?? currentUV;
 
-  // Evaluar regla según el valor máximo previsto para la jornada
   const evaluatedValue = Math.max(currentUV, maxUV);
   const rule = REGLAS_UV.find((r) => evaluatedValue >= r.min && evaluatedValue <= r.max) || REGLAS_UV[0];
 
   const card = document.createElement('article');
-  card.className = `risk-card risk-border-${rule.color}`;
+  card.className = `modern-risk-card theme-${rule.color}`;
   card.innerHTML = `
+    <div class="card-accent-bar"></div>
     <header class="risk-card-header">
-      <div class="risk-title-wrapper">
-        <span class="risk-card-icon" aria-hidden="true">☀️</span>
-        <h3 class="risk-card-title">Radiación UV</h3>
+      <div class="risk-type-badge">
+        <div class="risk-icon-pill">${ICONS.solar}</div>
+        <div>
+          <h3 class="risk-card-name">Radiación UV</h3>
+          <span class="risk-scale-sub">Índice OMS (0 - 11+)</span>
+        </div>
       </div>
-      <span class="risk-badge badge-${rule.color}">${rule.badge}</span>
+      <div class="status-pill-badge badge-${rule.color}">
+        <span class="badge-dot"></span>
+        <span>${rule.badge}</span>
+      </div>
     </header>
 
-    <div class="risk-body">
-      <div class="risk-metrics">
-        <div class="metric-block">
-          <span class="metric-label">Actual</span>
-          <span class="metric-value">${currentUV.toFixed(1)}</span>
+    <div class="risk-card-body">
+      <div class="kpi-hero-group">
+        <div class="kpi-main-block">
+          <span class="kpi-label">ÍNDICE MÁXIMO HOY</span>
+          <div class="kpi-hero-value">
+            <span class="val-num">${maxUV.toFixed(1)}</span>
+            <span class="val-unit">UV-I</span>
+          </div>
         </div>
-        <div class="metric-divider"></div>
-        <div class="metric-block">
-          <span class="metric-label">Máx. Hoy</span>
-          <span class="metric-value font-bold">${maxUV.toFixed(1)}</span>
+
+        <div class="kpi-sub-block">
+          <span class="sub-label">VALOR ACTUAL</span>
+          <span class="sub-value">${currentUV.toFixed(1)}</span>
+          <span class="sub-state">${currentUV > 0 ? 'En exposición' : 'Bajo horizonte'}</span>
         </div>
-        <div class="metric-subtext">Escala OMS (0 - 11+)</div>
       </div>
     </div>
 
     <footer class="risk-card-footer">
-      <p class="risk-recommendation">
-        <strong>Acción SST:</strong> ${escapeHTML(rule.recomendacion)}
-      </p>
+      <div class="protocol-header">
+        ${ICONS.shield}
+        <span>MEDIDA DE CONTROL OPERACIONAL SST</span>
+      </div>
+      <p class="protocol-text">${escapeHTML(rule.recomendacion)}</p>
     </footer>
   `;
   return card;
 }
 
 /**
- * 2. Tarjeta Lluvia por hora:
- * Gráfico simple de barras de las próximas 24 h y texto:
- * "Próxima lluvia probable: HH:MM" o "Sin lluvia en las próximas 24 h".
+ * 2. Tarjeta Lluvia por hora
  */
 function createRainCard(data) {
   const currentIdx = getCurrentHourIndex(data.hourly?.time, data.current?.time);
@@ -311,8 +338,7 @@ function createRainCard(data) {
   const probs = data.hourly?.precipitation_probability?.slice(currentIdx, currentIdx + 24) || [];
   const amounts = data.hourly?.precipitation?.slice(currentIdx, currentIdx + 24) || [];
 
-  // Buscar primer evento de lluvia probable (prob >= 30% o mm > 0.1)
-  let nextRainText = 'Sin lluvia en las próximas 24 h';
+  let nextRainText = 'Sin precipitaciones en las próximas 24 h';
   let hasRain = false;
   let maxProb = 0;
   let totalPrecip = 0;
@@ -325,12 +351,11 @@ function createRainCard(data) {
 
     if (!hasRain && (p >= 30 || mm >= 0.2)) {
       const timeStr = times[i].slice(11, 16);
-      nextRainText = `Próxima lluvia probable: ${timeStr} (${p}% - ${mm.toFixed(1)} mm)`;
+      nextRainText = `Próxima lluvia estimada: ${timeStr} h (${p}% prob &bull; ${mm.toFixed(1)} mm)`;
       hasRain = true;
     }
   }
 
-  // Nivel semafórico
   const color = !hasRain
     ? 'verde'
     : maxProb >= 70 || totalPrecip > 5
@@ -339,76 +364,81 @@ function createRainCard(data) {
         ? 'naranja'
         : 'amarillo';
 
-  const badge = !hasRain ? 'SIN LLUVIA' : maxProb >= 70 ? 'LLUVIA FUERTE' : 'PROBABLE';
+  const badge = !hasRain ? 'DESPEJADO' : maxProb >= 70 ? 'LLUVIA FUERTE' : 'PROBABLE';
 
-  // Recomendación de una línea
   const recomendacion = !hasRain
-    ? 'Superficies secas. Tránsito vehicular en campamento y pista sin restricción hídrica.'
+    ? 'Vías secas. Tránsito de volquetes y equipos móviles sin restricción por terreno húmedo.'
     : color === 'rojo'
-      ? 'Pistas resbaladizas y riesgo de taludes: reducir velocidad en ruta y revisar canaletas.'
-      : 'Uso de ropa impermeable de campo (capotín) y precaución al descender de equipos móviles.';
+      ? 'Pistas resbaladizas y riesgo de taludes: activar protocolo de lluvia severa y reducir velocidad.'
+      : 'Uso obligatorio de impermeable y verificación de drenajes en frentes de excavación.';
 
-  // Generar gráfico de barras de las 24 horas
+  // Generar barras elegantes con gradientes
   let barsHTML = '';
   for (let i = 0; i < times.length; i++) {
     const prob = probs[i] || 0;
     const mm = amounts[i] || 0;
     const hourLabel = times[i].slice(11, 13);
-    const barHeight = Math.max(6, Math.round(prob * 0.5)); // 6px a 50px de altura
+    const heightPct = Math.max(8, prob);
     const isPeak = prob >= 40;
     const showLabel = i % 4 === 0 || i === times.length - 1;
 
     barsHTML += `
-      <div class="rain-bar-col" title="${hourLabel}:00 h | ${prob}% | ${mm.toFixed(1)} mm">
-        <div class="rain-bar ${isPeak ? 'bar-peak' : ''}" style="height: ${barHeight}px;"></div>
-        <span class="rain-hour-label">${showLabel ? hourLabel : ''}</span>
+      <div class="rain-bar-item" title="${hourLabel}:00 h | ${prob}% prob | ${mm.toFixed(1)} mm">
+        <div class="bar-fill ${isPeak ? 'bar-peak-accent' : ''}" style="height: ${heightPct}%;"></div>
+        <span class="bar-hour">${showLabel ? hourLabel : ''}</span>
       </div>
     `;
   }
 
   const card = document.createElement('article');
-  card.className = `risk-card risk-border-${color}`;
+  card.className = `modern-risk-card theme-${color}`;
   card.innerHTML = `
+    <div class="card-accent-bar"></div>
     <header class="risk-card-header">
-      <div class="risk-title-wrapper">
-        <span class="risk-card-icon" aria-hidden="true">🌧️</span>
-        <h3 class="risk-card-title">Lluvia por Hora</h3>
+      <div class="risk-type-badge">
+        <div class="risk-icon-pill">${ICONS.rain}</div>
+        <div>
+          <h3 class="risk-card-name">Lluvia y Precipitación</h3>
+          <span class="risk-scale-sub">Ventana de pronóstico a 24 horas</span>
+        </div>
       </div>
-      <span class="risk-badge badge-${color}">${badge}</span>
+      <div class="status-pill-badge badge-${color}">
+        <span class="badge-dot"></span>
+        <span>${badge}</span>
+      </div>
     </header>
 
-    <div class="risk-body">
-      <div class="rain-status-line">
-        <span class="rain-highlight ${hasRain ? 'text-warn' : ''}">
-          ${escapeHTML(nextRainText)}
+    <div class="risk-card-body">
+      <div class="rain-summary-line">
+        <span class="rain-status-pill ${hasRain ? 'pill-alert' : 'pill-ok'}">
+          ${nextRainText}
         </span>
       </div>
 
-      <div class="rain-chart-container" aria-label="Gráfico de probabilidad de precipitación en las próximas 24 horas">
-        <div class="rain-chart-header">
-          <span>Próximas 24 horas (probabilidad %)</span>
-          <span>Máx: ${maxProb}%</span>
+      <div class="rain-histogram-box">
+        <div class="histogram-legend">
+          <span>PROBABILIDAD HORARIA (%)</span>
+          <span>PICO: ${maxProb}%</span>
         </div>
-        <div class="rain-bars-wrapper">
+        <div class="rain-histogram-track">
           ${barsHTML}
         </div>
       </div>
     </div>
 
     <footer class="risk-card-footer">
-      <p class="risk-recommendation">
-        <strong>Acción SST:</strong> ${escapeHTML(recomendacion)}
-      </p>
+      <div class="protocol-header">
+        ${ICONS.shield}
+        <span>MEDIDA DE CONTROL OPERACIONAL SST</span>
+      </div>
+      <p class="protocol-text">${escapeHTML(recomendacion)}</p>
     </footer>
   `;
   return card;
 }
 
 /**
- * 3. Tarjeta Viento y ráfagas:
- * Velocidad y ráfaga actual y máxima de las próximas 12 h, en km/h.
- * Umbrales configurables en reglas.js:
- * ráfaga < 25 verde, 25-35 amarillo, 36-50 naranja (trabajo en altura e izaje con restricción), > 50 rojo.
+ * 3. Tarjeta Viento y ráfagas
  */
 function createWindCard(data) {
   const currentSpeed = data.current?.wind_speed_10m ?? 0;
@@ -418,7 +448,6 @@ function createWindCard(data) {
   const next12Gusts = data.hourly?.wind_gusts_10m?.slice(currentIdx, currentIdx + 12) || [];
   const max12hGust = Math.max(currentGust, ...next12Gusts);
 
-  // Evaluar según la ráfaga máxima esperada
   let rule = UMBRALES_VIENTO.NORMAL;
   if (max12hGust > 50) {
     rule = UMBRALES_VIENTO.SUSPENSION;
@@ -429,50 +458,54 @@ function createWindCard(data) {
   }
 
   const card = document.createElement('article');
-  card.className = `risk-card risk-border-${rule.color}`;
+  card.className = `modern-risk-card theme-${rule.color}`;
   card.innerHTML = `
+    <div class="card-accent-bar"></div>
     <header class="risk-card-header">
-      <div class="risk-title-wrapper">
-        <span class="risk-card-icon" aria-hidden="true">💨</span>
-        <h3 class="risk-card-title">Viento y Ráfagas</h3>
+      <div class="risk-type-badge">
+        <div class="risk-icon-pill">${ICONS.wind}</div>
+        <div>
+          <h3 class="risk-card-name">Viento y Ráfagas</h3>
+          <span class="risk-scale-sub">Límites D.S. 024-2016-EM / ASME B30.5</span>
+        </div>
       </div>
-      <span class="risk-badge badge-${rule.color}">${rule.badge}</span>
+      <div class="status-pill-badge badge-${rule.color}">
+        <span class="badge-dot"></span>
+        <span>${rule.badge}</span>
+      </div>
     </header>
 
-    <div class="risk-body">
-      <div class="risk-metrics">
-        <div class="metric-block">
-          <span class="metric-label">Viento Actual</span>
-          <span class="metric-value">${Math.round(currentSpeed)} <small>km/h</small></span>
+    <div class="risk-card-body">
+      <div class="kpi-hero-group">
+        <div class="kpi-main-block">
+          <span class="kpi-label">RÁFAGA MÁXIMA 12H</span>
+          <div class="kpi-hero-value">
+            <span class="val-num">${Math.round(max12hGust)}</span>
+            <span class="val-unit">km/h</span>
+          </div>
         </div>
-        <div class="metric-divider"></div>
-        <div class="metric-block">
-          <span class="metric-label">Ráfaga Actual</span>
-          <span class="metric-value">${Math.round(currentGust)} <small>km/h</small></span>
-        </div>
-        <div class="metric-divider"></div>
-        <div class="metric-block">
-          <span class="metric-label">Ráfaga Máx. 12h</span>
-          <span class="metric-value font-bold">${Math.round(max12hGust)} <small>km/h</small></span>
+
+        <div class="kpi-sub-block">
+          <span class="sub-label">ACTUAL SOSTENIDO</span>
+          <span class="sub-value">${Math.round(currentSpeed)} <small>km/h</small></span>
+          <span class="sub-state">Ráfaga actual: ${Math.round(currentGust)} km/h</span>
         </div>
       </div>
-      <div class="metric-subtext">Estándar: restricción > 35 km/h | suspensión > 50 km/h</div>
     </div>
 
     <footer class="risk-card-footer">
-      <p class="risk-recommendation">
-        <strong>Acción SST:</strong> ${escapeHTML(rule.recomendacion)}
-      </p>
+      <div class="protocol-header">
+        ${ICONS.shield}
+        <span>MEDIDA DE CONTROL OPERACIONAL SST</span>
+      </div>
+      <p class="protocol-text">${escapeHTML(rule.recomendacion)}</p>
     </footer>
   `;
   return card;
 }
 
 /**
- * 4. Tarjeta Tormenta eléctrica:
- * Usa CAPE y weather_code (95, 96, 99 = tormenta).
- * Nivel según CAPE (<500 bajo, 500-1500 moderado, 1500-2500 alto, >2500 muy alto).
- * Si hay weather_code de tormenta en las próximas horas, sube el nivel y muestra hora estimada.
+ * 4. Tarjeta Tormenta eléctrica
  */
 function createThunderstormCard(data) {
   const currentIdx = getCurrentHourIndex(data.hourly?.time, data.current?.time);
@@ -483,7 +516,6 @@ function createThunderstormCard(data) {
   const currentCape = capes[0] || 0;
   const maxCape = Math.max(currentCape, ...(capes.slice(0, 12) || [0]));
 
-  // Nivel base por energía convectiva (CAPE)
   let level = 'BAJO';
   if (maxCape > 2500) {
     level = 'MUY_ALTO';
@@ -495,7 +527,6 @@ function createThunderstormCard(data) {
 
   let capeRule = UMBRALES_CAPE[level];
 
-  // Evaluar detección de códigos de tormenta (95, 96, 99)
   let stormDetected = false;
   let estimatedStormTime = null;
 
@@ -507,7 +538,6 @@ function createThunderstormCard(data) {
     }
   }
 
-  // Escalación del nivel de riesgo si el modelo prevé tormenta explícita
   let color = capeRule.color;
   let badge = capeRule.badge;
   let recomendacion = capeRule.recomendacion;
@@ -515,86 +545,95 @@ function createThunderstormCard(data) {
   if (stormDetected) {
     if (level === 'BAJO' || level === 'MODERADO') {
       color = 'naranja';
-      badge = 'TORMENTA PREVISTA';
+      badge = 'TORMENTA ESTIMADA';
     } else {
       color = 'rojo';
-      badge = 'CRÍTICO / TORMENTA';
+      badge = 'CRÍTICO / DESCARGAS';
     }
-    const horaMsg = estimatedStormTime ? ` estimada aprox. a las ${estimatedStormTime} h.` : '.';
-    recomendacion = `Tormenta eléctrica${horaMsg} Activar protocolo de detector de tormentas y preparar repliegue a refugio.`;
+    const horaMsg = estimatedStormTime ? ` estimada a las ${estimatedStormTime} h.` : '.';
+    recomendacion = `Tormenta eléctrica${horaMsg} Activar protocolo de alerta amarilla/roja y verificar refugios Faraday.`;
   }
 
   const card = document.createElement('article');
-  card.className = `risk-card risk-border-${color}`;
+  card.className = `modern-risk-card theme-${color}`;
   card.innerHTML = `
+    <div class="card-accent-bar"></div>
     <header class="risk-card-header">
-      <div class="risk-title-wrapper">
-        <span class="risk-card-icon" aria-hidden="true">⚡</span>
-        <h3 class="risk-card-title">Tormenta Eléctrica</h3>
+      <div class="risk-type-badge">
+        <div class="risk-icon-pill">${ICONS.storm}</div>
+        <div>
+          <h3 class="risk-card-name">Tormenta Eléctrica</h3>
+          <span class="risk-scale-sub">Energía Convectiva CAPE (J/kg)</span>
+        </div>
       </div>
-      <span class="risk-badge badge-${color}">${badge}</span>
+      <div class="status-pill-badge badge-${color}">
+        <span class="badge-dot"></span>
+        <span>${badge}</span>
+      </div>
     </header>
 
-    <div class="risk-body">
-      <div class="risk-metrics">
-        <div class="metric-block">
-          <span class="metric-label">CAPE Actual</span>
-          <span class="metric-value">${Math.round(currentCape)} <small>J/kg</small></span>
+    <div class="risk-card-body">
+      <div class="kpi-hero-group">
+        <div class="kpi-main-block">
+          <span class="kpi-label">PICO CAPE 12H</span>
+          <div class="kpi-hero-value">
+            <span class="val-num">${Math.round(maxCape)}</span>
+            <span class="val-unit">J/kg</span>
+          </div>
         </div>
-        <div class="metric-divider"></div>
-        <div class="metric-block">
-          <span class="metric-label">CAPE Máx. 12h</span>
-          <span class="metric-value font-bold">${Math.round(maxCape)} <small>J/kg</small></span>
-        </div>
-        <div class="metric-divider"></div>
-        <div class="metric-block">
-          <span class="metric-label">Detección WMO</span>
-          <span class="metric-value ${stormDetected ? 'text-danger font-bold' : ''}">
-            ${stormDetected ? 'Activa ⚡' : 'Sin alerta'}
+
+        <div class="kpi-sub-block">
+          <span class="sub-label">DETECCIÓN WMO</span>
+          <span class="sub-value ${stormDetected ? 'text-danger' : 'text-ok'}">
+            ${stormDetected ? 'Alerta Activa' : 'Sin Alerta'}
           </span>
+          <span class="sub-state">${stormDetected ? `Impacto ~${estimatedStormTime || '--:--'} h` : 'Atmósfera estable'}</span>
         </div>
       </div>
-      <div class="metric-subtext">Energía Convectiva Potencial Disponible (CAPE)</div>
     </div>
 
     <footer class="risk-card-footer">
-      <p class="risk-recommendation">
-        <strong>Acción SST:</strong> ${escapeHTML(recomendacion)}
-      </p>
+      <div class="protocol-header">
+        ${ICONS.shield}
+        <span>MEDIDA DE CONTROL OPERACIONAL SST</span>
+      </div>
+      <p class="protocol-text">${escapeHTML(recomendacion)}</p>
     </footer>
   `;
   return card;
 }
 
 /**
- * Genera una tarjeta de contingencia cuando un servicio o dato no está disponible.
- * Regla: "si una falla, esa tarjeta muestra 'Dato no disponible' y las demás siguen funcionando"
+ * Tarjeta de contingencia
  */
-function createErrorCard(title, icon = '⚠️') {
+function createErrorCard(title, iconType = 'shield') {
   const card = document.createElement('article');
-  card.className = 'risk-card risk-border-error';
+  card.className = 'modern-risk-card theme-gris';
   card.innerHTML = `
+    <div class="card-accent-bar"></div>
     <header class="risk-card-header">
-      <div class="risk-title-wrapper">
-        <span class="risk-card-icon" aria-hidden="true">${icon}</span>
-        <h3 class="risk-card-title">${escapeHTML(title)}</h3>
+      <div class="risk-type-badge">
+        <div class="risk-icon-pill">${ICONS[iconType] || ICONS.shield}</div>
+        <div>
+          <h3 class="risk-card-name">${escapeHTML(title)}</h3>
+          <span class="risk-scale-sub">Sensor meteorológico</span>
+        </div>
       </div>
-      <span class="risk-badge badge-gris">NO DISPONIBLE</span>
+      <div class="status-pill-badge badge-gris">
+        <span class="badge-dot"></span>
+        <span>NO DISPONIBLE</span>
+      </div>
     </header>
-    <div class="risk-body">
-      <div class="card-empty-state">
-        <span class="empty-icon">📡</span>
-        <p class="empty-text">Dato no disponible</p>
-        <small class="empty-subtext">No se pudo recuperar la lectura actual. Las demás tarjetas operan normalmente.</small>
+    <div class="risk-card-body">
+      <div class="error-state-box">
+        <span class="error-msg-main">Dato no disponible</span>
+        <span class="error-msg-sub">El canal de datos no respondió. Las demás tarjetas operan con normalidad.</span>
       </div>
     </div>
   `;
   return card;
 }
 
-/**
- * Escapa caracteres HTML para seguridad.
- */
 function escapeHTML(str) {
   if (!str) return '';
   return str.replace(/[&<>'"]/g, 

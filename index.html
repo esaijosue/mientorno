@@ -3,9 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MiEntorno - Riesgos en Tiempo Real SST</title>
-  <meta name="description" content="Monitoreo de riesgos del entorno en tiempo real para trabajadores de campo en minería, energía, construcción y puertos del Perú.">
+  <title>MiEntorno - Inteligencia de Riesgos Ambientales SST / HSE</title>
+  <meta name="description" content="Plataforma de inteligencia y evaluación de riesgos ambientales en tiempo real para faenas mineras, energéticas, construcción y puertos en Perú.">
   
+  <!-- Tipografías Ejecutivas: Plus Jakarta Sans y JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <!-- Leaflet CSS (cdnjs) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" integrity="sha512-Zcn6bjR/8RZbLEpLIeXrNGAffCNWFZDl64355DYWFUD9B56N1x5z5UbdFs9FVebPRkqV8BHNetTrG81MBNN23w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
@@ -14,14 +19,24 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- Encabezado -->
+    <!-- Barra Superior de Navegación y Estado -->
     <header class="app-header">
       <div class="brand-wrapper">
-        <div class="brand-icon" aria-hidden="true">🛡️</div>
-        <div>
-          <h1 id="app-name" class="brand-title">MiEntorno</h1>
-          <p class="brand-tagline">Seguridad y Salud en el Trabajo (SST / HSE)</p>
+        <div class="brand-badge-icon">
+          <div class="brand-radar-core"></div>
         </div>
+        <div>
+          <div class="brand-title-row">
+            <h1 id="app-name" class="brand-title">MiEntorno</h1>
+            <span class="brand-version-pill">SST v2.0</span>
+          </div>
+          <p class="brand-tagline">Centro de Inteligencia de Riesgos Críticos &bull; HSE</p>
+        </div>
+      </div>
+
+      <div class="header-status-badge" title="Monitoreo activo en tiempo real">
+        <span class="status-ping-dot"></span>
+        <span class="status-text">OPERATIVO &bull; PERÚ</span>
       </div>
     </header>
 
@@ -34,12 +49,15 @@
           <!-- Búsqueda con Nominatim -->
           <div class="search-box-container">
             <div class="search-input-wrapper">
-              <span class="search-icon" aria-hidden="true">🔍</span>
+              <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
               <input
                 type="search"
                 id="search-input"
                 class="search-input"
-                placeholder="Buscar ciudad, mina, puerto o campamento en Perú..."
+                placeholder="Buscar mina, puerto, campamento o ciudad..."
                 autocomplete="off"
                 aria-label="Buscar lugar por nombre"
               >
@@ -47,14 +65,20 @@
             <ul id="search-results" class="search-results-list" hidden></ul>
           </div>
 
-          <!-- Botón de Ubicación GPS -->
+          <!-- Botón de Ubicación GPS de Alta Precisión -->
           <button id="btn-location" class="btn-location" type="button">
-            <span class="icon">📍</span> Usar mi ubicación
+            <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+            </svg>
+            <span>Usar mi ubicación GPS</span>
           </button>
 
           <!-- Barra de Metadatos de Posición -->
           <div class="location-meta-bar">
-            <span id="location-status" class="location-status">Esperando selección de ubicación...</span>
+            <div class="meta-status-group">
+              <span class="meta-dot"></span>
+              <span id="location-status" class="location-status">Detectando posición...</span>
+            </div>
             <span id="coords-display" class="coords-display">Lat: --.---- | Lon: --.----</span>
           </div>
 
@@ -65,8 +89,15 @@
         <!-- Mapa Interactivo -->
         <main class="map-card" aria-label="Mapa interactivo de ubicación">
           <div class="map-header">
-            <span>📍 Mapa de Operaciones</span>
-            <span>Arrastra el marcador para afinar</span>
+            <div class="map-header-title">
+              <svg class="map-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                <line x1="8" y1="2" x2="8" y2="18"></line>
+                <line x1="16" y1="6" x2="16" y2="22"></line>
+              </svg>
+              <span>MONITOR GEOESPACIAL</span>
+            </div>
+            <span class="map-hint">Arrastra el radar para afinar</span>
           </div>
           <div id="map" class="map-container"></div>
         </main>
@@ -74,27 +105,30 @@
 
       <!-- Columna Principal: Tarjetas de Riesgo -->
       <div class="content-column">
-        <!-- Sección de Tarjetas de Riesgo - Fase 2 -->
+        <!-- Sección de Tarjetas de Riesgo -->
         <section class="cards-section" aria-label="Tarjetas de riesgos">
           <div class="cards-header-bar">
-            <div class="section-title">
-              <span>⚠️</span>
-              <span>Evaluación de Riesgos en Tiempo Real</span>
+            <div class="section-title-wrapper">
+              <div class="section-title-glow"></div>
+              <h2 class="section-title">MATRIZ DE RIESGOS DEL ENTORNO</h2>
+              <span class="section-subtitle">Evaluación micrometeorológica y física en tiempo real</span>
             </div>
             <div class="cards-actions">
-              <span id="last-updated" class="last-updated-text">Esperando ubicación...</span>
-              <button id="btn-refresh" class="btn-refresh" type="button" aria-label="Actualizar riesgos">
-                🔄 Actualizar
+              <span id="last-updated" class="last-updated-text">Sincronizando...</span>
+              <button id="btn-refresh" class="btn-refresh" type="button" aria-label="Actualizar datos">
+                <svg class="refresh-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                </svg>
+                <span>Actualizar</span>
               </button>
             </div>
           </div>
 
           <div id="cards-container" class="cards-grid">
-            <div class="welcome-card">
-              <h3>Calculando matriz de riesgos...</h3>
-              <p>
-                Obteniendo datos meteorológicos de alta precisión para el punto de operación.
-              </p>
+            <div class="loading-state-card">
+              <div class="loading-pulse-ring"></div>
+              <p class="loading-state-title">Calculando vectores de riesgo...</p>
+              <p class="loading-state-sub">Procesando sondeos atmosféricos y modelos de predicción en el borde.</p>
             </div>
           </div>
         </section>
@@ -102,14 +136,16 @@
     </div>
   </div>
 
-  <!-- Pie de página fijo reglamentario -->
+  <!-- Pie de página fijo reglamentario y elegante -->
   <footer class="app-footer">
-    <p class="footer-disclaimer">
-      Información referencial. No reemplaza las alertas oficiales (SENAMHI, IGP, INDECI, DHN).
-    </p>
-    <p class="footer-attribution">
-      Datos meteorológicos por <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> &bull; Cartografía por <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>
-    </p>
+    <div class="footer-inner">
+      <p class="footer-disclaimer">
+        <span class="shield-tag">REFERENCIAL</span> Información técnica de apoyo para evaluación operacional en campo. No reemplaza alertas oficiales del Estado (SENAMHI, IGP, INDECI, DHN).
+      </p>
+      <p class="footer-attribution">
+        Modelos numéricos: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> &bull; Cartografía: <a href="https://carto.com/" target="_blank" rel="noopener">CARTO</a> / <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OSM</a>
+      </p>
+    </div>
   </footer>
 
   <!-- Leaflet JS (cdnjs) -->
@@ -119,4 +155,3 @@
   <script type="module" src="main.js"></script>
 </body>
 </html>
-
