@@ -1311,104 +1311,374 @@ body.theme-control-room {
   background: var(--color-alert);
 }
 
+/* Pie de página del tablero */
+.panel-dashboard-footer {
+  margin-top: 14px;
+  padding: 12px 6px 6px 6px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-align: center;
+  flex-wrap: wrap;
+}
+
+.footer-separator {
+  color: rgba(255, 255, 255, 0.2);
+}
+
 /* =========================================================================
-   6. RESPONSIVE DESIGN (TABLETS Y MÓVILES)
+   6. RESPONSIVE DESIGN (TABLETS Y MÓVILES DE ALTA GAMA)
    ========================================================================= */
-@media (max-width: 1024px) {
+
+/* Laptops compactas y monitores medianos (1025px a 1200px) */
+@media (max-width: 1200px) {
   .intelligence-floating-panel {
-    width: 380px;
-    padding: 14px;
+    width: 410px;
+    padding: 14px 16px;
   }
 
   .map-floating-content-layer {
-    left: 380px;
-  }
-
-  .map-hero-title {
-    font-size: 1.6rem;
+    left: 410px;
   }
 
   .floating-warning-accordion {
-    width: 300px;
+    width: 275px;
   }
 }
 
-@media (max-width: 768px) {
+/* Tablets (iPad, Galaxy Tab, Surface: 769px a 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
   .app-top-header {
-    padding: 0 14px;
     height: 56px;
+    padding: 0 16px;
   }
 
-  .coords-telemetry-text {
+  .header-search-wrapper {
+    max-width: 260px;
+  }
+
+  .app-floating-workspace {
+    top: 56px;
+  }
+
+  .intelligence-floating-panel {
+    width: 350px;
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .risk-cards-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .risk-card {
+    padding: 8px 10px;
+    min-height: 105px;
+  }
+
+  .metric-hero-val {
+    font-size: 1.25rem;
+  }
+
+  .hero-number {
+    font-size: 2.1rem;
+  }
+
+  .map-floating-content-layer {
+    left: 350px;
+  }
+
+  .map-hero-title {
+    font-size: 1.5rem;
+  }
+
+  .frosted-glass-metric-card {
+    top: 75px;
+    left: 18px;
+    width: 180px;
+    padding: 12px;
+  }
+
+  .glass-hero-val {
+    font-size: 2rem;
+  }
+
+  .floating-warning-accordion {
+    top: auto;
+    bottom: 20px;
+    right: 20px;
+    width: 260px;
+    max-height: calc(100vh - 160px);
+  }
+
+  .map-floating-navigation-controls {
+    bottom: 20px;
+    right: 295px;
+  }
+
+  .mobile-bottom-dock-bar {
+    display: none;
+  }
+}
+
+/* Teléfonos móviles y pantallas pequeñas (<= 768px) */
+@media (max-width: 768px) {
+  .app-top-header {
+    padding: 0 10px;
+    height: 52px;
+    gap: 6px;
+  }
+
+  .brand-logo-img {
+    height: 26px;
+  }
+
+  .brand-main-title {
+    font-size: 0.92rem;
+  }
+
+  .brand-separator {
+    font-size: 0.75rem;
+    margin: 0 1px;
+  }
+
+  .brand-sub-title {
+    font-size: 0.72rem;
+  }
+
+  .brand-author-tag {
+    display: none; /* Se muestra con elegancia en el pie del tablero */
+  }
+
+  .telemetry-pill {
     display: none;
   }
 
   .header-search-wrapper {
-    max-width: 160px;
+    max-width: 130px;
+  }
+
+  .header-search-box {
+    padding: 4px 8px;
+    gap: 6px;
+  }
+
+  .header-search-input {
+    font-size: 0.72rem;
   }
 
   .search-kbd-hint {
     display: none;
   }
 
+  .btn-gps-trigger {
+    padding: 5px 8px;
+    font-size: 0.7rem;
+    gap: 3px;
+  }
+
+  .btn-icon-pill {
+    width: 30px;
+    height: 30px;
+  }
+
   .app-floating-workspace {
-    top: 56px;
-    flex-direction: column;
-  }
-
-  .intelligence-floating-panel {
-    width: 100%;
-    height: auto;
-    max-height: calc(100vh - 56px);
-    border-right: none;
-    padding: 14px;
-    background: rgba(12, 15, 21, 0.96);
-  }
-
-  .risk-cards-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .map-floating-content-layer {
-    position: static;
+    top: 52px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: fixed;
     display: block;
+    pointer-events: none;
   }
 
-  .floating-map-hero-header {
-    top: 68px;
-    left: 14px;
-  }
-
-  .frosted-glass-metric-card {
-    top: 140px;
-    left: 14px;
-    width: calc(100% - 28px);
-    max-width: 250px;
-    padding: 14px 16px;
-  }
-
-  .floating-warning-accordion {
-    top: auto;
-    bottom: 80px;
-    left: 14px;
-    right: 14px;
-    width: auto;
-  }
-
-  .map-floating-navigation-controls {
-    bottom: 80px;
-    right: 14px;
-  }
-
-  .mobile-bottom-dock-bar {
+  /* Vista de Tablero móvil */
+  body.mobile-mode-dashboard .intelligence-floating-panel {
     display: flex;
-  }
-
-  body.mobile-mode-map .intelligence-floating-panel {
-    display: none;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    padding: 12px 14px 85px 14px;
+    background: rgba(12, 14, 20, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    border-right: none;
   }
 
   body.mobile-mode-dashboard .map-floating-content-layer {
     display: none;
+  }
+
+  body.mobile-mode-dashboard .map-photographic-vignette {
+    background: rgba(12, 14, 20, 0.95);
+  }
+
+  /* Vista de Mapa móvil (Estilo idéntico a referencia iPhone) */
+  body.mobile-mode-map .intelligence-floating-panel {
+    display: none;
+  }
+
+  body.mobile-mode-map .map-floating-content-layer {
+    display: block;
+    position: absolute;
+    inset: 0;
+    left: 0;
+    pointer-events: none;
+  }
+
+  body.mobile-mode-map .floating-map-hero-header {
+    position: absolute;
+    top: 12px;
+    left: 14px;
+    right: 14px;
+    pointer-events: none;
+    gap: 6px;
+  }
+
+  body.mobile-mode-map .map-hero-title {
+    font-size: 1.35rem;
+    line-height: 1.1;
+  }
+
+  body.mobile-mode-map .map-glass-pill {
+    padding: 5px 12px;
+    font-size: 0.74rem;
+  }
+
+  body.mobile-mode-map .frosted-glass-metric-card {
+    position: absolute;
+    top: 72px;
+    left: 14px;
+    width: 175px;
+    padding: 10px 12px;
+    border-radius: 12px;
+  }
+
+  body.mobile-mode-map .glass-hero-val {
+    font-size: 1.9rem;
+  }
+
+  body.mobile-mode-map .floating-warning-accordion {
+    position: absolute;
+    top: auto;
+    bottom: 80px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: 440px;
+    margin: 0 auto;
+    max-height: 240px;
+  }
+
+  body.mobile-mode-map .accordion-header {
+    padding: 8px 12px;
+  }
+
+  body.mobile-mode-map .accordion-main-title {
+    font-size: 0.78rem;
+  }
+
+  body.mobile-mode-map .accordion-body {
+    padding: 8px 10px;
+    max-height: 180px;
+    gap: 6px;
+  }
+
+  body.mobile-mode-map .map-floating-navigation-controls {
+    position: absolute;
+    bottom: 175px;
+    right: 12px;
+    gap: 6px;
+  }
+
+  body.mobile-mode-map .map-btn-circle {
+    width: 36px;
+    height: 36px;
+  }
+
+  body.mobile-mode-map .map-photographic-vignette {
+    background: radial-gradient(circle at 50% 40%, transparent 28%, rgba(12, 14, 20, 0.3) 65%, rgba(12, 14, 20, 0.75) 100%);
+  }
+
+  /* Ajuste de cuadrícula de tarjetas de riesgo */
+  .risk-cards-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .risk-card {
+    padding: 9px 11px;
+    min-height: 100px;
+  }
+
+  .metric-hero-val {
+    font-size: 1.25rem;
+  }
+
+  .hero-number {
+    font-size: 2.1rem;
+  }
+
+  .efficiency-chart-svg {
+    height: 52px;
+  }
+
+  /* Barra dock inferior móvil flotante */
+  .mobile-bottom-dock-bar {
+    display: flex;
+    position: fixed;
+    bottom: max(14px, env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    z-index: 1800;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .dock-capsule-container {
+    pointer-events: auto;
+    padding: 4px 8px;
+    gap: 4px;
+    background: rgba(18, 22, 28, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .dock-action-btn {
+    padding: 5px 12px;
+    font-size: 0.68rem;
+    gap: 2px;
+  }
+}
+
+/* Teléfonos muy compactos (<= 440px) */
+@media (max-width: 440px) {
+  .risk-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .brand-sub-title {
+    font-size: 0.68rem;
+  }
+}
+
+/* Pantallas ultra estrechas (<= 360px) */
+@media (max-width: 360px) {
+  .brand-separator,
+  .brand-sub-title {
+    display: none;
+  }
+
+  .header-search-wrapper {
+    max-width: 105px;
   }
 }

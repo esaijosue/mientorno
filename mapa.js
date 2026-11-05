@@ -64,12 +64,6 @@ export function initMap(containerId, onLocationChange) {
     opacity: 0.65
   }).addTo(map);
 
-  // Atribución compacta
-  L.control.attribution({
-    position: 'bottomright',
-    prefix: false
-  }).addAttribution('&copy; Esri &bull; Maxar').addTo(map);
-
   // Escuchar clic en el mapa para posicionamiento manual
   map.on('click', (e) => {
     const { lat, lng } = e.latlng;

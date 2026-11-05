@@ -332,16 +332,23 @@ function iniciarApp() {
         document.body.classList.add('mobile-mode-map');
         setTimeout(resizeMap, 150);
       } else if (target === 'alerts') {
+        document.body.classList.remove('mobile-mode-dashboard');
+        document.body.classList.add('mobile-mode-map');
+        setTimeout(resizeMap, 150);
         const accordion = document.getElementById('warning-accordion');
         if (accordion) {
           accordion.classList.remove('collapsed');
-          accordion.scrollIntoView({ behavior: 'smooth' });
         }
       } else if (target === 'gps') {
         solicitarGeolocalizacion(false);
       }
     });
   });
+
+  // Modo móvil inicial por defecto si la pantalla es <= 768px
+  if (window.innerWidth <= 768) {
+    document.body.classList.add('mobile-mode-dashboard');
+  }
 
   // Iniciar temporizador de actualización periódica de 10 minutos
   iniciarAutoRefresco();
@@ -351,6 +358,13 @@ function iniciarApp() {
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
+      if (window.innerWidth <= 768) {
+        if (!document.body.classList.contains('mobile-mode-map') && !document.body.classList.contains('mobile-mode-dashboard')) {
+          document.body.classList.add('mobile-mode-dashboard');
+        }
+      } else {
+        document.body.classList.remove('mobile-mode-map', 'mobile-mode-dashboard');
+      }
       resizeMap();
     }, 150);
   });
