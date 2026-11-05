@@ -2,35 +2,25 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ficha técnica y metodología &bull; MiEntorno</title>
-  <meta name="description" content="Especificación técnica, metodología de cálculo y marco regulatorio SST para fiscalización en faenas mineras, energéticas, construcción y puertos del Perú.">
-
-  <!-- Favicon oficial con logo del proyecto -->
+  <meta name="description" content="Ficha técnica, metodología de cálculo y marco normativo peruano de la plataforma MiEntorno.">
   <link rel="icon" type="image/webp" href="logo.webp">
-
-  <!-- Tipografía Inter y JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg-body: #090b10;
-      --bg-card: rgba(18, 22, 30, 0.7);
-      --bg-card-subtle: rgba(255, 255, 255, 0.025);
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-focus: rgba(255, 255, 255, 0.18);
-      --text-pure: #ffffff;
-      --text-primary: #e2e8f0;
-      --text-secondary: #94a3b8;
-      --text-muted: #64748b;
-      --color-accent: #38bdf8;
-      --color-safe: #10b981;
-      --color-warning: #f59e0b;
-      --color-alert: #ef4444;
+      --bg: #ffffff;
+      --text: #111827;
+      --text-muted: #4b5563;
+      --text-subtle: #6b7280;
+      --border: #e5e7eb;
+      --border-light: #f3f4f6;
+      --bg-subtle: #f9fafb;
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --font-mono: 'JetBrains Mono', Consolas, monospace;
     }
 
     * {
@@ -40,195 +30,169 @@
     }
 
     body {
-      background-color: var(--bg-body);
-      color: var(--text-primary);
+      background-color: var(--bg);
+      color: var(--text);
       font-family: var(--font-sans);
       font-size: 15px;
       line-height: 1.65;
       -webkit-font-smoothing: antialiased;
-      padding-bottom: 80px;
+      padding-bottom: 70px;
     }
 
-    /* Barra superior de navegación */
-    .top-nav {
+    /* Barra superior simple y limpia */
+    .top-bar {
+      border-bottom: 1px solid var(--border);
+      background: #ffffff;
       position: sticky;
       top: 0;
-      z-index: 100;
-      background: rgba(9, 11, 16, 0.92);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border-subtle);
-      height: 58px;
+      z-index: 50;
+    }
+
+    .top-bar-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 14px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 24px;
     }
 
-    .brand-link {
+    .brand-group {
       display: flex;
       align-items: center;
       gap: 10px;
       text-decoration: none;
-      color: var(--text-pure);
+      color: var(--text);
     }
 
     .brand-logo {
-      height: 28px;
+      height: 24px;
       width: auto;
-      border-radius: 4px;
+      display: block;
     }
 
-    .brand-title {
-      font-weight: 700;
+    .brand-name {
       font-size: 0.95rem;
+      font-weight: 700;
       letter-spacing: -0.01em;
     }
 
-    .brand-sep {
-      color: rgba(255, 255, 255, 0.3);
-      font-weight: 300;
-    }
-
-    .brand-subtitle {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-      font-weight: 400;
-    }
-
-    .btn-return {
+    .btn-back {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-pure);
+      gap: 6px;
+      color: var(--text-muted);
       text-decoration: none;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 500;
-      padding: 6px 14px;
-      border-radius: 9999px;
-      transition: all 0.18s ease;
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: all 0.15s ease;
+      background: #ffffff;
     }
 
-    .btn-return:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: var(--border-focus);
-      transform: translateY(-1px);
+    .btn-back:hover {
+      color: var(--text);
+      background: var(--bg-subtle);
+      border-color: #d1d5db;
     }
 
-    /* Contenedor central de lectura ejecutiva */
-    .doc-container {
-      max-width: 820px;
+    /* Contenedor de lectura */
+    .content-wrap {
+      max-width: 760px;
       margin: 0 auto;
-      padding: 40px 24px 0 24px;
+      padding: 40px 20px 0 20px;
     }
 
-    /* Cabecera del documento */
-    .doc-header {
-      border-bottom: 1px solid var(--border-subtle);
-      padding-bottom: 24px;
+    .page-header {
       margin-bottom: 36px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
     }
 
-    .doc-kicker {
-      display: inline-block;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
+    .page-tag {
+      font-size: 0.75rem;
       font-weight: 600;
-      letter-spacing: 0.08em;
-      color: var(--color-accent);
+      color: var(--text-subtle);
+      letter-spacing: 0.04em;
       margin-bottom: 8px;
     }
 
-    .doc-title {
+    .page-title {
       font-size: 1.85rem;
       font-weight: 700;
-      color: var(--text-pure);
-      line-height: 1.25;
-      margin-bottom: 12px;
+      color: var(--text);
       letter-spacing: -0.02em;
+      line-height: 1.25;
+      margin-bottom: 8px;
     }
 
-    .doc-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      font-size: 0.8rem;
-      color: var(--text-secondary);
+    .page-meta {
+      font-size: 0.82rem;
+      color: var(--text-subtle);
     }
 
-    .doc-meta span {
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    /* Secciones editoriales */
+    section {
+      margin-bottom: 34px;
     }
 
-    /* Secciones del documento */
-    .doc-section {
-      margin-bottom: 36px;
-    }
-
-    .section-title {
-      font-size: 1.2rem;
+    h2 {
+      font-size: 1.15rem;
       font-weight: 600;
-      color: var(--text-pure);
-      margin-bottom: 14px;
+      color: var(--text);
       letter-spacing: -0.01em;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .section-num {
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: var(--color-accent);
-      background: rgba(56, 189, 248, 0.1);
-      padding: 2px 7px;
-      border-radius: 4px;
+      margin-bottom: 12px;
     }
 
     p {
       margin-bottom: 14px;
-      color: #cbd5e1;
+      color: #374151;
+      font-size: 0.94rem;
+      line-height: 1.65;
     }
 
-    /* Tarjetas de normas y metodologías */
-    .card-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: 12px;
-      padding: 18px 20px;
-      margin-bottom: 16px;
+    ul {
+      margin-left: 20px;
+      margin-bottom: 14px;
+      color: #374151;
+      font-size: 0.94rem;
     }
 
-    .card-box-header {
-      font-weight: 600;
-      color: var(--text-pure);
+    li {
       margin-bottom: 6px;
-      font-size: 0.95rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
     }
 
-    .card-pill {
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      padding: 2px 8px;
-      border-radius: 9999px;
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-secondary);
+    /* Bloques informativos sutiles */
+    .law-item {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      background: var(--bg-subtle);
     }
 
-    /* Tablas técnicas */
-    .data-table-wrapper {
+    .law-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .law-desc {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-bottom: 0;
+      line-height: 1.55;
+    }
+
+    /* Tabla minimalista */
+    .table-container {
       overflow-x: auto;
-      margin: 16px 0;
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
-      background: rgba(12, 14, 20, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin: 14px 0;
     }
 
     table {
@@ -239,18 +203,18 @@
     }
 
     th {
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--text-pure);
+      background: var(--bg-subtle);
+      color: var(--text);
       font-weight: 600;
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border-subtle);
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
       white-space: nowrap;
     }
 
     td {
-      padding: 10px 14px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      color: #cbd5e1;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      color: #374151;
       vertical-align: top;
     }
 
@@ -258,348 +222,283 @@
       border-bottom: none;
     }
 
-    .code-tag {
+    .mono {
       font-family: var(--font-mono);
-      font-size: 0.76rem;
-      background: rgba(255, 255, 255, 0.06);
-      padding: 2px 6px;
-      border-radius: 4px;
-      color: #e2e8f0;
+      font-size: 0.78rem;
     }
 
-    /* Caja de fórmula */
-    .formula-box {
-      background: rgba(15, 23, 42, 0.6);
-      border-left: 3px solid var(--color-accent);
-      border-radius: 0 8px 8px 0;
-      padding: 14px 18px;
-      margin: 16px 0;
+    /* Recuadro de fórmula simple */
+    .calc-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
       font-family: var(--font-mono);
-      font-size: 0.85rem;
-      color: #f1f5f9;
+      font-size: 0.82rem;
+      color: #1f2937;
+      margin: 12px 0 16px 0;
     }
 
-    /* Autoría y firma profesional */
-    .author-card {
-      background: linear-gradient(135deg, rgba(24, 28, 38, 0.85) 0%, rgba(14, 18, 24, 0.95) 100%);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 14px;
-      padding: 24px;
+    /* Tarjeta de autoría */
+    .author-section {
+      border-top: 1px solid var(--border);
+      padding-top: 26px;
       margin-top: 40px;
     }
 
     .author-name {
-      font-size: 1.15rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      color: var(--text-pure);
-      margin-bottom: 4px;
+      color: var(--text);
+      margin-bottom: 2px;
     }
 
-    .author-title {
-      font-size: 0.85rem;
-      color: var(--color-accent);
-      font-weight: 500;
-      margin-bottom: 12px;
-    }
-
-    .author-desc {
+    .author-role {
       font-size: 0.82rem;
-      color: var(--text-secondary);
+      color: var(--text-subtle);
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    .author-bio {
+      font-size: 0.86rem;
+      color: var(--text-muted);
       line-height: 1.6;
     }
 
-    /* Estilos de impresión oficial (auditorías y fiscalización) */
-    @media print {
-      body {
-        background: #ffffff !important;
-        color: #000000 !important;
-      }
-      .top-nav {
-        display: none !important;
-      }
-      .btn-return {
-        display: none !important;
-      }
-      .doc-container {
-        padding: 0;
-        max-width: 100%;
-      }
-      .card-box, .data-table-wrapper, .author-card {
-        border-color: #cbd5e1 !important;
-        background: transparent !important;
-        color: #000000 !important;
-        box-shadow: none !important;
-      }
-      p, td, th {
-        color: #1e293b !important;
-      }
-      .doc-title {
-        color: #0f172a !important;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .doc-title {
+    @media (max-width: 600px) {
+      .page-title {
         font-size: 1.45rem;
       }
-      .top-nav {
-        padding: 0 14px;
+      .content-wrap {
+        padding: 24px 16px 0 16px;
       }
-      .doc-container {
-        padding: 20px 14px 0 14px;
+      .top-bar-inner {
+        padding: 12px 16px;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Barra superior -->
-  <nav class="top-nav">
-    <a href="index.html" class="brand-link">
-      <img src="logo.webp" alt="Logo MiEntorno" class="brand-logo">
-      <span class="brand-title">MiEntorno</span>
-      <span class="brand-sep">|</span>
-      <span class="brand-subtitle">Metodología y normas</span>
-    </a>
-    <a href="index.html" class="btn-return" title="Volver a la consola de monitoreo en tiempo real">
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="19" y1="12" x2="5" y2="12"></line>
-        <polyline points="12 19 5 12 12 5"></polyline>
-      </svg>
-      <span>Volver al monitoreo</span>
-    </a>
-  </nav>
+  <!-- Barra de cabecera -->
+  <header class="top-bar">
+    <div class="top-bar-inner">
+      <a href="index.html" class="brand-group">
+        <img src="logo.webp" alt="Logo MiEntorno" class="brand-logo">
+        <span class="brand-name">MiEntorno</span>
+      </a>
+      <a href="index.html" class="btn-back">
+        &larr; Volver al monitoreo
+      </a>
+    </div>
+  </header>
 
-  <!-- Contenido principal -->
-  <main class="doc-container">
-    <header class="doc-header">
-      <span class="doc-kicker">Ficha técnica y memoria metodológica</span>
-      <h1 class="doc-title">MiEntorno: sistema de monitoreo ambiental y riesgos físicos en faena</h1>
-      <div class="doc-meta">
-        <span>Área técnica: Seguridad y salud en el trabajo (SST / HSE)</span>
-        <span>&bull;</span>
-        <span>Ámbito: Minería, energía, construcción y puertos del Perú</span>
-        <span>&bull;</span>
-        <span>Versión: 2.0 (Control room)</span>
-      </div>
+  <!-- Documento técnico -->
+  <main class="content-wrap">
+    <header class="page-header">
+      <div class="page-tag">Ficha técnica y memoria metodológica</div>
+      <h1 class="page-title">Monitoreo ambiental y riesgos físicos en faena</h1>
+      <div class="page-meta">Documento para supervisores de campo, comités de SST y fiscalización reguladora</div>
     </header>
 
-    <!-- 1. Objeto y alcance -->
-    <section class="doc-section">
-      <h2 class="section-title"><span class="section-num">01</span> Objeto y alcance de la plataforma</h2>
+    <!-- 1. Propósito -->
+    <section>
+      <h2>1. Propósito del sistema</h2>
       <p>
-        <strong>MiEntorno</strong> es una solución de monitoreo continuo y evaluación predictiva de riesgos ambientales y agentes físicos en tiempo real, diseñada específicamente para frentes de trabajo en operaciones mineras a tajo abierto y subterráneas, proyectos hidroeléctricos, obras viales y terminales portuarios de la República del Perú.
+        MiEntorno es una herramienta operativa de consulta y evaluación de factores climáticos y físicos en tiempo real. Está diseñada para frentes de trabajo en minería, energía, construcción pesada y operaciones portuarias en el Perú.
       </p>
       <p>
-        La herramienta centraliza la toma de decisiones preventivas para supervisores de turno, inspectores de seguridad e ingenieros residentes, proveyendo umbrales de alerta temprana orientados a la suspensión preventiva de tareas críticas (izajes, trabajos en altura, labores en cielo abierto y tránsito de equipos pesados) ante fenómenos climáticos adversos.
+        Su objetivo es proporcionar criterios objetivos y basados en normativas a los supervisores de turno y comités de seguridad, facilitando la decisión oportuna de continuar o suspender tareas críticas a cielo abierto (maniobras de izaje, trabajos en altura, labores en tajo y tránsito de equipos móviles).
       </p>
     </section>
 
-    <!-- 2. Marco normativo peruano -->
-    <section class="doc-section">
-      <h2 class="section-title"><span class="section-num">02</span> Marco normativo y regulatorio aplicable</h2>
+    <!-- 2. Marco normativo -->
+    <section>
+      <h2>2. Marco normativo aplicable</h2>
       <p>
-        Los parámetros de evaluación, ponderaciones de riesgo y protocolos de contingencia de MiEntorno están calibrados en estricta conformidad con la legislación peruana vigente:
+        Los umbrales de alerta y medidas de control se rigen por la normativa técnica y laboral vigente en el Perú:
       </p>
 
-      <div class="card-box">
-        <div class="card-box-header">
-          <span>Decreto supremo N° 024-2016-EM</span>
-          <span class="card-pill">Sector minería</span>
-        </div>
-        <p>
-          Reglamento de seguridad y salud ocupacional en minería. Art. 385 y conexos: establece la obligatoriedad de detener maniobras de izaje con grúas móviles cuando la velocidad del viento supere los <strong>32 km/h</strong> (o el límite prescrito por el fabricante del equipo), así como la paralización de trabajos en altura ante tormentas eléctricas y precipitaciones.
+      <div class="law-item">
+        <div class="law-name">Decreto supremo N° 024-2016-EM (Minería)</div>
+        <p class="law-desc">
+          En su artículo 385 y normas conexas, exige suspender maniobras de izaje con grúas cuando la velocidad del viento supere los 32 km/h (o el límite establecido por el fabricante), así como paralizar trabajos en altura ante tormentas o lluvias continuas.
         </p>
       </div>
 
-      <div class="card-box">
-        <div class="card-box-header">
-          <span>Ley N° 30102</span>
-          <span class="card-pill">Radiación solar UV</span>
-        </div>
-        <p>
-          Ley que dispone medidas preventivas contra los efectos nocivos para la salud por la exposición prolongada a la radiación solar. Exige a los empleadores dotar de fotoprotección con factor no menor a SPF 50+, sombreros con ala ancha o cubrenucas, lentes con filtro UV al 100%, y establecer programas de rotación horaria de personal en sombra cuando el índice UV alcance niveles <em>muy alto</em> (&ge; 8) o <em>extremo</em> (&ge; 11).
+      <div class="law-item">
+        <div class="law-name">Ley N° 30102 (Radiación solar)</div>
+        <p class="law-desc">
+          Dispone medidas preventivas obligatorias para trabajadores expuestos al sol: uso de fotoprotector (mínimo SPF 50+), cubrenucas, lentes con filtro UV al 100% y rotación horaria a la sombra en niveles de radiación muy altos (&ge; 8 UVI).
         </p>
       </div>
 
-      <div class="card-box">
-        <div class="card-box-header">
-          <span>Ley N° 29783 y D.S. N° 005-2012-TR</span>
-          <span class="card-pill">Marco general SST</span>
-        </div>
-        <p>
-          Ley de seguridad y salud en el trabajo y su reglamento, con modificatoria Ley N° 31246: principio de prevención e identificación obligatoria de peligros físicos ambientales en la matriz IPERC continuo, garantizando el derecho del trabajador a interrumpir su labor ante peligro inminente no controlado.
+      <div class="law-item">
+        <div class="law-name">Ley N° 29783 y D.S. N° 005-2012-TR (Marco general SST)</div>
+        <p class="law-desc">
+          Garantiza el derecho de los trabajadores a interrumpir sus labores ante situaciones de peligro inminente no controlado y establece la obligación de registrar los controles ambientales en el IPERC continuo.
         </p>
       </div>
 
-      <div class="card-box">
-        <div class="card-box-header">
-          <span>Estándares de la Organización Meteorológica Mundial (WMO)</span>
-          <span class="card-pill">Norma técnica internacional</span>
-        </div>
-        <p>
-          Monitoreo de energía potencial convectiva disponible (CAPE en J/kg) para la previsión de tormentas severas con descargas atmosféricas y aplicación de la regla de seguridad 30/30 para evacuación hacia refugios con blindaje equipotencial (jaulas Faraday).
+      <div class="law-item">
+        <div class="law-name">Estándares de la Organización Meteorológica Mundial (WMO)</div>
+        <p class="law-desc">
+          Parámetros para la evaluación de inestabilidad convectiva atmosférica (CAPE) y cumplimiento de la regla 30/30 de evacuación a refugios seguros (jaulas Faraday o vehículos cerrados) ante tormentas eléctricas.
         </p>
       </div>
     </section>
 
-    <!-- 3. Metodología de cálculo del índice de seguridad en faena -->
-    <section class="doc-section">
-      <h2 class="section-title"><span class="section-num">03</span> Metodología de cálculo del índice de seguridad en faena (ISF)</h2>
+    <!-- 3. Cómo se calcula el índice de seguridad -->
+    <section>
+      <h2>3. Cálculo del índice de seguridad en faena</h2>
       <p>
-        El <strong>índice de seguridad en faena (ISF)</strong> es una métrica sintética porcentual calculada dinámicamente cada 10 minutos. Evalúa la tolerancia del entorno físico para operaciones regulares a partir de un puntaje base de 100%, aplicando deducciones ponderadas acumulativas de acuerdo al grado de desviación de cada factor respecto a los umbrales permisibles:
+        El índice de seguridad resume la aptitud física del entorno en una escala de 0% a 100%. El cálculo inicia con una base de 100 puntos y aplica deducciones directas acumulativas según la severidad de los factores que superen los límites tolerables:
       </p>
 
-      <div class="formula-box">
-        ISF = max(0, 100 - [ D_uv + D_lluvia + D_viento + D_tormenta ])
+      <div class="calc-box">
+        Índice de seguridad = 100 &minus; (Deducción UV + Deducción lluvia + Deducción viento + Deducción tormenta)
       </div>
 
-      <div class="data-table-wrapper">
+      <div class="table-container">
         <table>
           <thead>
             <tr>
-              <th>Rango ISF</th>
-              <th>Clasificación</th>
-              <th>Estado operativo en faena</th>
-              <th>Acción mandatoria</th>
+              <th>Rango del índice</th>
+              <th>Condición en faena</th>
+              <th>Criterio de acción</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><span class="code-tag">&ge; 80.0%</span></td>
+              <td><span class="mono">&ge; 80.0%</span></td>
               <td>Condición normal</td>
-              <td>Operación regular en todos los frentes.</td>
-              <td>Mantener controles operacionales estándar del IPERC continuo.</td>
+              <td>Operaciones regulares sin restricciones climáticas adicionales.</td>
             </tr>
             <tr>
-              <td><span class="code-tag">60.0% &ndash; 79.9%</span></td>
+              <td><span class="mono">60.0% a 79.9%</span></td>
               <td>Atención requerida</td>
-              <td>Operación con restricciones preventivas activas.</td>
-              <td>Aplicación de medidas complementarias (rotación de cuadrillas a la sombra, monitoreo de anemómetros de pluma).</td>
+              <td>Operación con restricciones (rotación de cuadrillas a la sombra, monitoreo continuo de anemómetros de pluma).</td>
             </tr>
             <tr>
-              <td><span class="code-tag">&lt; 60.0%</span></td>
+              <td><span class="mono">&lt; 60.0%</span></td>
               <td>Alerta crítica</td>
-              <td>Suspensión técnica de tareas de alto riesgo en cielo abierto.</td>
-              <td>Parada obligatoria de maniobras de izaje, trabajos en altura y evacuación preventiva ante tormenta eléctrica.</td>
+              <td>Parada técnica obligatoria de tareas de alto riesgo en cielo abierto (izajes, andamios, trabajos en altura).</td>
             </tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <!-- 4. Factores físicos y tablas de ponderación -->
-    <section class="doc-section">
-      <h2 class="section-title"><span class="section-num">04</span> Parámetros técnicos y algoritmos de deducción</h2>
+    <!-- 4. Factores y umbrales de deducción -->
+    <section>
+      <h2>4. Factores evaluados y deducciones</h2>
 
-      <div class="data-table-wrapper">
+      <div class="table-container">
         <table>
           <thead>
             <tr>
-              <th>Factor físico</th>
-              <th>Métrica evaluada</th>
-              <th>Umbrales normativos</th>
-              <th>Deducción ISF</th>
-              <th>Control operativo reglamentario</th>
+              <th>Factor</th>
+              <th>Lectura</th>
+              <th>Límites y niveles</th>
+              <th>Deducción</th>
+              <th>Medida de control operativa</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><strong>01. Radiación solar UV</strong></td>
-              <td>Índice UVI diario máximo y valor actual horario.</td>
+              <td><strong>Radiación solar UV</strong></td>
+              <td>Índice UVI diario máximo y actual</td>
               <td>
-                UVI 0 &ndash; 5: Normal<br>
-                UVI 6 &ndash; 7: Alto<br>
-                UVI 8 &ndash; 10: Muy alto<br>
-                UVI &ge; 11: Extremo
+                0 a 5: Normal<br>
+                6 a 7: Alto<br>
+                8 a 10: Muy alto<br>
+                &ge; 11: Extremo
               </td>
-              <td>
+              <td class="mono">
                 0 pts<br>
-                -10 pts<br>
-                -18 pts<br>
-                -25 pts
+                &minus;10 pts<br>
+                &minus;18 pts<br>
+                &minus;25 pts
               </td>
-              <td>Rotación horaria a sombra, fotoprotector SPF 50+ cada 2 horas, uso mandatorio de cubrenuca y lentes UV 400 (Ley 30102).</td>
+              <td>Fotoprotector SPF 50+, cubrenucas y rotación horaria a sombra obligatoria.</td>
             </tr>
             <tr>
-              <td><strong>02. Precipitación pluvial</strong></td>
-              <td>Probabilidad de precipitación (%) e intensidad acumulada (mm/24h).</td>
+              <td><strong>Precipitación pluvial</strong></td>
+              <td>Probabilidad (%) y acumulación (mm)</td>
               <td>
-                Prob &lt; 20%: Seco<br>
-                Prob 20 &ndash; 39%: Ligera<br>
-                Prob 40 &ndash; 69%: Probable<br>
-                Prob &ge; 70% o &ge; 5 mm: Crítico
+                &lt; 20%: Seco<br>
+                20% a 39%: Ligera<br>
+                40% a 69%: Probable<br>
+                &ge; 70% o &ge; 5 mm: Crítico
               </td>
-              <td>
+              <td class="mono">
                 0 pts<br>
-                -5 pts<br>
-                -12 pts<br>
-                -20 pts
+                &minus;5 pts<br>
+                &minus;12 pts<br>
+                &minus;20 pts
               </td>
-              <td>Inspección de adherencia en haul roads, reducción de velocidad en transporte de mineral y áridos, y drenaje de tajos.</td>
+              <td>Revisión de adherencia en haul roads, reducción de velocidad en transporte de mineral y drenaje.</td>
             </tr>
             <tr>
-              <td><strong>03. Viento y ráfagas</strong></td>
-              <td>Velocidad sostenida a 10m y ráfagas máximas (km/h).</td>
+              <td><strong>Viento y ráfagas</strong></td>
+              <td>Velocidad sostenida y ráfagas (km/h)</td>
               <td>
                 &le; 20 km/h: Normal<br>
-                21 &ndash; 31 km/h: Precaución<br>
+                21 a 31 km/h: Precaución<br>
                 &ge; 32 km/h: Límite D.S. 024
               </td>
-              <td>
+              <td class="mono">
                 0 pts<br>
-                -12 pts<br>
-                -28 pts
+                &minus;12 pts<br>
+                &minus;28 pts
               </td>
-              <td><strong>Parada técnica obligatoria de grúas e izajes a 32 km/h</strong> (D.S. 024-2016-EM Art. 385). Aseguramiento de cargas y barboquejos.</td>
+              <td><strong>Parada técnica mandatoria de grúas e izajes a 32 km/h</strong> (D.S. 024-2016-EM). Aseguramiento de cargas.</td>
             </tr>
             <tr>
-              <td><strong>04. Tormenta y CAPE</strong></td>
-              <td>Energía convectiva (J/kg) y descargas atmosféricas activas.</td>
+              <td><strong>Tormenta eléctrica</strong></td>
+              <td>Energía convectiva CAPE (J/kg)</td>
               <td>
-                CAPE &lt; 300: Estable<br>
-                CAPE 300 &ndash; 999: Inestable<br>
-                CAPE &ge; 1000 o rayos: Severo
+                &lt; 300: Estable<br>
+                300 a 999: Inestable<br>
+                &ge; 1000 o descargas: Severo
               </td>
-              <td>
+              <td class="mono">
                 0 pts<br>
-                -10 pts<br>
-                -30 pts
+                &minus;10 pts<br>
+                &minus;30 pts
               </td>
-              <td>Alerta de refugio inmediato en estructuras Faraday, corte de comunicaciones por cable a cielo abierto y parada en frentes altos.</td>
+              <td>Evacuación preventiva a refugios Faraday y detención de labores en áreas abiertas y frentes altos.</td>
             </tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <!-- 5. Fuentes de datos y arquitectura de telemetría -->
-    <section class="doc-section">
-      <h2 class="section-title"><span class="section-num">05</span> Arquitectura de datos y fuentes de telemetría</h2>
-      <p>
-        Para asegurar la máxima disponibilidad en faenas remotas y campamentos mineros sin latencias, MiEntorno opera bajo una arquitectura de telemetría desacoplada:
-      </p>
-      <ul style="padding-left: 20px; margin-bottom: 16px; color: #cbd5e1;">
-        <li style="margin-bottom: 8px;">
-          <strong>Modelos numéricos atmosféricos (NWP):</strong> Integración con modelos de alta resolución ECMWF (Centro Europeo de Previsiones Meteorológicas a Plazo Medio) y GFS/ICON a resolución de cuadrícula de 0.1° (~11 km), proporcionando datos horarios continuos de radiación espectral, presión barométrica, ráfagas convectivas e índices CAPE.
+    <!-- 5. Fuentes de datos -->
+    <section>
+      <h2>5. Fuentes de datos y telemetría</h2>
+      <ul>
+        <li>
+          <strong>Modelos numéricos atmosféricos:</strong> Datos obtenidos de modelos de alta resolución ECMWF y GFS procesados a través de Open-Meteo, con actualización horaria de radiación, viento, precipitaciones e índices de inestabilidad convectiva.
         </li>
-        <li style="margin-bottom: 8px;">
-          <strong>Cartografía satelital de precisión:</strong> Mosaicos multiespectrales de alta definición provistos por <em>Esri World Imagery</em> (con sensores Maxar Technologies y Earthstar Geographics), permitiendo la identificación visual directa de tajos, relaveras, botaderos, plataformas de izaje y muelles portuarios.
+        <li>
+          <strong>Imágenes satelitales:</strong> Capa base de alta definición de Esri World Imagery (sensores Maxar y Earthstar Geographics), permitiendo ubicar tajos, plataformas, depósitos de relaves y campamentos.
         </li>
-        <li style="margin-bottom: 8px;">
-          <strong>Georreferenciación WGS84:</strong> Soporte para coordenadas decimales exactas mediante geolocalización satelital W3C y motor de búsqueda toponímica Nominatim para asientos mineros, campamentos y distritos del Perú.
+        <li>
+          <strong>Georreferenciación:</strong> Sistema de coordenadas WGS84 mediante geolocalización satelital del navegador y búsqueda toponímica en OpenStreetMap.
         </li>
       </ul>
     </section>
 
-    <!-- 6. Autoría y responsabilidad técnica -->
-    <section class="author-card">
+    <!-- 6. Autoría técnica -->
+    <section class="author-section">
       <div class="author-name">Esai Josue Huaman Meza</div>
-      <div class="author-title">Ingeniero de seguridad industrial (SST / HSE / SSOMA) &bull; Desarrollador principal</div>
-      <p class="author-desc">
-        Profesional especializado en seguridad industrial, salud en el trabajo y prevención de riesgos de misión crítica con 7 años de experiencia directa en operaciones de gran minería, generación y transmisión eléctrica, obras de infraestructura pesada y terminales portuarios del Perú.
+      <div class="author-role">Ingeniero de seguridad industrial (SST / HSE / SSOMA) &bull; Desarrollador</div>
+      <p class="author-bio">
+        Ingeniero con 7 años de experiencia directa en faenas de minería a tajo abierto y subterránea, obras de generación y transmisión eléctrica, construcción pesada y terminales portuarios en el Perú.
       </p>
-      <p class="author-desc" style="margin-top: 8px;">
-        Posee el grado de <strong>maestro en computación</strong> y dos maestrías en administración de negocios (<strong>MBA</strong>) con especialización en <strong>ciencia de datos</strong> e <strong>inteligencia artificial</strong>. MiEntorno ha sido concebido y programado para cerrar la brecha entre la analítica de datos meteorológicos de precisión y la toma de decisiones reglamentaria en campo.
+      <p class="author-bio" style="margin-top: 6px;">
+        Cuenta con grado de maestro en computación y dos maestrías en administración de negocios (MBA) con especialización en ciencia de datos e inteligencia artificial.
       </p>
     </section>
   </main>
