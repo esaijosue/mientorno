@@ -133,3 +133,4 @@ export function resizeMap() {
     map.invalidateSize();
   }
 }
+

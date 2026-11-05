@@ -67,18 +67,26 @@
       <div id="map" class="map-container"></div>
     </main>
 
-    <!-- Sección de Tarjetas de Riesgo (Contenedor para Fase 2) -->
+    <!-- Sección de Tarjetas de Riesgo - Fase 2 -->
     <section class="cards-section" aria-label="Tarjetas de riesgos">
-      <div class="section-title">
-        <span>⚠️</span>
-        <span>Evaluación de Riesgos del Entorno</span>
+      <div class="cards-header-bar">
+        <div class="section-title">
+          <span>⚠️</span>
+          <span>Evaluación de Riesgos en Tiempo Real</span>
+        </div>
+        <div class="cards-actions">
+          <span id="last-updated" class="last-updated-text">Esperando ubicación...</span>
+          <button id="btn-refresh" class="btn-refresh" type="button" aria-label="Actualizar riesgos">
+            🔄 Actualizar
+          </button>
+        </div>
       </div>
 
       <div id="cards-container" class="cards-grid">
         <div class="welcome-card">
-          <h3>Fase 1: Ubicación y Base Operativa</h3>
+          <h3>Calculando matriz de riesgos...</h3>
           <p>
-            Ubicación y mapa configurados con precisión. En la Fase 2 se integrarán automáticamente las tarjetas de Radiación UV, Lluvia horaria, Viento y Ráfagas, y Tormenta eléctrica con datos de Open-Meteo.
+            Obteniendo datos meteorológicos de alta precisión para el punto de operación.
           </p>
         </div>
       </div>
@@ -102,3 +110,4 @@
   <script type="module" src="main.js"></script>
 </body>
 </html>
+

@@ -1,23 +1,26 @@
 /**
  * main.js - Orquestador principal de la aplicación SST/HSE
- * Proyecto: MiEntorno - Fase 1
+ * Proyecto: MiEntorno - Fase 2
  */
 
 import {
   APP_NAME,
   GEOLOCATION_CONFIG,
   STORAGE_KEY_LOCATION,
-  PERU_DEFAULT_COORDS
+  PERU_DEFAULT_COORDS,
+  AUTO_REFRESH_INTERVAL_MS
 } from './reglas.js';
-import { searchLocationNominatim } from './api.js';
+import { searchLocationNominatim, fetchWeatherData } from './api.js';
 import { initMap, setMarkerPosition, centerPeru } from './mapa.js';
 import {
   initUI,
   setLocationButtonLoading,
+  setRefreshButtonLoading,
   updateLocationInfo,
   showNotification,
   renderSearchResults,
-  hideSearchResults
+  hideSearchResults,
+  renderRiskCards
 } from './ui.js';
 
 // Estado global de la ubicación seleccionada
@@ -27,8 +30,11 @@ let currentLocation = {
   accuracy: null
 };
 
-// Variable de temporizador para debounce de búsqueda
+// Variable para el temporizador de búsqueda con debounce
 let searchDebounceTimer = null;
+
+// Variable para el temporizador de auto-refresco (cada 10 min)
+let autoRefreshTimer = null;
 
 /**
  * Guarda la última ubicación en localStorage dentro de try/catch seguro.
@@ -65,42 +71,56 @@ function recuperarUbicacionLocalStorage() {
 }
 
 /**
+ * Consulta la API meteorológica y actualiza todas las tarjetas de riesgo.
+ * Si ocurre un error, cada tarjeta maneja su contingencia mostrando "Dato no disponible".
+ */
+async function cargarDatosMeteorologicos(lat, lon) {
+  if (lat === null || lon === null) return;
+
+  setRefreshButtonLoading(true);
+
+  try {
+    const weatherData = await fetchWeatherData(lat, lon);
+    renderRiskCards(weatherData);
+  } catch (err) {
+    console.error('Error al cargar datos meteorológicos:', err);
+    showNotification('No se pudieron actualizar los datos meteorológicos en tiempo real. Mostrando estado de contingencia.', 'warning');
+    // Enviar objeto nulo para que cada tarjeta individual renderice "Dato no disponible"
+    renderRiskCards(null);
+  } finally {
+    setRefreshButtonLoading(false);
+  }
+}
+
+/**
  * Función central de cambio de ubicación (recalcula tarjetas al mover marcador o seleccionar punto).
  */
 function alCambiarUbicacion(lat, lon, accuracy = null, origen = 'manual') {
   currentLocation = { lat, lon, accuracy };
-  
+
   // Guardar en almacenamiento seguro
   guardarUbicacionLocalStorage(lat, lon, accuracy);
 
   // Actualizar indicadores visuales de precisión y coordenadas
   updateLocationInfo(lat, lon, accuracy, origen);
 
-  // Recalcular tarjetas de riesgos (Base de Fase 1 lista para Fase 2)
-  recalcularTarjetas(lat, lon);
-}
-
-/**
- * Función que disparará la actualización de riesgos en Fase 2.
- */
-function recalcularTarjetas(lat, lon) {
-  // Evento listo para orquestar la llamada unificada a Open-Meteo en Fase 2
-  const event = new CustomEvent('mientorno:location-changed', {
-    detail: { lat, lon }
-  });
-  window.dispatchEvent(event);
+  // Recalcular inmediatamente las tarjetas de riesgo para las nuevas coordenadas
+  cargarDatosMeteorologicos(lat, lon);
 }
 
 /**
  * Solicita geolocalización al navegador mediante navigator.geolocation.
+ * @param {boolean} isAutoInit Si es llamada automática al inicio
  */
-function solicitarGeolocalizacion() {
+function solicitarGeolocalizacion(isAutoInit = false) {
   if (!('geolocation' in navigator)) {
-    showNotification('Tu navegador o dispositivo no soporta geolocalización GPS.', 'error');
+    if (!isAutoInit) {
+      showNotification('Tu navegador o dispositivo no soporta geolocalización GPS.', 'error');
+    }
     return;
   }
 
-  setLocationButtonLoading(true, 'Obteniendo GPS...');
+  setLocationButtonLoading(true, isAutoInit ? 'Detectando GPS...' : 'Obteniendo GPS...');
 
   navigator.geolocation.getCurrentPosition(
     // Éxito
@@ -118,17 +138,23 @@ function solicitarGeolocalizacion() {
         (lat, lon, acc, origen) => alCambiarUbicacion(lat, lon, acc, origen)
       );
 
-      // Actualizar estado general
+      // Actualizar estado general y calcular tarjetas
       alCambiarUbicacion(latitude, longitude, accuracy, 'gps');
     },
     // Error / Rechazo
     (error) => {
       setLocationButtonLoading(false);
 
+      if (isAutoInit) {
+        // En auto-inicio silencioso no interrumpir agresivamente si ya hay caché
+        const saved = recuperarUbicacionLocalStorage();
+        if (saved) return;
+      }
+
       switch (error.code) {
         case error.PERMISSION_DENIED:
           showNotification(
-            'Permiso de ubicación denegado. Mostrando mapa centrado en Perú para elegir el punto manualmente.',
+            'Permiso de GPS no concedido. Se muestra el mapa del Perú para elegir el punto de trabajo manualmente.',
             'warning'
           );
           centerPeru();
@@ -136,20 +162,20 @@ function solicitarGeolocalizacion() {
 
         case error.POSITION_UNAVAILABLE:
           showNotification(
-            'No se pudo determinar la señal GPS del dispositivo. Selecciona el punto directamente en el mapa.',
+            'Señal GPS no disponible temporalmente. Selecciona tu punto directamente en el mapa.',
             'warning'
           );
           break;
 
         case error.TIMEOUT:
           showNotification(
-            'Se agotó el tiempo de espera (15 s) para la geolocalización de alta precisión. Intenta nuevamente o ajusta en el mapa.',
+            'Se agotó el tiempo de espera (15 s) para la señal GPS. Por favor, pulsa en el mapa o reintenta.',
             'warning'
           );
           break;
 
         default:
-          showNotification('Error al obtener la ubicación. Por favor, selecciona un punto en el mapa.', 'error');
+          showNotification('No se pudo obtener la posición GPS. Selecciona un punto en el mapa.', 'error');
           break;
       }
     },
@@ -169,7 +195,6 @@ function manejarBusqueda(texto) {
     return;
   }
 
-  // Debounce de 1000 ms
   searchDebounceTimer = setTimeout(async () => {
     try {
       const results = await searchLocationNominatim(cleanText);
@@ -185,19 +210,34 @@ function manejarBusqueda(texto) {
         alCambiarUbicacion(seleccionado.lat, seleccionado.lon, null, 'busqueda');
       });
     } catch (err) {
-      showNotification('No se pudo completar la búsqueda en este momento. Intenta nuevamente.', 'warning');
+      showNotification('Servicio de búsqueda no disponible momentáneamente. Intenta nuevamente.', 'warning');
     }
   }, 1000);
 }
 
 /**
- * Inicialización al cargar el DOM.
+ * Configuración del ciclo de auto-refresco cada 10 minutos.
+ */
+function iniciarAutoRefresco() {
+  if (autoRefreshTimer) {
+    clearInterval(autoRefreshTimer);
+  }
+
+  autoRefreshTimer = setInterval(() => {
+    if (currentLocation.lat !== null && currentLocation.lon !== null) {
+      console.log('Ejecutando auto-refresco periódico de riesgos (10 min)...');
+      cargarDatosMeteorologicos(currentLocation.lat, currentLocation.lon);
+    }
+  }, AUTO_REFRESH_INTERVAL_MS);
+}
+
+/**
+ * Inicialización de la aplicación al cargar el DOM.
  */
 document.addEventListener('DOMContentLoaded', () => {
-  // Iniciar textos y elementos
   initUI();
 
-  // Inicializar mapa interactivo con Leaflet
+  // Inicializar mapa interactivo Leaflet
   initMap('map', (lat, lon, acc, origen) => {
     alCambiarUbicacion(lat, lon, acc, origen);
   });
@@ -205,7 +245,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // Configurar botón "Usar mi ubicación"
   const btnLocation = document.getElementById('btn-location');
   if (btnLocation) {
-    btnLocation.addEventListener('click', solicitarGeolocalizacion);
+    btnLocation.addEventListener('click', () => solicitarGeolocalizacion(false));
+  }
+
+  // Configurar botón "Actualizar"
+  const btnRefresh = document.getElementById('btn-refresh');
+  if (btnRefresh) {
+    btnRefresh.addEventListener('click', () => {
+      if (currentLocation.lat !== null && currentLocation.lon !== null) {
+        cargarDatosMeteorologicos(currentLocation.lat, currentLocation.lon);
+      } else {
+        showNotification('Selecciona primero una ubicación en el mapa o activa tu GPS.', 'info');
+      }
+    });
   }
 
   // Configurar campo de búsqueda
@@ -229,7 +281,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Intentar cargar la última ubicación guardada en localStorage
+  // Iniciar temporizador de actualización periódica de 10 minutos
+  iniciarAutoRefresco();
+
+  // 1. Cargar ubicación guardada previamente si existe para render instantáneo
   const saved = recuperarUbicacionLocalStorage();
   if (saved) {
     setMarkerPosition(
@@ -242,7 +297,9 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     alCambiarUbicacion(saved.lat, saved.lon, saved.accuracy, 'storage');
   } else {
-    // Si no hay guardada, centrar en Perú de manera informativa
     centerPeru();
   }
+
+  // 2. Intentar reconocimiento automático de GPS de inmediato (solicitado para experiencia óptima de campo)
+  solicitarGeolocalizacion(true);
 });
