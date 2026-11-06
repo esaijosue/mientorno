@@ -334,33 +334,17 @@ function iniciarApp() {
   dockBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.dataset.target;
-      updateActiveDock(target);
 
       if (target === 'dashboard') {
+        updateActiveDock(target);
         document.body.classList.remove('mobile-map-focus');
         document.body.classList.add('mobile-dashboard-focus');
         setTimeout(resizeMap, 150);
       } else if (target === 'map') {
+        updateActiveDock(target);
         document.body.classList.remove('mobile-dashboard-focus');
         document.body.classList.add('mobile-map-focus');
         setTimeout(resizeMap, 150);
-      } else if (target === 'alerts') {
-        if (window.innerWidth <= 768) {
-          document.body.classList.remove('mobile-map-focus');
-          document.body.classList.add('mobile-dashboard-focus');
-          setTimeout(() => {
-            resizeMap();
-            const banner = document.getElementById('dashboard-sst-alert-banner');
-            if (banner && !banner.hidden) {
-              banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-          }, 150);
-        } else {
-          const accordion = document.getElementById('warning-accordion');
-          if (accordion) {
-            accordion.classList.remove('collapsed');
-          }
-        }
       } else if (target === 'gps') {
         solicitarGeolocalizacion(false);
       }

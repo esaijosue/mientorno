@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ficha técnica y metodología &bull; MiEntorno</title>
-  <meta name="description" content="Ficha técnica, metodología de cálculo y marco normativo peruano de la plataforma MiEntorno.">
+  <meta name="description"
+    content="Ficha técnica, metodología de cálculo y marco normativo peruano de la plataforma MiEntorno.">
   <link rel="icon" type="image/webp" href="logo.webp">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
 
   <style>
     :root {
@@ -27,6 +31,10 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    html, body {
+      overflow-x: hidden;
     }
 
     body {
@@ -48,9 +56,9 @@
     }
 
     .top-bar-inner {
-      max-width: 760px;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 14px 20px;
+      padding: 14px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -98,14 +106,14 @@
     }
 
     .content-wrap {
-      max-width: 760px;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 40px 20px 0 20px;
+      padding: 40px 24px 0 24px;
     }
 
     .page-header {
-      margin-bottom: 36px;
-      padding-bottom: 24px;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
       border-bottom: 1px solid var(--border);
     }
 
@@ -123,12 +131,45 @@
       color: var(--text);
       letter-spacing: -0.02em;
       line-height: 1.25;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .page-meta {
-      font-size: 0.82rem;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+
+    .page-author-byline {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 0.8rem;
+      line-height: 1.35;
       color: var(--text-subtle);
+    }
+
+    .byline-primary {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .byline-prefix {
+      font-weight: 400;
+      color: var(--text-subtle);
+    }
+
+    .byline-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .byline-role {
+      font-weight: 400;
+      font-size: 0.78rem;
+      color: var(--text-muted);
     }
 
     section {
@@ -184,10 +225,11 @@
     }
 
     .table-container {
-      overflow-x: auto;
       border: 1px solid var(--border);
       border-radius: 8px;
       margin: 14px 0;
+      background: #ffffff;
+      overflow: hidden;
     }
 
     table {
@@ -201,13 +243,12 @@
       background: var(--bg-subtle);
       color: var(--text);
       font-weight: 600;
-      padding: 9px 12px;
+      padding: 10px 14px;
       border-bottom: 1px solid var(--border);
-      white-space: nowrap;
     }
 
     td {
-      padding: 9px 12px;
+      padding: 10px 14px;
       border-bottom: 1px solid var(--border);
       color: #374151;
       vertical-align: top;
@@ -222,6 +263,17 @@
       font-size: 0.78rem;
     }
 
+    .col-factor { width: 15%; }
+    .col-metric { width: 18%; }
+    .col-limits { width: 24%; }
+    .col-deduction { width: 13%; }
+    .col-action { width: 30%; }
+
+    .cell-limits,
+    .cell-deduction {
+      line-height: 1.65;
+    }
+
     .calc-box {
       background: var(--bg-subtle);
       border: 1px solid var(--border);
@@ -231,47 +283,245 @@
       font-size: 0.82rem;
       color: #1f2937;
       margin: 12px 0 16px 0;
+      line-height: 1.6;
+      word-break: break-word;
     }
 
-    .author-section {
-      border-top: 1px solid var(--border);
-      padding-top: 26px;
-      margin-top: 40px;
+    .table-desktop {
+      display: block;
     }
 
-    .author-name {
-      font-size: 1.05rem;
+    .cards-mobile {
+      display: none;
+    }
+
+    .scale-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      background: var(--bg-subtle);
+    }
+
+    .scale-card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .scale-badge {
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+    }
+
+    .badge-safe {
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #a7f3d0;
+    }
+
+    .badge-warning {
+      background: #fffbeb;
+      color: #d97706;
+      border: 1px solid #fde68a;
+    }
+
+    .badge-alert {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .scale-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .scale-card-desc {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .factor-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      background: var(--bg-subtle);
+    }
+
+    .factor-card-header {
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .factor-name {
+      font-size: 0.94rem;
       font-weight: 700;
       color: var(--text);
       margin-bottom: 2px;
     }
 
-    .author-role {
-      font-size: 0.82rem;
+    .factor-reading {
+      font-size: 0.8rem;
       color: var(--text-subtle);
-      font-weight: 500;
+    }
+
+    .factor-levels-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
       margin-bottom: 10px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
     }
 
-    .author-bio {
-      font-size: 0.86rem;
-      color: var(--text-muted);
-      line-height: 1.6;
+    .factor-level-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      color: #374151;
+      padding: 4px 0;
+      border-bottom: 1px dashed var(--border-light);
     }
 
-    @media (max-width: 600px) {
-      .page-title {
-        font-size: 1.45rem;
+    .factor-level-row:last-child {
+      border-bottom: none;
+    }
+
+    .factor-action {
+      font-size: 0.82rem;
+      color: #374151;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 720px) {
+      .table-desktop {
+        display: none !important;
       }
-      .content-wrap {
-        padding: 24px 16px 0 16px;
+
+      .cards-mobile {
+        display: flex !important;
+        flex-direction: column;
+        gap: 12px;
       }
+    }
+
+    @media (max-width: 900px) {
       .top-bar-inner {
-        padding: 12px 16px;
+        padding: 12px 20px;
+      }
+
+      .content-wrap {
+        padding: 32px 20px 0 20px;
+      }
+
+      .page-title {
+        font-size: 1.6rem;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        font-size: 14.5px;
+        padding-bottom: 50px;
+      }
+
+      .top-bar-inner {
+        padding: 10px 16px;
+      }
+
+      .brand-name {
+        font-size: 0.9rem;
+      }
+
+      .btn-back {
+        font-size: 0.78rem;
+        padding: 5px 10px;
+      }
+
+      .btn-back-text {
+        display: none;
+      }
+
+      .btn-back::after {
+        content: "Volver";
+      }
+
+      .content-wrap {
+        padding: 20px 16px 0 16px;
+      }
+
+      .page-header {
+        margin-bottom: 22px;
+        padding-bottom: 16px;
+      }
+
+      .page-title {
+        font-size: 1.35rem;
+        line-height: 1.3;
+      }
+
+      .page-meta {
+        font-size: 0.86rem;
+        margin-bottom: 8px;
+      }
+
+      .page-author-byline {
+        font-size: 0.78rem;
+      }
+
+      .byline-role {
+        font-size: 0.74rem;
+      }
+
+      h2 {
+        font-size: 1.05rem;
+        margin-bottom: 10px;
+      }
+
+      p, ul {
+        font-size: 0.88rem;
+        line-height: 1.6;
+      }
+
+      .law-item {
+        padding: 12px 14px;
+      }
+
+      .law-name {
+        font-size: 0.88rem;
+      }
+
+      .law-desc {
+        font-size: 0.82rem;
+      }
+
+      .calc-box {
+        font-size: 0.75rem;
+        padding: 10px 12px;
+      }
+
+      table {
+        font-size: 0.78rem;
+      }
+
+      th, td {
+        padding: 8px 10px;
       }
     }
   </style>
 </head>
+
 <body>
   <header class="top-bar">
     <div class="top-bar-inner">
@@ -280,30 +530,41 @@
         <span class="brand-name">MiEntorno</span>
       </a>
       <a href="index.html" class="btn-back">
-        &larr; Volver al monitoreo
+        <span>&larr;</span>
+        <span class="btn-back-text">Volver al monitoreo</span>
       </a>
     </div>
   </header>
 
   <main class="content-wrap">
     <header class="page-header">
-      <div class="page-tag">Ficha técnica y memoria metodológica</div>
-      <h1 class="page-title">Monitoreo ambiental y riesgos físicos en faena</h1>
-      <div class="page-meta">Documento para supervisores de campo, comités de SST y fiscalización reguladora</div>
+
+      <h1 class="page-title">Monitoreo ambiental y riesgos físicos en campo</h1>
+      <div class="page-meta">Ficha técnica y marco normativo</div>
+      <div class="page-author-byline">
+        <div class="byline-primary">
+          <span class="byline-prefix">Desarrollado por:</span>
+          <span class="byline-name">Esai Josue Huaman Meza</span>
+        </div>
+        <div class="byline-role">Ingeniero de Seguridad Industrial</div>
+      </div>
     </header>
 
     <section>
-      <h2>1. Propósito del sistema</h2>
       <p>
-        MiEntorno es una herramienta operativa de consulta y evaluación de factores climáticos y físicos en tiempo real. Está diseñada para frentes de trabajo en minería, energía, construcción pesada y operaciones portuarias en el Perú.
+        <b>MiEntorno</b> es una herramienta de consulta y evaluación de factores climáticos y físicos en
+        tiempo real.
+        Está diseñada para frentes de trabajo en terreno.
       </p>
       <p>
-        Su objetivo es proporcionar criterios objetivos y basados en normativas a los supervisores de turno y comités de seguridad, facilitando la decisión oportuna de continuar o suspender tareas críticas a cielo abierto (maniobras de izaje, trabajos en altura, labores en tajo y tránsito de equipos móviles).
+        Su misión es proporcionar criterios objetivos y basados en normativas facilitando la decisión oportuna de
+        continuar o suspender tareas críticas a cielo abierto (maniobras
+        de izaje, trabajos en altura, labores en tajo y tránsito de equipos móviles, etc.).
       </p>
     </section>
 
     <section>
-      <h2>2. Marco normativo aplicable</h2>
+      <h2>Marco normativo aplicable</h2>
       <p>
         Los umbrales de alerta y medidas de control se rigen por la normativa técnica y laboral vigente en el Perú:
       </p>
@@ -311,181 +572,325 @@
       <div class="law-item">
         <div class="law-name">Decreto supremo N° 024-2016-EM (Minería)</div>
         <p class="law-desc">
-          En su artículo 385 y normas conexas, exige suspender maniobras de izaje con grúas cuando la velocidad del viento supere los 32 km/h (o el límite establecido por el fabricante), así como paralizar trabajos en altura ante tormentas o lluvias continuas.
+          En su artículo 385 y normas conexas, exige suspender maniobras de izaje con grúas cuando la velocidad del
+          viento supere los 32 km/h (o el límite establecido por el fabricante), así como paralizar trabajos en altura
+          ante tormentas o lluvias continuas.
         </p>
       </div>
 
       <div class="law-item">
         <div class="law-name">Ley N° 30102 (Radiación solar)</div>
         <p class="law-desc">
-          Dispone medidas preventivas obligatorias para trabajadores expuestos al sol: uso de fotoprotector (mínimo SPF 50+), cubrenucas, lentes con filtro UV al 100% y rotación horaria a la sombra en niveles de radiación muy altos (&ge; 8 UVI).
+          Dispone medidas preventivas obligatorias para trabajadores expuestos al sol: uso de fotoprotector (mínimo SPF
+          50+), cubrenucas, lentes con filtro UV al 100% y rotación horaria a la sombra en niveles de radiación muy
+          altos (&ge; 8 UVI).
         </p>
       </div>
 
       <div class="law-item">
         <div class="law-name">Ley N° 29783 y D.S. N° 005-2012-TR (Marco general SST)</div>
         <p class="law-desc">
-          Garantiza el derecho de los trabajadores a interrumpir sus labores ante situaciones de peligro inminente no controlado y establece la obligación de registrar los controles ambientales en el IPERC continuo.
+          Garantiza el derecho de los trabajadores a interrumpir sus labores ante situaciones de peligro inminente no
+          controlado y establece la obligación de registrar los controles ambientales en el IPERC continuo.
         </p>
       </div>
 
       <div class="law-item">
         <div class="law-name">Estándares de la Organización Meteorológica Mundial (WMO)</div>
         <p class="law-desc">
-          Parámetros para la evaluación de inestabilidad convectiva atmosférica (CAPE) y cumplimiento de la regla 30/30 de evacuación a refugios seguros (jaulas Faraday o vehículos cerrados) ante tormentas eléctricas.
+          Parámetros para la evaluación de inestabilidad convectiva atmosférica (CAPE) y cumplimiento de la regla 30/30
+          de evacuación a refugios seguros (jaulas Faraday o vehículos cerrados) ante tormentas eléctricas.
         </p>
       </div>
     </section>
 
     <section>
-      <h2>3. Cálculo del índice de seguridad en faena</h2>
+      <h2>Cálculo del índice de seguridad en terreno</h2>
       <p>
-        El índice de seguridad resume la aptitud física del entorno en una escala de 0% a 100%. El cálculo inicia con una base de 100 puntos y aplica deducciones directas acumulativas según la severidad de los factores que superen los límites tolerables:
+        El índice de seguridad resume la aptitud física del entorno en una escala de 0% a 100%. El cálculo inicia con
+        una base de 100 puntos y aplica deducciones directas acumulativas según la severidad de los factores que superen
+        los límites tolerables:
       </p>
 
       <div class="calc-box">
         Índice de seguridad = 100 &minus; (Deducción UV + Deducción lluvia + Deducción viento + Deducción tormenta)
       </div>
 
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Rango del índice</th>
-              <th>Condición en faena</th>
-              <th>Criterio de acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="mono">&ge; 80.0%</span></td>
-              <td>Condición normal</td>
-              <td>Operaciones regulares sin restricciones climáticas adicionales.</td>
-            </tr>
-            <tr>
-              <td><span class="mono">60.0% a 79.9%</span></td>
-              <td>Atención requerida</td>
-              <td>Operación con restricciones (rotación de cuadrillas a la sombra, monitoreo continuo de anemómetros de pluma).</td>
-            </tr>
-            <tr>
-              <td><span class="mono">&lt; 60.0%</span></td>
-              <td>Alerta crítica</td>
-              <td>Parada técnica obligatoria de tareas de alto riesgo en cielo abierto (izajes, andamios, trabajos en altura).</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="table-desktop">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 22%;">Rango del índice</th>
+                <th style="width: 25%;">Condición en faena</th>
+                <th>Criterio de acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="mono">&ge; 80.0%</span></td>
+                <td>Condición normal</td>
+                <td>Operaciones regulares sin restricciones climáticas adicionales.</td>
+              </tr>
+              <tr>
+                <td><span class="mono">60.0% a 79.9%</span></td>
+                <td>Atención requerida</td>
+                <td>Operación con restricciones (rotación de cuadrillas a la sombra, monitoreo continuo de anemómetros de
+                  pluma).</td>
+              </tr>
+              <tr>
+                <td><span class="mono">&lt; 60.0%</span></td>
+                <td>Alerta crítica</td>
+                <td>Parada técnica obligatoria de tareas de alto riesgo en cielo abierto (izajes, andamios, trabajos en
+                  altura).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="cards-mobile">
+        <div class="scale-card">
+          <div class="scale-card-header">
+            <span class="scale-badge badge-safe">&ge; 80.0%</span>
+            <span class="scale-title">Condición normal</span>
+          </div>
+          <div class="scale-card-desc">Operaciones regulares sin restricciones climáticas adicionales.</div>
+        </div>
+
+        <div class="scale-card">
+          <div class="scale-card-header">
+            <span class="scale-badge badge-warning">60.0% a 79.9%</span>
+            <span class="scale-title">Atención requerida</span>
+          </div>
+          <div class="scale-card-desc">Operación con restricciones (rotación de cuadrillas a la sombra, monitoreo continuo de anemómetros de pluma).</div>
+        </div>
+
+        <div class="scale-card">
+          <div class="scale-card-header">
+            <span class="scale-badge badge-alert">&lt; 60.0%</span>
+            <span class="scale-title">Alerta crítica</span>
+          </div>
+          <div class="scale-card-desc">Parada técnica obligatoria de tareas de alto riesgo en cielo abierto (izajes, andamios, trabajos en altura).</div>
+        </div>
       </div>
     </section>
 
     <section>
-      <h2>4. Factores evaluados y deducciones</h2>
+      <h2>Factores evaluados y deducciones</h2>
 
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Factor</th>
-              <th>Lectura</th>
-              <th>Límites y niveles</th>
-              <th>Deducción</th>
-              <th>Medida de control operativa</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Radiación solar UV</strong></td>
-              <td>Índice UVI diario máximo y actual</td>
-              <td>
-                0 a 5: Normal<br>
-                6 a 7: Alto<br>
-                8 a 10: Muy alto<br>
-                &ge; 11: Extremo
-              </td>
-              <td class="mono">
-                0 pts<br>
-                &minus;10 pts<br>
-                &minus;18 pts<br>
-                &minus;25 pts
-              </td>
-              <td>Fotoprotector SPF 50+, cubrenucas y rotación horaria a sombra obligatoria.</td>
-            </tr>
-            <tr>
-              <td><strong>Precipitación pluvial</strong></td>
-              <td>Probabilidad (%) y acumulación (mm)</td>
-              <td>
-                &lt; 20%: Seco<br>
-                20% a 39%: Ligera<br>
-                40% a 69%: Probable<br>
-                &ge; 70% o &ge; 5 mm: Crítico
-              </td>
-              <td class="mono">
-                0 pts<br>
-                &minus;5 pts<br>
-                &minus;12 pts<br>
-                &minus;20 pts
-              </td>
-              <td>Revisión de adherencia en haul roads, reducción de velocidad en transporte de mineral y drenaje.</td>
-            </tr>
-            <tr>
-              <td><strong>Viento y ráfagas</strong></td>
-              <td>Velocidad sostenida y ráfagas (km/h)</td>
-              <td>
-                &le; 20 km/h: Normal<br>
-                21 a 31 km/h: Precaución<br>
-                &ge; 32 km/h: Límite D.S. 024
-              </td>
-              <td class="mono">
-                0 pts<br>
-                &minus;12 pts<br>
-                &minus;28 pts
-              </td>
-              <td><strong>Parada técnica mandatoria de grúas e izajes a 32 km/h</strong> (D.S. 024-2016-EM). Aseguramiento de cargas.</td>
-            </tr>
-            <tr>
-              <td><strong>Tormenta eléctrica</strong></td>
-              <td>Energía convectiva CAPE (J/kg)</td>
-              <td>
-                &lt; 300: Estable<br>
-                300 a 999: Inestable<br>
-                &ge; 1000 o descargas: Severo
-              </td>
-              <td class="mono">
-                0 pts<br>
-                &minus;10 pts<br>
-                &minus;30 pts
-              </td>
-              <td>Evacuación preventiva a refugios Faraday y detención de labores en áreas abiertas y frentes altos.</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="table-desktop">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th class="col-factor">Factor</th>
+                <th class="col-metric">Lectura</th>
+                <th class="col-limits">Límites y niveles</th>
+                <th class="col-deduction">Deducción</th>
+                <th class="col-action">Medida de control operativa</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Radiación solar UV</strong></td>
+                <td>Índice UVI diario máximo y actual</td>
+                <td class="cell-limits">
+                  0 a 5: Normal<br>
+                  6 a 7: Alto<br>
+                  8 a 10: Muy alto<br>
+                  &ge; 11: Extremo
+                </td>
+                <td class="cell-deduction mono">
+                  0 pts<br>
+                  &minus;10 pts<br>
+                  &minus;18 pts<br>
+                  &minus;25 pts
+                </td>
+                <td>Fotoprotector SPF 50+, cubrenucas y rotación horaria a sombra obligatoria.</td>
+              </tr>
+              <tr>
+                <td><strong>Precipitación pluvial</strong></td>
+                <td>Probabilidad (%) y acumulación (mm)</td>
+                <td class="cell-limits">
+                  &lt; 20%: Seco<br>
+                  20% a 39%: Ligera<br>
+                  40% a 69%: Probable<br>
+                  &ge; 70% o &ge; 5 mm: Crítico
+                </td>
+                <td class="cell-deduction mono">
+                  0 pts<br>
+                  &minus;5 pts<br>
+                  &minus;12 pts<br>
+                  &minus;20 pts
+                </td>
+                <td>Revisión de adherencia en haul roads, reducción de velocidad en transporte de mineral y drenaje.</td>
+              </tr>
+              <tr>
+                <td><strong>Viento y ráfagas</strong></td>
+                <td>Velocidad sostenida y ráfagas (km/h)</td>
+                <td class="cell-limits">
+                  &le; 20 km/h: Normal<br>
+                  21 a 31 km/h: Precaución<br>
+                  &ge; 32 km/h: Límite D.S. 024
+                </td>
+                <td class="cell-deduction mono">
+                  0 pts<br>
+                  &minus;12 pts<br>
+                  &minus;28 pts
+                </td>
+                <td><strong>Parada técnica mandatoria de grúas e izajes a 32 km/h</strong> (D.S. 024-2016-EM).
+                  Aseguramiento de cargas.</td>
+              </tr>
+              <tr>
+                <td><strong>Tormenta eléctrica</strong></td>
+                <td>Energía convectiva CAPE (J/kg)</td>
+                <td class="cell-limits">
+                  &lt; 300: Estable<br>
+                  300 a 999: Inestable<br>
+                  &ge; 1000 o descargas: Severo
+                </td>
+                <td class="cell-deduction mono">
+                  0 pts<br>
+                  &minus;10 pts<br>
+                  &minus;30 pts
+                </td>
+                <td>Evacuación preventiva a refugios Faraday y detención de labores en áreas abiertas y frentes altos.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="cards-mobile">
+        <div class="factor-card">
+          <div class="factor-card-header">
+            <div class="factor-name">Radiación solar UV</div>
+            <div class="factor-reading">Lectura: Índice UVI diario máximo y actual</div>
+          </div>
+          <div class="factor-levels-grid">
+            <div class="factor-level-row">
+              <span>0 a 5: Normal</span>
+              <span class="mono">0 pts</span>
+            </div>
+            <div class="factor-level-row">
+              <span>6 a 7: Alto</span>
+              <span class="mono">&minus;10 pts</span>
+            </div>
+            <div class="factor-level-row">
+              <span>8 a 10: Muy alto</span>
+              <span class="mono">&minus;18 pts</span>
+            </div>
+            <div class="factor-level-row">
+              <span>&ge; 11: Extremo</span>
+              <span class="mono">&minus;25 pts</span>
+            </div>
+          </div>
+          <div class="factor-action">
+            <strong>Control operativo:</strong> Fotoprotector SPF 50+, cubrenucas y rotación horaria a sombra obligatoria.
+          </div>
+        </div>
+
+        <div class="factor-card">
+          <div class="factor-card-header">
+            <div class="factor-name">Precipitación pluvial</div>
+            <div class="factor-reading">Lectura: Probabilidad (%) y acumulación (mm)</div>
+          </div>
+          <div class="factor-levels-grid">
+            <div class="factor-level-row">
+              <span>&lt; 20%: Seco</span>
+              <span class="mono">0 pts</span>
+            </div>
+            <div class="factor-level-row">
+              <span>20% a 39%: Ligera</span>
+              <span class="mono">&minus;5 pts</span>
+            </div>
+            <div class="factor-level-row">
+              <span>40% a 69%: Probable</span>
+              <span class="mono">&minus;12 pts</span>
+            </div>
+            <div class="factor-level-row">
+              <span>&ge; 70% o &ge; 5 mm: Crítico</span>
+              <span class="mono">&minus;20 pts</span>
+            </div>
+          </div>
+          <div class="factor-action">
+            <strong>Control operativo:</strong> Revisión de adherencia en haul roads, reducción de velocidad en transporte de mineral y drenaje.
+          </div>
+        </div>
+
+        <div class="factor-card">
+          <div class="factor-card-header">
+            <div class="factor-name">Viento y ráfagas</div>
+            <div class="factor-reading">Lectura: Velocidad sostenida y ráfagas (km/h)</div>
+          </div>
+          <div class="factor-levels-grid">
+            <div class="factor-level-row">
+              <span>&le; 20 km/h: Normal</span>
+              <span class="mono">0 pts</span>
+            </div>
+            <div class="factor-level-row">
+              <span>21 a 31 km/h: Precaución</span>
+              <span class="mono">&minus;12 pts</span>
+            </div>
+            <div class="factor-level-row">
+              <span>&ge; 32 km/h: Límite D.S. 024</span>
+              <span class="mono">&minus;28 pts</span>
+            </div>
+          </div>
+          <div class="factor-action">
+            <strong>Control operativo:</strong> <strong>Parada técnica mandatoria de grúas e izajes a 32 km/h</strong> (D.S. 024-2016-EM). Aseguramiento de cargas.
+          </div>
+        </div>
+
+        <div class="factor-card">
+          <div class="factor-card-header">
+            <div class="factor-name">Tormenta eléctrica</div>
+            <div class="factor-reading">Lectura: Energía convectiva CAPE (J/kg)</div>
+          </div>
+          <div class="factor-levels-grid">
+            <div class="factor-level-row">
+              <span>&lt; 300: Estable</span>
+              <span class="mono">0 pts</span>
+            </div>
+            <div class="factor-level-row">
+              <span>300 a 999: Inestable</span>
+              <span class="mono">&minus;10 pts</span>
+            </div>
+            <div class="factor-level-row">
+              <span>&ge; 1000 o descargas: Severo</span>
+              <span class="mono">&minus;30 pts</span>
+            </div>
+          </div>
+          <div class="factor-action">
+            <strong>Control operativo:</strong> Evacuación preventiva a refugios Faraday y detención de labores en áreas abiertas y frentes altos.
+          </div>
+        </div>
       </div>
     </section>
 
     <section>
-      <h2>5. Fuentes de datos y telemetría</h2>
+      <h2>Fuentes de datos y telemetría</h2>
       <ul>
         <li>
-          <strong>Modelos numéricos atmosféricos:</strong> Datos obtenidos de modelos de alta resolución ECMWF y GFS procesados a través de Open-Meteo, con actualización horaria de radiación, viento, precipitaciones e índices de inestabilidad convectiva.
+          <strong>Modelos numéricos atmosféricos:</strong> Datos obtenidos de modelos de alta resolución ECMWF y GFS
+          procesados a través de Open-Meteo, con actualización horaria de radiación, viento, precipitaciones e índices
+          de inestabilidad convectiva.
         </li>
         <li>
-          <strong>Imágenes satelitales:</strong> Capa base de alta definición de Esri World Imagery (sensores Maxar y Earthstar Geographics), permitiendo ubicar tajos, plataformas, depósitos de relaves y campamentos.
+          <strong>Imágenes satelitales:</strong> Capa base de alta definición de Esri World Imagery (sensores Maxar y
+          Earthstar Geographics), permitiendo ubicar tajos, plataformas, depósitos de relaves y campamentos.
         </li>
         <li>
-          <strong>Georreferenciación:</strong> Sistema de coordenadas WGS84 mediante geolocalización satelital del navegador y búsqueda toponímica en OpenStreetMap.
+          <strong>Georreferenciación:</strong> Sistema de coordenadas WGS84 mediante geolocalización satelital del
+          navegador y búsqueda toponímica en OpenStreetMap.
         </li>
       </ul>
     </section>
 
-    <section class="author-section">
-      <div class="author-name">Esai Josue Huaman Meza</div>
-      <div class="author-role">Ingeniero de seguridad industrial (SST / HSE / SSOMA) &bull; Desarrollador</div>
-      <p class="author-bio">
-        Ingeniero con 7 años de experiencia directa en faenas de minería a tajo abierto y subterránea, obras de generación y transmisión eléctrica, construcción pesada y terminales portuarios en el Perú.
-      </p>
-      <p class="author-bio" style="margin-top: 6px;">
-        Cuenta con grado de maestro en computación y dos maestrías en administración de negocios (MBA) con especialización en ciencia de datos e inteligencia artificial.
-      </p>
-    </section>
+
   </main>
 </body>
+
 </html>

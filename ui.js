@@ -43,7 +43,6 @@ export function initUI() {
     chartLinePath: document.getElementById('chart-line-path'),
     dockBtnDashboard: document.getElementById('dock-btn-dashboard'),
     dockBtnMap: document.getElementById('dock-btn-map'),
-    dockBtnAlerts: document.getElementById('dock-btn-alerts'),
     dockBtnGps: document.getElementById('dock-btn-gps')
   };
 
