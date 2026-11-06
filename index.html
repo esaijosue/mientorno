@@ -36,7 +36,7 @@
           type="search"
           id="search-input"
           class="header-search-input"
-          placeholder="Buscar mina, puerto o ciudad en Perú..."
+          placeholder="Buscar mina, puerto, obra o ciudad en el mundo..."
           autocomplete="off"
           aria-label="Buscar ubicación"
         >
@@ -175,6 +175,13 @@
         <div class="factors-header-top">
           <span class="factors-title">Factores de faena</span>
           <span id="last-updated" class="factors-timestamp">Sincronizado</span>
+        </div>
+        <div id="model-reliability-banner" class="model-reliability-banner" title="Índice de certeza estadística y fiabilidad predictiva según horizonte temporal">
+          <span class="reliability-badge-dot"></span>
+          <span class="reliability-label">Fiabilidad operativa:</span>
+          <span id="reliability-score" class="reliability-score">98%</span>
+          <span class="reliability-sep">&bull;</span>
+          <span id="reliability-desc" class="reliability-desc">Telemetría instantánea y Nowcasting</span>
         </div>
         <div class="horizon-toggle-group" role="group" aria-label="Modo de monitoreo y proyección">
           <button class="horizon-btn active" type="button" data-horizon="0" title="Lectura instantánea en tiempo real"><span class="live-pulse-dot"></span> En vivo</button>

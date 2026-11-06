@@ -690,6 +690,69 @@ body.theme-control-room {
   color: var(--text-muted);
 }
 
+.model-reliability-banner {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin: 2px 0 6px 0;
+  font-size: 0.67rem;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reliability-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+  flex-shrink: 0;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.model-reliability-banner.rel-high .reliability-badge-dot {
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+}
+
+.model-reliability-banner.rel-medium .reliability-badge-dot {
+  background: #38bdf8;
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+}
+
+.model-reliability-banner.rel-standard .reliability-badge-dot {
+  background: #fbbf24;
+  box-shadow: 0 0 6px rgba(251, 191, 36, 0.6);
+}
+
+.reliability-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.reliability-score {
+  font-weight: 700;
+  color: #38bdf8;
+  font-family: var(--font-mono);
+}
+
+.reliability-sep {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.6rem;
+}
+
+.reliability-desc {
+  color: #cbd5e1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .horizon-toggle-group {
   display: flex;
   align-items: center;
