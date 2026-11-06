@@ -44,63 +44,50 @@ Los algoritmos de cálculo, umbrales de alerta y medidas de contingencia impleme
 
 ## 4. Metodología de cálculo: Índice de seguridad en faena (ISF)
 
-El índice general consolida el riesgo ambiental instantáneo en una métrica porcentual entre $0\%$ y $100\%$. Su formulación matemática se basa en la deducción de penalidades ponderadas a partir de una línea base de operación segura ($100\%$):
+El índice general consolida el riesgo ambiental instantáneo y proyectado en una métrica porcentual entre $0.0\%$ y $100.0\%$. A diferencia de fórmulas empíricas basadas en deducciones aritméticas lineales ciegas (que pueden ocultar un peligro de muerte si los demás factores están en calma), MiEntorno implementa un **modelo riguroso de dos capas** sustentado en la **Gestión de Riesgos Críticos (CRM / ICMM)**, el **Reglamento de Seguridad y Salud Ocupacional en Minería (D.S. 024-2016-EM)** y la **Ley N° 29783**:
 
-$$\text{ISF} = 100 - \sum_{i=1}^{8} P_i$$
+### Principio No Compensatorio en SST
+En la prevención de fatalidades, la seguridad **no es compensatoria**. La ausencia de lluvia o la serenidad del viento no pueden compensar ni diluir una tormenta eléctrica activa con descargas a 4 km o ráfagas huracanadas sobre una grúa. Si un factor alcanza un nivel crítico de fatalidad, gobierna inmediatamente el índice general imponiendo un techo técnico y activando la parada técnica obligatoria.
 
-Donde $P_i$ representa la penalidad específica calculada para cada uno de los **ocho factores operativos**:
+### Formulación matemática en 2 Capas
 
-### Factores evaluados, deducciones y medidas operacionales
+$$\text{ISF} = \min\left( \sum_{i=1}^{8} W_i \times A_i, \; C_{\max}(\text{Severidad}_{\max}) \right)$$
 
-1. **Radiación solar ultravioleta ($P_{\text{UV}}$):**
-   - Noche ($UV < 0.2$) o Bajo/Moderado ($0.2 \le UV < 6.0$): $0$ puntos (lentes con filtro UV400 y bloqueador solar FPS 50+).
-   - Alto ($6.0 \le UV < 8.0$): $-10$ puntos (casco con cortaviento tipo legionario con cubrenuca UPF 50+, visera de ala ancha e hidratación programada de 250 ml cada 45 min).
-   - Muy alto ($8.0 \le UV < 11.0$): $-18$ puntos (mallas raschel o toldos en frentes de trabajo, rotación obligatoria a la sombra cada 20–30 min e hidratación continua).
-   - Extremo ($UV \ge 11.0$): $-25$ puntos (suspensión de trabajos físicos pesados a cielo abierto entre 11:00 y 15:00 h, conforme a la Ley N° 30102, con suministro de sales de rehidratación oral / electrolitos).
+Donde:
+- $W_i$ es el **peso específico operacional** asignado a cada factor según su potencial de fatalidad ($\sum W_i = 100\%$).
+- $A_i$ es la **aptitud porcentual del subfactor** ($100\%$ en condición normal, $85\%$ en alerta baja, $65\%$ moderada, $40\%$ restricción, $15\%$ severa y $0\%$ en parada técnica).
+- $C_{\max}$ es la **Puerta de Control Crítico (*Non-compensatory Gate*)** impuesta por la severidad máxima presente en faena.
 
-2. **Precipitación pluvial y acumulación ($P_{\text{lluvia}}$):**
-   - Seco ($0.0\text{ mm/h}$ y prob. $< 20\%$): $0$ puntos (tránsito regular en haul roads y riego controlado antipolvo).
-   - Llovizna ($0.1$ a $0.9\text{ mm/h}$ o prob. $20\%$ a $39\%$): $-6$ puntos (alerta por *efecto jaboncillo* por lodo superficial; reducción preventiva de velocidad en 15 km/h en curvas y rampas; ropa impermeable de faena).
-   - Lluvia moderada ($1.0$ a $4.9\text{ mm/h}$ o prob. $40\%$ a $69\%$): $-12$ puntos (velocidad máxima reducida a 30 km/h en acarreo; distancia entre volquetes duplicada a mín. 50 m; activación de bombas de achique y vigilancia de cunetas).
-   - Lluvia intensa ($\ge 5.0\text{ mm/h}$ o prob. $\ge 70\%$): $-20$ puntos (restricción en rampas $> 10\%$; suspensión preventiva de acarreo si se compromete la adherencia; evacuación de personal en fondo de tajo y pie de talud).
+```mermaid
+flowchart TD
+    A["Telemetría de los 8 Factores Ambientales"] --> B{"¿Existe algún factor en RIESGO CRÍTICO / ROJO?<br>(Tormenta <16km, Viento >50km/h, Nieve severa, etc.)"}
+    B -- "SÍ (Principio No Compensatorio)" --> C["PUERTA DE CONTROL CRÍTICO ACTIVA:<br>El índice queda gobernado por el factor más severo.<br>Techo infranqueable: 0% a 25% (PARADA TÉCNICA)"]
+    B -- "NO (Condiciones normales o moderadas)" --> D["PONDERACIÓN MULTICRITERIO NORMATIVA:<br>Suma ponderada de aptitud según potencial de fatalidad:<br>Tormenta (25%) + Viento (20%) + Temperatura (15%) + Lluvia (10%) + Nieve (10%) + Suelo (10%) + Visibilidad (5%) + UV (5%)"]
+    C --> E["Índice de Seguridad en Faena (ISF Real)"]
+    D --> E
+```
 
-3. **Velocidad del viento y ráfagas ($P_{\text{viento}}$):**
-   - Normal ($< 25.0\text{ km/h}$): $0$ puntos (maniobras de grúas, izajes y trabajos en altura autorizados sin restricción).
-   - Precaución ($25.0$ a $31.9\text{ km/h}$): $-8$ puntos (uso obligatorio de mínimo dos vientos guía / *taglines* en izajes, barbiquejo de 3 puntos en cascos, amarre de herramientas de mano y prohibición de izar cargas de gran superficie tipo vela).
-   - Restricción izajes ($32.0$ a $49.9\text{ km/h}$): $-20$ puntos (**Límite obligatorio de parada técnica de grúas e izajes conforme a D.S. 024-2016-EM Art. 385 y ASME B30.5**: descenso y bloqueo de plumas, suspensión de canastillas manlift y montaje estructural).
-   - Suspensión total ($\ge 50.0\text{ km/h}$): $-35$ puntos (**Parada obligatoria de trabajos en altura según Norma G.050**: evacuación inmediata de andamios y plataformas, repliegue total de plumas y aseguramiento de paneles sueltos).
+### Matriz de ponderación multicriterio ($W_i$)
 
-4. **Tormenta eléctrica y protocolo ThunderBolt ($P_{\text{tormenta}}$):**
-   - Condición Verde / Normal ($\text{CAPE} < 500\text{ J/kg}$ o radio $> 50\text{ km}$): $0$ puntos (atmósfera estable; monitoreo rutinario del detector de tormentas).
-   - Alerta Amarilla ($500 \le \text{CAPE} < 1500\text{ J/kg}$ o celda a $32$–$50\text{ km}$): $-6$ puntos (vigilancia preventiva, verificación de disponibilidad de refugios Faraday y prohibición de iniciar voladuras a la intemperie).
-   - Alerta Naranja ($1500 \le \text{CAPE} < 2500\text{ J/kg}$ o celda a $16$–$32\text{ km}$): $-14$ puntos (restricción operativa: suspensión obligatoria de izajes con grúas, trabajos en altura y voladuras; repliegue preventivo de cuadrillas en cumbres hacia refugios).
-   - Alerta Roja ($\text{CAPE} \ge 2500\text{ J/kg}$, descargas a $< 16\text{ km}$ o código WMO $95, 96, 99$): $-35$ puntos (evacuación inmediata obligatoria a refugios Faraday certificados o camionetas con cabina metálica cerrada según D.S. 024-2016-EM; aplicación estricta de regla 30/30 OMM con 30 min sin descargas para reanudar).
+| Factor ambiental y operativo | Peso ($W_i$) | Justificación técnica y normativa SST |
+| :--- | :---: | :--- |
+| **04. Tormenta eléctrica** | **25%** | Máximo potencial de fatalidad inmediata por caída de rayos a cielo abierto (D.S. 024-2016-EM). |
+| **03. Viento y ráfagas** | **20%** | Riesgo catastrófico inmediato en izajes con grúas (ASME B30.5) y trabajos en altura (Norma G.050). |
+| **05. Temperatura y estrés térmico** | **15%** | Riesgo vital por hipotermia severa ($\le -5^\circ	ext{C}$) o golpe de calor mortal ($\ge 38^\circ	ext{C}$, ISO 7243 / R.M. 375). |
+| **02. Precipitación pluvial** | **10%** | Pérdida de adherencia, derrape de volquetes en haul roads e inundación en fondo de tajo. |
+| **06. Nieve y congelamiento** | **10%** | Pérdida total de tracción en alta montaña y congelamiento de mecanismos hidráulicos. |
+| **08. Humedad de suelo** | **10%** | Inestabilidad geotécnica de taludes, coronación de bancos y asentamiento de grúas móviles. |
+| **07. Visibilidad en ruta** | **5%** | Riesgo de colisión de camiones de acarreo por niebla densa o polvaredas en rampas. |
+| **01. Radiación solar UV** | **5%** | Riesgo ergonómico y ocupacional acumulativo sobre piel y ojos (Ley N° 30102). |
 
-5. **Temperatura y estrés térmico ($P_{\text{térmico}}$):**
-   - Confort térmico ($8.1^\circ\text{C}$ a $28.0^\circ\text{C}$): $0$ puntos (condiciones óptimas; hidratación regular estándar de 2 L/día).
-   - Frío moderado ($0.1^\circ\text{C}$ a $8.0^\circ\text{C}$): $-6$ puntos (casacas térmicas de faena, chalecos cortaviento y calistenia muscular previa para evitar lesiones osteomusculares).
-   - Calor moderado ($28.1^\circ\text{C}$ a $32.0^\circ\text{C}$): $-6$ puntos (hidratación preventiva cada 45 min; ventilación forzada o aire acondicionado en cabinas de maquinaria).
-   - Bajo cero / Escarcha ($-4.9^\circ\text{C}$ a $0.0^\circ\text{C}$): $-18$ puntos (EPP térmico de 3 capas, guantes térmicos antideslizantes, rotación periódica a caseta térmica e inspección de *hielo negro* en gratings y pasarelas).
-   - Estrés térmico por calor ($32.1^\circ\text{C}$ a $38.0^\circ\text{C}$): $-18$ puntos (régimen de trabajo-descanso 45 min labor / 15 min descanso bajo sombra fresca según ISO 7243 y R.M. 375-2008-TR; hidratación obligatoria de 1 L/hora con aporte de electrolitos; monitoreo activo de fatiga o calambres térmicos).
-   - Helada extrema ($\le -5.0^\circ\text{C}$): $-25$ puntos (régimen 30 min trabajo / 30 min en caseta calefaccionada, ropa térmica multicapa con pasamontañas ignífugo y bebidas calientes azucaradas).
-   - Golpe de calor crítico ($> 38.0^\circ\text{C}$): $-25$ puntos (**Alerta roja por riesgo vital**: suspensión obligatoria de faenas físicas pesadas a la intemperie; pausas de 30 min cada 30 min trabajados o parada técnica hasta descenso térmico; tópicos y camilla con compresas frías en alerta).
+### Escala de acción operacional y techos críticos ($C_{\max}$)
 
-6. **Nieve y congelamiento ($P_{\text{nieve}}$):**
-   - Seco ($0.0\text{ cm}$): $0$ puntos (vías y accesos despejados sin restricción invernal).
-   - Escarcha ligera ($0.1$ a $0.9\text{ cm}$): $-8$ puntos (alerta por *hielo negro (black ice)* en calzadas y gratings metálicos de escaleras; esparcir sal o arena en accesos peatonales; técnica estricta de 3 puntos de apoyo en equipos pesados; activar desempañadores de cabina).
-   - Nieve moderada ($1.0$ a $4.9\text{ cm}$): $-18$ puntos (tracción 4x4 y cadenas para nieve obligatorias en neumáticos de vehículos livianos y pesados; velocidad máxima 20 km/h; despeje continuo de haul roads con motoniveladoras; suspensión de trabajos en techos y andamios a la intemperie).
-   - Nevada severa ($\ge 5.0\text{ cm}$): $-30$ puntos (**Paralización de acarreo y emergencia invernal**: parada preventiva de volquetes y camiones de extracción; cierre de frentes de tajo no prioritarios; tránsito restringido exclusivamente a motoniveladoras y barredoras viales; personal a resguardo en campamentos o refugios calefaccionados).
-
-7. **Visibilidad en ruta y acarreo ($P_{\text{visibilidad}}$):**
-   - Óptima ($\ge 2000\text{ m}$): $0$ puntos (tránsito regular de flota pesada y liviana a velocidades autorizadas con luces bajas encendidas permanentemente).
-   - Neblina ligera ($501$ a $2000\text{ m}$): $-5$ puntos (conducción a la defensiva; encendido de luces neblineras y pértiga con luz estroboscópica; velocidad máx. 40 km/h en haul roads; chalecos reflectivos clase 3 para personal de a pie).
-   - Niebla moderada ($101$ a $500\text{ m}$): $-12$ puntos (velocidad máx. 20–25 km/h; distancia mínima de seguimiento de 60 metros entre volquetes; prohibición absoluta de adelantar; comunicación radial obligatoria en curvas y cruces de tajo).
-   - Niebla densa crítica ($\le 100\text{ m}$): $-25$ puntos (**Parada obligatoria de acarreo y transporte pesado según D.S. 024-2016-EM**: detención ordenada de volquetes en bermas o bahías de parqueo seguro; encender luces de emergencia e intermitentes; prohibido descender de cabinas en ruta).
-
-8. **Humedad de suelo y estabilidad geotécnica ($P_{\text{suelo}}$):**
-   - Terreno estable ($< 0.28\text{ m}^3/\text{m}^3$, $< 28\%$ saturación): $0$ puntos (soporte geotécnico óptimo; excavaciones, acarreo y posicionamiento de grúas autorizados sin restricción).
-   - Suelo húmedo ($0.28$ a $0.399\text{ m}^3/\text{m}^3$, $28\%$ a $39.9\%$ saturación): $-10$ puntos (pérdida de capacidad portante del terreno: inspección visual diaria de fisuras o grietas de tracción en crestas de talud; uso obligatorio de almohadillas / *mats* de distribución de carga de doble área bajo zapatas de grúas; prohibido estacionar a menos de 3 metros del borde de zanjas o taludes).
-   - Saturación crítica ($\ge 0.40\text{ m}^3/\text{m}^3$, $\ge 40\%$ saturación): $-20$ puntos (**Alerta geotécnica por deslizamiento**: evacuación preventiva de cuadrillas al pie de taludes inestables y botaderos; prohibición de izajes o tránsito de maquinaria pesada sobre terreno natural no consolidado; monitoreo continuo con prismas y piezómetros; verificación de bermas de seguridad de 3/4 de llanta en vías de acarreo).
+| Severidad máxima | Rango ISF | Condición en faena | Criterio de acción en faena |
+| :---: | :---: | :--- | :--- |
+| **Nivel 0 – 2** | **$\ge 80.0\%$** | **Condición normal (Verde)** | Operaciones regulares sin restricciones climáticas adicionales. |
+| **Nivel 3** | **$60.0\%$ a $79.9\%$** | **Atención requerida (Amarilla)** | Operación con controles preventivos: uso obligatorio de dos vientos guía (taglines) en izajes, cortavientos y rotación a la sombra. |
+| **Nivel 4** | **$40.0\%$ a $59.9\%$** | **Operación restringida (Naranja)** | Suspensión de tareas en frentes expuestos: parada de izajes con grúas (vientos $> 38	ext{ km/h}$), restricción en rampas resbaladizas y repliegue de crestas. |
+| **Nivel 5** | **$< 40.0\%$ ($C_{\max} \le 25\%$)** | **Alerta crítica / Parada obligatoria (Roja)** | **Parada técnica obligatoria inmediata** y evacuación a zonas seguras (refugios Faraday certificados ante tormentas $< 16	ext{ km}$, paralización total de grúas y andamios por viento $\ge 50	ext{ km/h}$ o nieve severa). |
 
 ---
 

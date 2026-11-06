@@ -632,64 +632,81 @@
     </section>
 
     <section>
-      <h2>Cálculo del índice de seguridad en terreno</h2>
+      <h2>Metodología de cálculo: Índice de seguridad en faena (ISF)</h2>
       <p>
-        El índice de seguridad resume la aptitud física del entorno en una escala de 0% a 100% (con cota operativa de
-        20.0% a 99.0%). El cálculo inicia con una base de 100 puntos y aplica deducciones directas acumulativas según la
-        severidad de los factores climáticos y geofísicos que superen los límites permisibles.
+        El Índice de Seguridad en Faena (ISF) consolida el riesgo ambiental instantáneo y proyectado en una métrica porcentual entre 0.0% y 100.0%. A diferencia de modelos empíricos basados en deducciones aritméticas ciegas (que pueden ocultar un peligro mortal si los demás factores están en calma), MiEntorno implementa un <strong>modelo riguroso de dos capas</strong> alineado con los estándares de <strong>Gestión de Riesgos Críticos (CRM / ICMM)</strong>, el <strong>Reglamento de Seguridad y Salud Ocupacional en Minería (D.S. 024-2016-EM)</strong> y la <strong>Ley N° 29783</strong>:
       </p>
 
+      <div class="callout" style="margin-bottom: 20px;">
+        <span class="callout-title">Principio no compensatorio en SST</span>
+        <p style="margin-bottom: 0;">
+          En la gestión de riesgos de fatalidad, la seguridad <strong>no es compensatoria</strong>. La ausencia de lluvia o la serenidad del viento no pueden compensar ni diluir una tormenta eléctrica activa con descargas a 4 km o ráfagas huracanadas sobre una grúa. Si un factor alcanza un nivel crítico de fatalidad, gobierna inmediatamente el índice y activa la parada técnica obligatoria.
+        </p>
+      </div>
+
       <div class="calc-box">
-        Índice de seguridad = 100 &minus; &sum; (Deducciones acumuladas de los factores evaluados)
+        <strong>Ecuación de cálculo del ISF en 2 Capas:</strong><br><br>
+        1. Aptitud ponderada base: S<sub>ponderado</sub> = &sum;<sub>i=1</sub><sup>8</sup> (W<sub>i</sub> &times; Aptitud<sub>i</sub>)<br>
+        2. Puerta de control crítico (Gating): ISF = min( S<sub>ponderado</sub> , Techo<sub>crítico</sub>(Severidad<sub>máx</sub>) )
       </div>
 
       <p>
-        El tablero inicia por defecto en modo <strong>En vivo (Tiempo real)</strong> y permite alternar a proyecciones
-        operativas según la naturaleza de la tarea, con la posibilidad de retornar al modo en tiempo real pulsando «En
-        vivo» en cualquier momento:
+        <strong>Capa 1 &mdash; Ponderación multicriterio por potencial de daño (&sum; W<sub>i</sub> = 100%):</strong><br>
+        Cada factor tiene asignado un peso técnico proporcional a su severidad intrínseca y letalidad en operaciones mineras e industriales de superficie:
       </p>
 
       <ul
         style="margin: 8px 0 16px 20px; font-size: 0.88rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px;">
-        <li><strong>En vivo (Tiempo real):</strong> Modo predeterminado. Lectura instantánea de la telemetría en terreno
-          sin proyecciones hacia adelante. Refleja las condiciones operativas exactas en el momento actual.</li>
-        <li><strong>30 minutos (30m):</strong> Ventana inmediata de alta resolución para maniobras críticas de izaje con
-          grúas y traslados de cargas sobredimensionadas.</li>
-        <li><strong>1 hora (1h):</strong> Alerta táctica para trabajos temporales en altura (andamios, plataformas
-          elevadoras) y frentes expuestos.</li>
-        <li><strong>3 horas (3h):</strong> Ventana de ejecución de tareas programadas (vaciados, tendido de cables,
-          barrenación en tajo).</li>
-        <li><strong>9 horas (9h):</strong> Jornada laboral diurna en obras civiles y frentes de superficie.</li>
-        <li><strong>12 horas (12h):</strong> Turno estándar de faena minera e industrial (régimen 12x12).</li>
-        <li><strong>24 horas (24h):</strong> Ciclo diario integral para previsión logística, relevo de guardias y
-          planificación del siguiente turno.</li>
+        <li><strong>Tormenta eléctrica (25% peso):</strong> Máximo potencial de fatalidad inmediata por caída de rayos a cielo abierto (D.S. 024-2016-EM).</li>
+        <li><strong>Viento y ráfagas (20% peso):</strong> Riesgo catastrófico inmediato en izajes con grúas (ASME B30.5) y trabajos en altura (Norma G.050).</li>
+        <li><strong>Estrés térmico y temperatura (15% peso):</strong> Riesgo vital por hipotermia severa (&le; -5°C) o golpe de calor mortal (&ge; 38°C) conforme a ISO 7243 y R.M. 375-2008-TR.</li>
+        <li><strong>Precipitación pluvial (10% peso):</strong> Riesgo de derrape de volquetes en pistas de acarreo, pérdida de frenado e inundación de tajos.</li>
+        <li><strong>Nieve y congelamiento (10% peso):</strong> Pérdida total de adherencia en alta montaña y congelamiento de mecanismos hidráulicos.</li>
+        <li><strong>Humedad de suelo (10% peso):</strong> Inestabilidad geotécnica en taludes, coronaciones de banco y asentamiento de grúas móviles.</li>
+        <li><strong>Visibilidad en ruta (5% peso):</strong> Riesgo de colisión de camiones mineros por niebla densa o polvaredas en rampas.</li>
+        <li><strong>Radiación solar UV (5% peso):</strong> Riesgo ergonómico y ocupacional acumulativo sobre piel y ojos (Ley N° 30102).</li>
       </ul>
+
+      <p>
+        <strong>Capa 2 &mdash; Puerta de control crítico (Critical Risk Gating):</strong><br>
+        El factor más severo en terreno impone un <strong>techo máximo infranqueable</strong> al índice general:
+      </p>
 
       <div class="table-desktop">
         <div class="table-container">
           <table>
             <thead>
               <tr>
-                <th style="width: 22%;">Rango del índice</th>
-                <th style="width: 25%;">Condición en faena</th>
-                <th>Criterio de acción</th>
+                <th style="width: 18%;">Severidad máxima</th>
+                <th style="width: 20%;">Rango del índice</th>
+                <th style="width: 24%;">Condición en faena</th>
+                <th>Criterio de acción operacional</th>
               </tr>
             </thead>
             <tbody>
               <tr>
+                <td><span class="mono">Nivel 0 &ndash; 2</span></td>
                 <td><span class="mono">&ge; 80.0%</span></td>
                 <td>Condición normal</td>
                 <td>Operaciones regulares sin restricciones climáticas adicionales.</td>
               </tr>
               <tr>
+                <td><span class="mono">Nivel 3 (Amarillo)</span></td>
                 <td><span class="mono">60.0% a 79.9%</span></td>
                 <td>Atención requerida</td>
-                <td>Operación con restricciones (rotación de cuadrillas a la sombra, monitoreo continuo de anemómetros de pluma, alerta de visibilidad).</td>
+                <td>Operación con controles preventivos activos: uso obligatorio de dos vientos guía (taglines) en izajes, cortavientos y rotación periódica a la sombra.</td>
               </tr>
               <tr>
-                <td><span class="mono">&lt; 60.0%</span></td>
-                <td>Alerta crítica</td>
-                <td>Parada técnica obligatoria de tareas de alto riesgo en cielo abierto (izajes, andamios, tránsito en trochas críticas, trabajos en altura).</td>
+                <td><span class="mono">Nivel 4 (Naranja)</span></td>
+                <td><span class="mono">40.0% a 59.9%</span></td>
+                <td>Operación restringida</td>
+                <td>Suspensión de tareas en frentes expuestos: parada de izajes con grúas móviles (vientos &gt; 38 km/h), restricción en rampas resbaladizas y repliegue de cuadrillas en crestas.</td>
+              </tr>
+              <tr>
+                <td><span class="mono">Nivel 5 (Rojo)</span></td>
+                <td><span class="mono">&lt; 40.0% (techo &le; 25%)</span></td>
+                <td>Alerta crítica / Parada obligatoria</td>
+                <td>Parada técnica obligatoria inmediata y evacuación a zonas seguras (refugios Faraday ante tormentas &lt; 16 km, paralización total de grúas y andamios por viento &ge; 50 km/h o nieve severa).</td>
               </tr>
             </tbody>
           </table>
@@ -710,21 +727,51 @@
             <span class="scale-badge badge-warning">60.0% a 79.9%</span>
             <span class="scale-title">Atención requerida</span>
           </div>
-          <div class="scale-card-desc">Operación con restricciones (rotación a la sombra, monitoreo de anemómetros de pluma, alerta de visibilidad).</div>
+          <div class="scale-card-desc">Operación con controles preventivos activos (dos taglines en izajes, cortavientos, rotación a la sombra).</div>
         </div>
 
         <div class="scale-card">
           <div class="scale-card-header">
-            <span class="scale-badge badge-alert">&lt; 60.0%</span>
-            <span class="scale-title">Alerta crítica</span>
+            <span class="scale-badge" style="background: rgba(249, 115, 22, 0.16); color: #fb923c;">40.0% a 59.9%</span>
+            <span class="scale-title">Operación restringida</span>
           </div>
-          <div class="scale-card-desc">Parada técnica obligatoria de tareas de alto riesgo en cielo abierto (izajes, andamios, tránsito crítico, trabajos en altura).</div>
+          <div class="scale-card-desc">Suspensión de izajes con grúas (> 38 km/h), restricción en rampas resbaladizas y repliegue de crestas.</div>
+        </div>
+
+        <div class="scale-card">
+          <div class="scale-card-header">
+            <span class="scale-badge badge-alert">&lt; 40.0%</span>
+            <span class="scale-title">Alerta crítica / Parada obligatoria</span>
+          </div>
+          <div class="scale-card-desc">Parada técnica obligatoria de tareas de alto riesgo en cielo abierto y evacuación a refugios Faraday ante descargas.</div>
         </div>
       </div>
+
+      <p style="margin-top: 18px;">
+        El tablero inicia por defecto en modo <strong>En vivo (Tiempo real)</strong> y permite alternar a proyecciones
+        operativas según la naturaleza de la tarea, con la posibilidad de retornar al modo en tiempo real pulsando «En
+        vivo» en cualquier momento:
+      </p>
+
+      <ul
+        style="margin: 8px 0 16px 20px; font-size: 0.88rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px;">
+        <li><strong>En vivo (Tiempo real):</strong> Modo predeterminado. Lectura instantánea de la telemetría en terreno
+          sin proyecciones hacia adelante. Refleja las condiciones operativas exactas en el momento actual.</li>
+        <li><strong>30 minutos (30m):</strong> Ventana inmediata de alta resolución para maniobras críticas de izaje con
+          grúas y traslados de cargas sobredimensionadas.</li>
+        <li><strong>1 hora (1h):</strong> Alerta táctica para trabajos temporales en altura (andamios, plataformas
+          elevadoras) y frentes expuestos.</li>
+        <li><strong>3 horas (3h):</strong> Ventana de ejecución de tareas programadas (vaciados, tendido de cables,
+          barrenación en tajo).</li>
+        <li><strong>9 horas (9h):</strong> Jornada laboral diurna en obras civiles y frentes de superficie.</li>
+        <li><strong>12 horas (12h):</strong> Turno estándar de faena minera e industrial (régimen 12x12).</li>
+        <li><strong>24 horas (24h):</strong> Ciclo diario integral para previsión logística, relevo de guardias y
+          planificación del siguiente turno.</li>
+      </ul>
     </section>
 
     <section>
-      <h2>Factores evaluados y deducciones</h2>
+      <h2>Factores evaluados, ponderaciones y controles operacionales</h2>
 
       <div class="table-desktop">
         <div class="table-container">
@@ -734,7 +781,7 @@
                 <th class="col-factor">Factor</th>
                 <th class="col-metric">Lectura y telemetría</th>
                 <th class="col-limits">Límites y niveles</th>
-                <th class="col-deduction">Deducción</th>
+                <th class="col-deduction">Ponderación y Aptitud</th>
                 <th class="col-action">Controles</th>
               </tr>
             </thead>
@@ -750,11 +797,12 @@
                   &ge; 11.0: Extremo
                 </td>
                 <td class="cell-deduction mono">
-                  0 pts<br>
-                  0 pts<br>
-                  &minus;10 pts<br>
-                  &minus;18 pts<br>
-                  &minus;25 pts
+                  <strong>5% peso</strong><br>
+                  100% aptitud<br>
+                  100% aptitud<br>
+                  40% aptitud<br>
+                  15% aptitud<br>
+                  0% (Crítico)
                 </td>
                 <td>
                   Bloqueador solar FPS 50+ con reaplicación horaria, casco con cortaviento legionario (cubrenuca UPF 50+), visera amplia y lentes UV400. Mallas raschel o toldos en puntos fijos; rotación a la sombra cada 45 min en UVI &ge; 6 y cada 20&ndash;30 min en UVI &ge; 8. Suspensión de tareas pesadas a la intemperie entre 11:00 y 15:00 h en UVI &ge; 11 (Ley N° 30102). Hidratación preventiva continua (250 ml cada 20&ndash;30 min) y sales de rehidratación oral.
@@ -770,10 +818,11 @@
                   Lluvia intensa (&ge; 5.0 mm/h / &ge; 70% prob)
                 </td>
                 <td class="cell-deduction mono">
-                  0 pts<br>
-                  &minus;6 pts<br>
-                  &minus;12 pts<br>
-                  &minus;20 pts
+                  <strong>10% peso</strong><br>
+                  100% aptitud<br>
+                  85% aptitud<br>
+                  40% aptitud<br>
+                  15% (Severo)
                 </td>
                 <td>
                   En calzada seca, tránsito regular y riego controlado antipolvo. Ante llovizna inicial, alerta por formación de lodo superficial (efecto jaboncillo): reducir velocidad en 15 km/h en curvas y rampas. Con lluvia moderada, velocidad máxima de 30 km/h en acarreo, distancia de 50 m entre volquetes y activación de bombas de achique. Con lluvia intensa, restringir rampas empinadas (&gt; 10%), suspender acarreo si la adherencia es crítica y evacuar cuadrillas de zanjas y pie de talud.
@@ -789,10 +838,11 @@
                   &ge; 50.0 km/h: Suspensión total
                 </td>
                 <td class="cell-deduction mono">
-                  0 pts<br>
-                  &minus;8 pts<br>
-                  &minus;20 pts<br>
-                  &minus;35 pts
+                  <strong>20% peso</strong><br>
+                  100% aptitud<br>
+                  65% aptitud<br>
+                  15% aptitud<br>
+                  0% (Parada)
                 </td>
                 <td>
                   Viento normal: maniobras autorizadas sin restricción. En nivel de precaución (25 a 31.9 km/h), uso obligatorio de mínimo dos vientos guía (taglines), barbiquejo de 3 puntos asegurado, amarre de herramientas y prohibición de izar cargas de gran superficie. A partir de 32 km/h, parada técnica obligatoria de grúas e izajes conforme a D.S. 024-2016-EM (Art. 385) y ASME B30.5 con plumas en reposo. Con ráfagas &ge; 50 km/h, parada total de trabajos en altura según Norma G.050 y evacuación inmediata de andamios.
@@ -808,14 +858,14 @@
                   Roja (&ge; 2500 J/kg o descargas): Evacuación (&lt; 16 km)
                 </td>
                 <td class="cell-deduction mono">
-                  0 pts<br>
-                  &minus;6 pts<br>
-                  &minus;14 pts<br>
-                  &minus;22 pts<br>
-                  &minus;35 pts
+                  <strong>25% peso</strong><br>
+                  100% aptitud<br>
+                  85% aptitud<br>
+                  40% aptitud<br>
+                  0% (Evacuación)
                 </td>
                 <td>
-                  En Alerta Verde, labores regulares y monitoreo rutinario del detector. Ante Alerta Amarilla (radio 32 a 50 km según ThunderBolt), aviso radial preventivo a supervisores, verificación de disponibilidad de refugios Faraday y prohibición de iniciar voladuras a la intemperie. En Alerta Naranja (radio 16 a 32 km), suspensión obligatoria de izajes con grúas, trabajos en altura (andamios) y voladuras, con repliegue de cuadrillas en cumbres hacia refugios. En Alerta Roja (descargas en faena o radio &lt; 16 km / &lt; 8 km), evacuación inmediata obligatoria a refugios jaula de Faraday certificados o vehículos con cabina metálica cerrada (D.S. 024-2016-EM). Aplicación estricta de la regla 30/30 OMM: esperar 30 min continuos sin descargas en el radio de 16 km para reanudar.
+                  Protocolo ThunderBolt y D.S. 024-2016-EM: Alerta Amarilla (32 a 50 km) con notificación radial preventiva, verificación de operatividad de refugios Faraday y prohibición de iniciar voladuras. Alerta Naranja (16 a 32 km) con suspensión obligatoria de izajes con grúas, trabajos en altura y voladuras; repliegue preventivo de cuadrillas en crestas. Alerta Roja (&lt; 16 km o descargas en faena) con evacuación inmediata obligatoria a refugios Faraday certificados o vehículos con cabina metálica cerrada. Reanudar únicamente tras 30 min sin descargas (regla 30/30 OMM).
                 </td>
               </tr>
               <tr>
@@ -827,17 +877,18 @@
                   0.1° a 8.0°C: Frío moderado<br>
                   8.1° a 28.0°C: Confort térmico<br>
                   28.1° a 32.0°C: Calor moderado<br>
-                  32.1° a 38.0°C: Estrés térmico por calor<br>
-                  &gt; 38.0°C: Golpe de calor crítico
+                  32.1° a 38.0°C: Estrés por calor<br>
+                  &gt; 38.0°C: Golpe de calor
                 </td>
                 <td class="cell-deduction mono">
-                  &minus;25 pts<br>
-                  &minus;18 pts<br>
-                  &minus;6 pts<br>
-                  0 pts<br>
-                  &minus;6 pts<br>
-                  &minus;18 pts<br>
-                  &minus;25 pts
+                  <strong>15% peso</strong><br>
+                  0% (Crítico)<br>
+                  15% aptitud<br>
+                  85% aptitud<br>
+                  100% aptitud<br>
+                  85% aptitud<br>
+                  15% aptitud<br>
+                  0% (Crítico)
                 </td>
                 <td>
                   En helada extrema (&le; &minus;5°C), régimen de 30 min trabajo por 30 min descanso en caseta calefaccionada, ropa térmica multicapa, pasamontañas ignífugo y bebidas calientes azucaradas. En temperaturas bajo cero (&minus;4.9° a 0°C), EPP térmico de 3 capas y revisión de pasarelas por hielo negro. En confort (8° a 28°C), ritmo regular con hidratación de 2 L/día. En calor moderado (28° a 32°C), hidratación preventiva cada 45 min y ventilación en cabinas. En estrés por calor (32° a 38°C), régimen 45 min labor / 15 min sombra (ISO 7243) e hidratación de 1 L/h con electrolitos. Con más de 38°C, alerta vital con pausas de 30 min o suspensión de labores pesadas a la intemperie.
@@ -853,10 +904,11 @@
                   &ge; 5.0 cm: Nevada severa
                 </td>
                 <td class="cell-deduction mono">
-                  0 pts<br>
-                  &minus;8 pts<br>
-                  &minus;18 pts<br>
-                  &minus;30 pts
+                  <strong>10% peso</strong><br>
+                  100% aptitud<br>
+                  85% aptitud<br>
+                  40% aptitud<br>
+                  0% (Severa)
                 </td>
                 <td>
                   Calzada despejada: acarreo regular. Ante escarcha ligera (0.1 a 0.9 cm), alerta por hielo negro (black ice) en accesos y gratings metálicos: esparcir sal o arena y técnica estricta de 3 puntos de apoyo en equipos. Con nieve moderada (1.0 a 4.9 cm), tracción 4x4 y cadenas para nieve obligatorias en neumáticos, velocidad máxima de 20 km/h y despeje continuo con motoniveladoras. Con nevada severa (&ge; 5 cm), paralización preventiva de volquetes y repliegue de personal a refugios calefaccionados.
@@ -872,10 +924,11 @@
                   &le; 100 m: Niebla densa
                 </td>
                 <td class="cell-deduction mono">
-                  0 pts<br>
-                  &minus;5 pts<br>
-                  &minus;12 pts<br>
-                  &minus;25 pts
+                  <strong>5% peso</strong><br>
+                  100% aptitud<br>
+                  85% aptitud<br>
+                  40% aptitud<br>
+                  0% (Parada)
                 </td>
                 <td>
                   Visibilidad óptima (&ge; 2000 m): tránsito regular con luces bajas encendidas permanentemente. Con neblina ligera (501 a 2000 m), faros neblineros, pértiga estroboscópica, velocidad máxima de 40 km/h en haul roads y chalecos reflectivos clase 3. Con niebla moderada (101 a 500 m), velocidad máxima de 20 a 25 km/h, 60 m entre volquetes y reporte radial obligatorio en curvas y cruces. Con niebla densa (&le; 100 m), parada total obligatoria de acarreo y transporte pesado según D.S. 024-2016-EM con estacionamiento ordenado en bahías de parqueo seguro.
@@ -890,9 +943,10 @@
                   &ge; 40%: Saturación crítica
                 </td>
                 <td class="cell-deduction mono">
-                  0 pts<br>
-                  &minus;10 pts<br>
-                  &minus;20 pts
+                  <strong>10% peso</strong><br>
+                  100% aptitud<br>
+                  65% aptitud<br>
+                  15% (Saturado)
                 </td>
                 <td>
                   Terreno estable: operaciones de excavación, acarreo y grúas sin restricción geotécnica. Con suelo húmedo (28% a 39.9%), inspección visual diaria de grietas de tracción en crestas de talud, uso obligatorio de almohadillas (mats de doble área) bajo zapatas de grúas y prohibición de estacionar a menos de 3 m del borde de zanjas. Con saturación crítica (&ge; 40%), alerta por deslizamiento: evacuación preventiva al pie de taludes inestables y botaderos, prohibición de izajes en terreno natural y monitoreo instrumental continuo.
@@ -907,14 +961,14 @@
         <div class="factor-card">
           <div class="factor-card-header">
             <div class="factor-name">01. Radiación solar UV</div>
-            <div class="factor-reading">UVI actual y curva diurna proyectada (Ley N° 30102 / OMS)</div>
+            <div class="factor-reading">5% peso &bull; UVI actual y proyectado (Ley N° 30102 / OMS)</div>
           </div>
           <div class="factor-levels-grid">
-            <div class="factor-level-row"><span>Noche (UVI &lt; 0.2): Seguro</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>0.2 a 5.9: Bajo / Moderado</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>6.0 a 7.9: Alto</span><span class="mono">&minus;10 pts</span></div>
-            <div class="factor-level-row"><span>8.0 a 10.9: Muy alto</span><span class="mono">&minus;18 pts</span></div>
-            <div class="factor-level-row"><span>&ge; 11.0: Extremo</span><span class="mono">&minus;25 pts</span></div>
+            <div class="factor-level-row"><span>Noche (UVI &lt; 0.2): Seguro</span><span class="mono">100% aptitud</span></div>
+            <div class="factor-level-row"><span>0.2 a 5.9: Bajo / Moderado</span><span class="mono">100% aptitud</span></div>
+            <div class="factor-level-row"><span>6.0 a 7.9: Alto</span><span class="mono">40% aptitud</span></div>
+            <div class="factor-level-row"><span>8.0 a 10.9: Muy alto</span><span class="mono">15% aptitud</span></div>
+            <div class="factor-level-row"><span>&ge; 11.0: Extremo</span><span class="mono">0% (Crítico)</span></div>
           </div>
           <div class="factor-action">Bloqueador solar FPS 50+ con reaplicación horaria, casco con cortaviento legionario (cubrenuca UPF 50+), visera amplia y lentes UV400. Mallas raschel o toldos en faena; rotación a sombra cada 45 min (UVI &ge; 6) y cada 20&ndash;30 min (UVI &ge; 8). Suspensión de faenas pesadas de 11:00 a 15:00 h en UVI &ge; 11 con sales rehidratantes orales.</div>
         </div>
@@ -922,13 +976,13 @@
         <div class="factor-card">
           <div class="factor-card-header">
             <div class="factor-name">02. Precipitación pluvial</div>
-            <div class="factor-reading">Tasa instantánea (mm/h), probabilidad (%) y acumulado (mm)</div>
+            <div class="factor-reading">10% peso &bull; Tasa instantánea (mm/h), probabilidad (%) y acumulado (mm)</div>
           </div>
           <div class="factor-levels-grid">
-            <div class="factor-level-row"><span>Seco (0 mm/h / &lt; 20% prob)</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>Llovizna (0.1&ndash;0.9 mm/h / 20&ndash;39% prob)</span><span class="mono">&minus;6 pts</span></div>
-            <div class="factor-level-row"><span>Lluvia moderada (1&ndash;4.9 mm/h / 40&ndash;69% prob)</span><span class="mono">&minus;12 pts</span></div>
-            <div class="factor-level-row"><span>Lluvia intensa (&ge; 5 mm/h / &ge; 70% prob)</span><span class="mono">&minus;20 pts</span></div>
+            <div class="factor-level-row"><span>Seco (0 mm/h / &lt; 20% prob)</span><span class="mono">100% aptitud</span></div>
+            <div class="factor-level-row"><span>Llovizna (0.1&ndash;0.9 mm/h / 20&ndash;39% prob)</span><span class="mono">85% aptitud</span></div>
+            <div class="factor-level-row"><span>Lluvia moderada (1&ndash;4.9 mm/h / 40&ndash;69% prob)</span><span class="mono">40% aptitud</span></div>
+            <div class="factor-level-row"><span>Lluvia intensa (&ge; 5 mm/h / &ge; 70% prob)</span><span class="mono">15% (Severo)</span></div>
           </div>
           <div class="factor-action">Alerta por formación de lodo superficial (efecto jaboncillo) en haul roads: reducir velocidad en 15 km/h en curvas y rampas. Con lluvia moderada, máx. 30 km/h y 50 m de distancia entre volquetes. Con lluvia intensa, restringir rampas empinadas (&gt; 10%), verificar bombeo en fondo de tajo y evacuar pie de taludes.</div>
         </div>
@@ -936,13 +990,13 @@
         <div class="factor-card">
           <div class="factor-card-header">
             <div class="factor-name">03. Viento y ráfagas</div>
-            <div class="factor-reading">Velocidad sostenida a 10m y viento en pluma a 80m (km/h)</div>
+            <div class="factor-reading">20% peso &bull; Velocidad sostenida a 10m y viento en pluma a 80m (km/h)</div>
           </div>
           <div class="factor-levels-grid">
-            <div class="factor-level-row"><span>&lt; 25.0 km/h: Normal</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>25.0 a 31.9 km/h: Precaución</span><span class="mono">&minus;8 pts</span></div>
-            <div class="factor-level-row"><span>32.0 a 49.9 km/h: Restricción izajes</span><span class="mono">&minus;20 pts</span></div>
-            <div class="factor-level-row"><span>&ge; 50.0 km/h: Suspensión total</span><span class="mono">&minus;35 pts</span></div>
+            <div class="factor-level-row"><span>&lt; 25.0 km/h: Normal</span><span class="mono">100% aptitud</span></div>
+            <div class="factor-level-row"><span>25.0 a 31.9 km/h: Precaución</span><span class="mono">65% aptitud</span></div>
+            <div class="factor-level-row"><span>32.0 a 49.9 km/h: Restricción izajes</span><span class="mono">15% aptitud</span></div>
+            <div class="factor-level-row"><span>&ge; 50.0 km/h: Suspensión total</span><span class="mono">0% (Parada)</span></div>
           </div>
           <div class="factor-action">A 25&ndash;31.9 km/h: mínimo 2 vientos guía (taglines) en izajes, barbiquejo de 3 puntos y amarre de herramientas. A partir de 32 km/h: parada obligatoria de grúas e izajes conforme al D.S. 024-2016-EM (Art. 385) y ASME B30.5. A &ge; 50 km/h: parada total de trabajos en andamios y plataformas (Norma G.050).</div>
         </div>
@@ -950,13 +1004,13 @@
         <div class="factor-card">
           <div class="factor-card-header">
             <div class="factor-name">04. Tormenta eléctrica</div>
-            <div class="factor-reading">Energía convectiva CAPE (J/kg), código WMO y radios ThunderBolt</div>
+            <div class="factor-reading">25% peso &bull; Energía convectiva CAPE (J/kg), código WMO y radios ThunderBolt</div>
           </div>
           <div class="factor-levels-grid">
-            <div class="factor-level-row"><span>Verde (&lt; 500): Normal (&gt; 50 km)</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>Amarilla (500&ndash;1499): Vigilancia (32&ndash;50 km)</span><span class="mono">&minus;6 pts</span></div>
-            <div class="factor-level-row"><span>Naranja (1500&ndash;2499): Restricción (16&ndash;32 km)</span><span class="mono">&minus;14 pts</span></div>
-            <div class="factor-level-row"><span>Roja (&ge; 2500 o descargas): Evacuación (&lt; 16 km)</span><span class="mono">&minus;35 pts</span></div>
+            <div class="factor-level-row"><span>Verde (&lt; 500): Normal (&gt; 50 km)</span><span class="mono">100% aptitud</span></div>
+            <div class="factor-level-row"><span>Amarilla (500&ndash;1499): Vigilancia (32&ndash;50 km)</span><span class="mono">85% aptitud</span></div>
+            <div class="factor-level-row"><span>Naranja (1500&ndash;2499): Restricción (16&ndash;32 km)</span><span class="mono">40% aptitud</span></div>
+            <div class="factor-level-row"><span>Roja (&ge; 2500 o descargas): Evacuación (&lt; 16 km)</span><span class="mono">0% (Evacuación)</span></div>
           </div>
           <div class="factor-action">Protocolo ThunderBolt y D.S. 024-2016-EM: Alerta Amarilla (32&ndash;50 km) con aviso radial y verificación de refugios; Alerta Naranja (16&ndash;32 km) con suspensión obligatoria de izajes, andamios y voladuras; Alerta Roja (&lt; 16 km o descargas en faena) con evacuación inmediata obligatoria a refugios Faraday certificados o camionetas cerradas. Reanudar únicamente tras 30 min sin descargas (regla 30/30 OMM).</div>
         </div>
@@ -964,16 +1018,16 @@
         <div class="factor-card">
           <div class="factor-card-header">
             <div class="factor-name">05. Temperatura y sensación térmica</div>
-            <div class="factor-reading">Temperatura de bulbo seco (°C), sensación térmica e ISO 7243</div>
+            <div class="factor-reading">15% peso &bull; Temperatura de bulbo seco (°C), sensación térmica e ISO 7243</div>
           </div>
           <div class="factor-levels-grid">
-            <div class="factor-level-row"><span>&le; &minus;5.0°C: Helada extrema</span><span class="mono">&minus;25 pts</span></div>
-            <div class="factor-level-row"><span>&minus;4.9° a 0.0°C: Bajo cero / Escarcha</span><span class="mono">&minus;18 pts</span></div>
-            <div class="factor-level-row"><span>0.1° a 8.0°C: Frío moderado</span><span class="mono">&minus;6 pts</span></div>
-            <div class="factor-level-row"><span>8.1° a 28.0°C: Confort térmico</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>28.1° a 32.0°C: Calor moderado</span><span class="mono">&minus;6 pts</span></div>
-            <div class="factor-level-row"><span>32.1° a 38.0°C: Estrés por calor</span><span class="mono">&minus;18 pts</span></div>
-            <div class="factor-level-row"><span>&gt; 38.0°C: Golpe de calor</span><span class="mono">&minus;25 pts</span></div>
+            <div class="factor-level-row"><span>&le; &minus;5.0°C: Helada extrema</span><span class="mono">0% (Crítico)</span></div>
+            <div class="factor-level-row"><span>&minus;4.9° a 0.0°C: Bajo cero / Escarcha</span><span class="mono">15% aptitud</span></div>
+            <div class="factor-level-row"><span>0.1° a 8.0°C: Frío moderado</span><span class="mono">85% aptitud</span></div>
+            <div class="factor-level-row"><span>8.1° a 28.0°C: Confort térmico</span><span class="mono">100% aptitud</span></div>
+            <div class="factor-level-row"><span>28.1° a 32.0°C: Calor moderado</span><span class="mono">85% aptitud</span></div>
+            <div class="factor-level-row"><span>32.1° a 38.0°C: Estrés por calor</span><span class="mono">15% aptitud</span></div>
+            <div class="factor-level-row"><span>&gt; 38.0°C: Golpe de calor</span><span class="mono">0% (Crítico)</span></div>
           </div>
           <div class="factor-action">En heladas (&le; &minus;5°C): régimen 30m trabajo / 30m caseta calefaccionada, EPP multicapa y bebidas calientes. En estrés por calor (32&ndash;38°C): régimen 45m labor / 15m sombra fresca (ISO 7243) e hidratación de 1 L/h con electrolitos. Con &gt; 38°C: alerta roja, descanso 30m/30m o suspensión de tareas pesadas.</div>
         </div>
@@ -981,13 +1035,13 @@
         <div class="factor-card">
           <div class="factor-card-header">
             <div class="factor-name">06. Nieve y congelamiento</div>
-            <div class="factor-reading">Tasa horaria, acumulación (cm) e isoterma 0°C</div>
+            <div class="factor-reading">10% peso &bull; Tasa horaria, acumulación (cm) e isoterma 0°C</div>
           </div>
           <div class="factor-levels-grid">
-            <div class="factor-level-row"><span>0.0 cm: Seco</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>0.1 a 0.9 cm: Escarcha ligera</span><span class="mono">&minus;8 pts</span></div>
-            <div class="factor-level-row"><span>1.0 a 4.9 cm: Nieve moderada</span><span class="mono">&minus;18 pts</span></div>
-            <div class="factor-level-row"><span>&ge; 5.0 cm: Nevada severa</span><span class="mono">&minus;30 pts</span></div>
+            <div class="factor-level-row"><span>0.0 cm: Seco</span><span class="mono">100% aptitud</span></div>
+            <div class="factor-level-row"><span>0.1 a 0.9 cm: Escarcha ligera</span><span class="mono">85% aptitud</span></div>
+            <div class="factor-level-row"><span>1.0 a 4.9 cm: Nieve moderada</span><span class="mono">40% aptitud</span></div>
+            <div class="factor-level-row"><span>&ge; 5.0 cm: Nevada severa</span><span class="mono">0% (Severa)</span></div>
           </div>
           <div class="factor-action">Con escarcha: alerta de hielo negro (black ice) en calzadas y gratings metálicos: esparcir sal o arena y técnica estricta de 3 puntos de apoyo. Con nieve moderada: tracción 4x4, cadenas obligatorias en llantas y máx. 20 km/h. Con nevada severa (&ge; 5 cm): parada preventiva de volquetes y tránsito exclusivo de motoniveladoras.</div>
         </div>
@@ -995,13 +1049,13 @@
         <div class="factor-card">
           <div class="factor-card-header">
             <div class="factor-name">07. Visibilidad en ruta</div>
-            <div class="factor-reading">Alcance visual en metros (m) en frente de acarreo</div>
+            <div class="factor-reading">5% peso &bull; Alcance visual en metros (m) en frente de acarreo</div>
           </div>
           <div class="factor-levels-grid">
-            <div class="factor-level-row"><span>&ge; 2000 m: Óptima</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>501 a 2000 m: Neblina ligera</span><span class="mono">&minus;5 pts</span></div>
-            <div class="factor-level-row"><span>101 a 500 m: Niebla moderada</span><span class="mono">&minus;12 pts</span></div>
-            <div class="factor-level-row"><span>&le; 100 m: Niebla densa</span><span class="mono">&minus;25 pts</span></div>
+            <div class="factor-level-row"><span>&ge; 2000 m: Óptima</span><span class="mono">100% aptitud</span></div>
+            <div class="factor-level-row"><span>501 a 2000 m: Neblina ligera</span><span class="mono">85% aptitud</span></div>
+            <div class="factor-level-row"><span>101 a 500 m: Niebla moderada</span><span class="mono">40% aptitud</span></div>
+            <div class="factor-level-row"><span>&le; 100 m: Niebla densa</span><span class="mono">0% (Parada)</span></div>
           </div>
           <div class="factor-action">Con neblina (501&ndash;2000 m): luces neblineras, pértiga estroboscópica y máx. 40 km/h en haul roads. Con niebla moderada (101&ndash;500 m): máx. 20&ndash;25 km/h, 60 m entre volquetes y comunicación radial obligatoria. Con niebla densa (&le; 100 m): parada total de acarreo (D.S. 024-2016-EM) y parqueo seguro en bermas.</div>
         </div>
@@ -1009,18 +1063,17 @@
         <div class="factor-card">
           <div class="factor-card-header">
             <div class="factor-name">08. Humedad de suelo</div>
-            <div class="factor-reading">Saturación (%) y humedad volumétrica (m³/m³) en 0&ndash;7 cm</div>
+            <div class="factor-reading">10% peso &bull; Saturación (%) y humedad volumétrica (m³/m³) en 0&ndash;7 cm</div>
           </div>
           <div class="factor-levels-grid">
-            <div class="factor-level-row"><span>&lt; 28%: Estable</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>28% a 39.9%: Suelo húmedo</span><span class="mono">&minus;10 pts</span></div>
-            <div class="factor-level-row"><span>&ge; 40%: Saturación crítica</span><span class="mono">&minus;20 pts</span></div>
+            <div class="factor-level-row"><span>&lt; 28%: Estable</span><span class="mono">100% aptitud</span></div>
+            <div class="factor-level-row"><span>28% a 39.9%: Suelo húmedo</span><span class="mono">65% aptitud</span></div>
+            <div class="factor-level-row"><span>&ge; 40%: Saturación crítica</span><span class="mono">15% (Saturado)</span></div>
           </div>
           <div class="factor-action">Con suelo húmedo (28&ndash;39.9%): inspección visual de grietas en crestas de talud, uso obligatorio de almohadillas (mats de doble área) bajo zapatas de grúas y no estacionar a &lt; 3 m del borde. Con saturación crítica (&ge; 40%): evacuación preventiva de pie de talud y prohibición de izajes en terreno natural.</div>
         </div>
       </div>
     </section>
-
     <section>
       <h2>Fuentes de datos y telemetría</h2>
       <ul>

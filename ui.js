@@ -10,7 +10,9 @@ import {
   UMBRALES_TEMPERATURA,
   UMBRALES_NIEVE,
   UMBRALES_VISIBILIDAD,
-  UMBRALES_SUELO
+  UMBRALES_SUELO,
+  calcularIndiceSeguridad,
+  evaluateHourlySlot
 } from './reglas.js';
 
 let elements = {};
@@ -263,6 +265,7 @@ export function renderRiskCards(weatherData, horizon = currentForecastHorizon) {
   const riskContext = {
     safeCount: 0,
     alertCount: 0,
+    factors: {},
     scoreDeductions: 0,
     highestRisk: {
       title: 'Condición normal',
@@ -342,7 +345,8 @@ function updateSafetyIndexSummary(context, weatherData) {
   const els = getElements();
   if (!els.safetyScoreNumber) return 100;
 
-  const finalScore = Math.max(20, Math.min(99, 100 - context.scoreDeductions));
+  const safetyResult = calcularIndiceSeguridad(context.factors || {});
+  const finalScore = safetyResult.finalScore;
   els.safetyScoreNumber.textContent = finalScore.toFixed(1);
 
   if (els.tallySafeCount) els.tallySafeCount.textContent = context.safeCount;
@@ -358,26 +362,24 @@ function renderSparklineCurve(weatherData, currentScore) {
 
   const width = 380;
   const height = 90;
-  const steps = 18;
+  const steps = 24;
 
-  const hourlyUV = weatherData?.hourly?.uv_index || [];
-  const hourlyWind = weatherData?.hourly?.wind_gusts_10m || [];
-
+  const hourly = weatherData?.hourly;
   const points = [];
+
   for (let i = 0; i < steps; i++) {
     const x = Math.round((i / (steps - 1)) * width);
-    const hourIdx = Math.floor((i / steps) * 24);
-    const uvVal = hourlyUV[hourIdx] || 0;
-    const windVal = hourlyWind[hourIdx] || 15;
+    let hourScore = currentScore || 100;
 
-    const middayArc = Math.sin((i / (steps - 1)) * Math.PI);
-    const dip = middayArc * (uvVal > 7 ? 20 : 10);
-    const windWobble = Math.sin(i * 1.5) * (windVal > 25 ? 5 : 2);
+    if (hourly && hourly.temperature_2m && hourly.temperature_2m.length > i) {
+      const evaluation = evaluateHourlySlot(hourly, i);
+      hourScore = evaluation.finalScore;
+    }
 
-    const baseScore = currentScore || 78.3;
-    const projectedScore = Math.max(38, Math.min(94, baseScore - dip + windWobble + (i > 11 ? 10 : 0)));
-
-    const y = Math.round(75 - ((projectedScore - 38) / 56) * 50);
+    // Mapeo proporcional 0%..100% en coordenadas SVG (viewBox height 75)
+    // 100% -> y = 12 (cima de la curva)
+    // 0%   -> y = 68 (base de la curva)
+    const y = Math.round(68 - (hourScore / 100) * 56);
     points.push({ x, y });
   }
 
@@ -401,7 +403,7 @@ function updateFloatingMapCard(context, score, horizon = currentForecastHorizon,
   if (!els.floatingKpiTitle || !els.floatingKpiValue) return;
 
   const hasAlerts = context.alertCount > 0;
-  const currentScore = score !== undefined ? score : Math.max(20, Math.min(99, 100 - context.scoreDeductions));
+  const currentScore = score !== undefined ? score : calcularIndiceSeguridad(context.factors || {}).finalScore;
   const isRealTime = (horizon === 0);
   const badgeText = formatHorizonBadge(horizon);
 
@@ -581,6 +583,7 @@ function createUVCard(data, ctx, fc) {
     else if (targetUV >= 6) { deduction = 10; severityScore = 3; }
   }
 
+  ctx.factors.uv = { severity: isNight ? 0 : severityScore, value: targetUV };
   ctx.scoreDeductions += deduction;
   if (severityScore === 0) ctx.safeCount++; else ctx.alertCount++;
 
@@ -710,6 +713,7 @@ function createRainCard(data, ctx, fc) {
     barsHTML = `<div class="mini-histogram-chart" title="Probabilidad de precipitación (${fc.badgeText})">${barsHTML}</div>`;
   }
 
+  ctx.factors.lluvia = { severity: rule.severity, value: fc.isRealTime ? currentPrecip : (fc.getValue('precipitation', 0)) };
   ctx.scoreDeductions += rule.deduccion;
   if (rule.severity === 0) ctx.safeCount++; else ctx.alertCount++;
 
@@ -790,6 +794,7 @@ function createWindCard(data, ctx, fc) {
     pillClass = 'pill-amber';
   }
 
+  ctx.factors.viento = { severity: rule.severity, value: targetGust };
   ctx.scoreDeductions += rule.deduccion;
   if (rule.severity === 0) ctx.safeCount++; else ctx.alertCount++;
 
@@ -882,6 +887,7 @@ function createThunderstormCard(data, ctx, fc) {
     pillClass = 'pill-red';
   }
 
+  ctx.factors.tormenta = { severity: rule.severity, value: targetCape };
   ctx.scoreDeductions += rule.deduccion;
   if (rule.severity === 0) ctx.safeCount++; else ctx.alertCount++;
 
@@ -992,6 +998,7 @@ function createTemperatureCard(data, ctx, fc) {
     severityScore = 1;
   }
 
+  ctx.factors.temperatura = { severity: severityScore, value: targetTemp };
   ctx.scoreDeductions += deduction;
   if (severityScore === 0) ctx.safeCount++; else ctx.alertCount++;
 
@@ -1087,6 +1094,7 @@ function createSnowCard(data, ctx, fc) {
     severityScore = 1;
   }
 
+  ctx.factors.nieve = { severity: severityScore, value: targetSnow };
   ctx.scoreDeductions += deduction;
   if (severityScore === 0) ctx.safeCount++; else ctx.alertCount++;
 
@@ -1180,6 +1188,7 @@ function createVisibilityCard(data, ctx, fc) {
     severityScore = 1;
   }
 
+  ctx.factors.visibilidad = { severity: severityScore, value: targetVis };
   ctx.scoreDeductions += deduction;
   if (severityScore === 0) ctx.safeCount++; else ctx.alertCount++;
 
@@ -1270,6 +1279,7 @@ function createSoilCard(data, ctx, fc) {
     severityScore = 2;
   }
 
+  ctx.factors.suelo = { severity: severityScore, value: targetMoisture };
   ctx.scoreDeductions += deduction;
   if (severityScore === 0) ctx.safeCount++; else ctx.alertCount++;
 

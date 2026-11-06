@@ -385,3 +385,150 @@ export const UMBRALES_SUELO = {
     recomendacion: 'Saturación hídrica crítica en taludes y botaderos: riesgo inminente de deslizamiento y asentamiento de equipos. Evacuación inmediata de cuadrillas al pie de talud y prohibición absoluta de izajes sobre terreno natural.'
   }
 };
+
+/**
+ * METODOLOGÍA DEL ÍNDICE DE SEGURIDAD EN FAENA (ISF) - 2 CAPAS
+ * Conforme a Ley N° 29783, D.S. 024-2016-EM e ICMM Critical Risk Management.
+ * Capa 1: Ponderación multicriterio por criticidad operacional (suma 100%).
+ * Capa 2: Puerta de Control Crítico (Non-compensatory Gating) por severidad máxima.
+ */
+export const FACTOR_WEIGHTS = {
+  tormenta: 0.25,      // 25% - Riesgo de fatalidad inmediata por descargas (D.S. 024-2016-EM)
+  viento: 0.20,        // 20% - Riesgo crítico en izajes con grúas y trabajos en altura (ASME B30.5 / G.050)
+  temperatura: 0.15,   // 15% - Estrés térmico extremo (hipotermia severa o golpe de calor mortal ISO 7243)
+  lluvia: 0.10,        // 10% - Pérdida de adherencia, derrape de volquetes y anegamiento en tajo
+  nieve: 0.10,         // 10% - Congelamiento de pistas, pérdida de tracción en alta montaña
+  suelo: 0.10,         // 10% - Inestabilidad de taludes y asentamiento de maquinaria pesada
+  visibilidad: 0.05,   // 5%  - Pérdida visual en tránsito de acarreo (niebla/polvo)
+  uv: 0.05             // 5%  - Exposición solar acumulativa (Ley N° 30102)
+};
+
+export const SEVERITY_APTITUDES = {
+  0: 100, // Normal / Seguro (100% de aptitud)
+  1: 85,  // Bajo / Leve (85% de aptitud)
+  2: 65,  // Moderado / Precaución (65% de aptitud)
+  3: 40,  // Alto / Restricción táctica (40% de aptitud)
+  4: 15,  // Muy alto / Severo (15% de aptitud)
+  5: 0    // Crítico extremo / Parada técnica (0% de aptitud)
+};
+
+export const BASE_CRITICAL_CEILINGS = {
+  5: 25.0, // Parada técnica obligatoria (Alerta Roja Crítica)
+  4: 50.0, // Operación restringida (Alerta Naranja)
+  3: 75.0, // Precaución táctica (Alerta Amarilla)
+  2: 100.0,
+  1: 100.0,
+  0: 100.0
+};
+
+export function calcularIndiceSeguridad(factors) {
+  let weightedScore = 0;
+  let maxSeverity = 0;
+  let criticalFactor = null;
+  let sev5Count = 0;
+  let sev4Count = 0;
+
+  for (const [key, weight] of Object.entries(FACTOR_WEIGHTS)) {
+    const factorData = factors[key] || { severity: 0 };
+    const sev = Math.max(0, Math.min(5, Number(factorData.severity) || 0));
+    const aptitude = SEVERITY_APTITUDES[sev] !== undefined ? SEVERITY_APTITUDES[sev] : 100;
+
+    weightedScore += weight * aptitude;
+    if (sev === 5) sev5Count++;
+    if (sev === 4) sev4Count++;
+    if (sev > maxSeverity) {
+      maxSeverity = sev;
+      criticalFactor = key;
+    }
+  }
+
+  let ceiling = BASE_CRITICAL_CEILINGS[maxSeverity] !== undefined ? BASE_CRITICAL_CEILINGS[maxSeverity] : 100.0;
+  if (sev5Count > 1) {
+    ceiling = Math.max(0, ceiling - (sev5Count - 1) * 10);
+  } else if (sev5Count === 1 && sev4Count > 0) {
+    ceiling = Math.max(0, ceiling - sev4Count * 5);
+  } else if (sev4Count > 1) {
+    ceiling = Math.max(0, ceiling - (sev4Count - 1) * 8);
+  }
+
+  const isGateActive = weightedScore > ceiling;
+  const finalScore = Math.max(0, Math.min(100, Math.min(weightedScore, ceiling)));
+
+  return {
+    finalScore: Number(finalScore.toFixed(1)),
+    weightedScore: Number(weightedScore.toFixed(1)),
+    maxSeverity,
+    ceiling: Number(ceiling.toFixed(1)),
+    isGateActive,
+    criticalFactor,
+    sev5Count,
+    sev4Count
+  };
+}
+
+export function evaluateHourlySlot(hourlyData, i) {
+  const uvVal = hourlyData.uv_index?.[i] || 0;
+  let uvSev = 0;
+  if (uvVal >= 11) uvSev = 5;
+  else if (uvVal >= 8) uvSev = 4;
+  else if (uvVal >= 6) uvSev = 3;
+
+  const rainVal = hourlyData.precipitation?.[i] || 0;
+  const probVal = hourlyData.precipitation_probability?.[i] || 0;
+  let rainSev = 0;
+  if (rainVal >= 5.0 || probVal >= 70) rainSev = 4;
+  else if (rainVal >= 1.0 || probVal >= 40) rainSev = 3;
+  else if (rainVal >= 0.1 || probVal >= 20) rainSev = 1;
+
+  const windVal = hourlyData.wind_speed_10m?.[i] || 0;
+  const gustVal = hourlyData.wind_gusts_10m?.[i] || 0;
+  let windSev = 0;
+  if (windVal >= 50.0 || gustVal >= 65.0) windSev = 5;
+  else if (windVal >= 38.0 || gustVal >= 50.0) windSev = 4;
+  else if (windVal >= 25.0 || gustVal >= 35.0) windSev = 2;
+
+  const weatherCode = hourlyData.weather_code?.[i];
+  const capeVal = hourlyData.cape?.[i] || 0;
+  let stormSev = 0;
+  if ([95, 96, 99].includes(weatherCode)) stormSev = 5;
+  else if (capeVal >= 2500) stormSev = 4;
+  else if (capeVal >= 1500) stormSev = 3;
+  else if (capeVal >= 500) stormSev = 1;
+
+  const tempVal = hourlyData.temperature_2m?.[i] ?? 15;
+  const appVal = hourlyData.apparent_temperature?.[i] ?? tempVal;
+  const minT = Math.min(tempVal, appVal);
+  const maxT = Math.max(tempVal, appVal);
+  let tempSev = 0;
+  if (minT <= -5.0 || maxT >= 38.0) tempSev = 5;
+  else if (minT <= -0.1 || maxT >= 32.0) tempSev = 4;
+  else if (minT < 10.0 || maxT >= 24.0) tempSev = 1;
+
+  const snowVal = hourlyData.snowfall?.[i] || 0;
+  let snowSev = 0;
+  if (snowVal >= 3.0) snowSev = 5;
+  else if (snowVal >= 1.0) snowSev = 3;
+  else if (snowVal > 0) snowSev = 1;
+
+  const visVal = hourlyData.visibility?.[i] ?? 10000;
+  let visSev = 0;
+  if (visVal < 200) visSev = 5;
+  else if (visVal < 800) visSev = 3;
+  else if (visVal < 2000) visSev = 1;
+
+  const soilVal = hourlyData.soil_moisture_0_to_7cm?.[i] || 0.15;
+  let soilSev = 0;
+  if (soilVal >= 0.40) soilSev = 4;
+  else if (soilVal >= 0.28) soilSev = 2;
+
+  return calcularIndiceSeguridad({
+    uv: { severity: uvSev },
+    lluvia: { severity: rainSev },
+    viento: { severity: windSev },
+    tormenta: { severity: stormSev },
+    temperatura: { severity: tempSev },
+    nieve: { severity: snowSev },
+    visibilidad: { severity: visSev },
+    suelo: { severity: soilSev }
+  });
+}
