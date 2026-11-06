@@ -2,8 +2,10 @@ import {
   APP_NAME,
   ACCURACY_WARNING_THRESHOLD_METERS,
   REGLAS_UV,
+  UMBRALES_LLUVIA,
   UMBRALES_VIENTO,
   UMBRALES_CAPE,
+  REGLA_TORMENTA_ACTIVA,
   WEATHER_CODES_TORMENTA,
   UMBRALES_TEMPERATURA,
   UMBRALES_NIEVE,
@@ -651,11 +653,7 @@ function createRainCard(data, ctx, fc) {
   const currentHourIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
   const currentProb = data?.hourly?.precipitation_probability?.[currentHourIdx] ?? 0;
 
-  let nivelTexto = 'Seco';
-  let pillClass = 'pill-green';
-  let deduction = 0;
-  let severityScore = 0;
-  let recomendacion = 'Vías secas. Tránsito normal de volquetes y equipos móviles sin restricción por humedad.';
+  let rule = UMBRALES_LLUVIA.SECO;
   let secondaryHTML = '';
   let badgeHTML = '';
   let heroVal = '0.0';
@@ -669,23 +667,11 @@ function createRainCard(data, ctx, fc) {
     secondaryHTML = `<span>${currentPrecip > 0 ? 'Precipitación activa sobre faena' : 'Calzada seca &bull; Sin lluvia actual'}</span>`;
 
     if (currentPrecip >= 5) {
-      nivelTexto = 'Lluvia intensa';
-      pillClass = 'pill-red';
-      deduction = 20;
-      severityScore = 4;
-      recomendacion = 'Pistas resbaladizas y riesgo de taludes: reducir velocidad en ruta y revisar drenajes de tajo.';
+      rule = UMBRALES_LLUVIA.INTENSA;
     } else if (currentPrecip >= 1) {
-      nivelTexto = 'Lluvia moderada';
-      pillClass = 'pill-amber';
-      deduction = 10;
-      severityScore = 2;
-      recomendacion = 'Uso de ropa impermeable de campo y precaución al subir o bajar de equipos pesados.';
+      rule = UMBRALES_LLUVIA.MODERADA;
     } else if (currentPrecip > 0) {
-      nivelTexto = 'Llovizna';
-      pillClass = 'pill-amber';
-      deduction = 5;
-      severityScore = 1;
-      recomendacion = 'Supervisar adherencia de neumáticos en haul roads y accesos.';
+      rule = UMBRALES_LLUVIA.LLOVIZNA;
     }
   } else {
     const targetPrecip = fc.getValue('precipitation', 0);
@@ -702,18 +688,13 @@ function createRainCard(data, ctx, fc) {
     badgeHTML = `<div class="metric-projection-badge" title="Acumulado estimado en ${fc.horizonTitle}"><span class="projection-label">${fc.badgeText}:</span><span class="projection-val">${totalPrecip.toFixed(1)} mm</span></div>`;
     secondaryHTML = `<span>A las ${fc.targetTimeStr} h: ${targetPrecip.toFixed(1)} mm/h (${targetProb}%)</span><span class="telemetry-sep">&bull;</span><span>${hasRain ? `Acumulado: ${totalPrecip.toFixed(1)} mm` : 'Sin lluvia prevista'}</span>`;
 
-    pillClass = (!hasRain) ? 'pill-green' : (maxProb >= 70 || totalPrecip >= 5 || targetPrecip >= 5) ? 'pill-red' : 'pill-amber';
-    nivelTexto = (!hasRain) ? 'Seco' : (maxProb >= 70 || targetPrecip >= 5) ? 'Lluvia intensa' : 'Lluvia probable';
-
-    recomendacion = (!hasRain)
-      ? 'Vías secas. Tránsito normal de volquetes y equipos móviles sin restricción por humedad.'
-      : (maxProb >= 70 || totalPrecip >= 5 || targetPrecip >= 5)
-        ? 'Pistas resbaladizas y riesgo de taludes: reducir velocidad en ruta y revisar drenajes de tajo.'
-        : 'Uso de ropa impermeable de campo y precaución al subir o bajar de equipos pesados.';
-
-    if (maxProb >= 70 || totalPrecip >= 5 || targetPrecip >= 5) { deduction = 20; severityScore = 4; }
-    else if (maxProb >= 40 || totalPrecip >= 2 || targetPrecip >= 1) { deduction = 12; severityScore = 3; }
-    else if (hasRain) { deduction = 6; severityScore = 1; }
+    if (maxProb >= 70 || totalPrecip >= 5 || targetPrecip >= 5) {
+      rule = UMBRALES_LLUVIA.INTENSA;
+    } else if (maxProb >= 40 || totalPrecip >= 2 || targetPrecip >= 1) {
+      rule = UMBRALES_LLUVIA.MODERADA;
+    } else if (hasRain) {
+      rule = UMBRALES_LLUVIA.LLOVIZNA;
+    }
 
     const hourlyTimes = data?.hourly?.time || [];
     const stepCount = windowProbs.length;
@@ -729,28 +710,28 @@ function createRainCard(data, ctx, fc) {
     barsHTML = `<div class="mini-histogram-chart" title="Probabilidad de precipitación (${fc.badgeText})">${barsHTML}</div>`;
   }
 
-  ctx.scoreDeductions += deduction;
-  if (severityScore === 0) ctx.safeCount++; else ctx.alertCount++;
+  ctx.scoreDeductions += rule.deduccion;
+  if (rule.severity === 0) ctx.safeCount++; else ctx.alertCount++;
 
-  if (severityScore > ctx.highestRisk.severityScore) {
+  if (rule.severity > ctx.highestRisk.severityScore) {
     ctx.highestRisk = {
       title: 'Precipitación pluvial',
       subtitle: fc.isRealTime ? `Tasa actual: ${currentPrecip.toFixed(1)} mm/h` : `Previsto a las ${fc.targetTimeStr} h: ${heroVal} ${heroUnit}`,
       value: heroVal,
       unit: heroUnit,
       caption: fc.isRealTime ? 'Lectura en tiempo real' : `Acumulado ${fc.badgeText}`,
-      recommendation: recomendacion,
-      severityScore
+      recommendation: rule.recomendacion,
+      severityScore: rule.severity
     };
   }
 
-  const hasAlert = severityScore > 0;
-  const cardClass = hasAlert ? (severityScore >= 4 ? 'risk-card card-alert' : 'risk-card card-warning') : 'risk-card';
+  const hasAlert = rule.severity > 0;
+  const cardClass = hasAlert ? (rule.severity >= 4 ? 'risk-card card-alert' : 'risk-card card-warning') : 'risk-card';
 
   const controlBoxHTML = `
     <div class="control-measure-box">
-      <span class="control-box-label">Control SST (Haul roads / Vías):</span>
-      <p class="control-box-text">${escapeHTML(recomendacion)}</p>
+      <span class="control-box-label">Control SST (Haul roads y accesos):</span>
+      <p class="control-box-text">${escapeHTML(rule.recomendacion)}</p>
     </div>
   `;
 
@@ -762,7 +743,7 @@ function createRainCard(data, ctx, fc) {
         <span class="factor-badge-circle">02</span>
         <span class="factor-title">Precipitación pluvial</span>
       </div>
-      <span class="risk-status-pill ${pillClass}">${nivelTexto}</span>
+      <span class="risk-status-pill ${rule.pill}">${rule.nivel}</span>
     </div>
 
     <div class="risk-metric-hero-line">
@@ -795,54 +776,42 @@ function createWindCard(data, ctx, fc) {
   const windowGusts = fc.getWindowValues('wind_gusts_10m', targetGust);
   const maxGust = Math.max(targetGust, ...windowGusts);
 
-  let nivelLabel = 'Normal';
+  let rule = UMBRALES_VIENTO.NORMAL;
   let pillClass = 'pill-green';
-  let deduction = 0;
-  let severityScore = 0;
-  let recomendacion = 'Vientos seguros. Operaciones de izaje, grúas y trabajos en altura autorizados sin restricción.';
 
-  if (targetGust > 50 || targetBoom > 50 || maxGust > 50) {
-    nivelLabel = 'Suspensión';
+  if (targetGust >= 50 || targetBoom >= 50 || maxGust >= 50) {
+    rule = UMBRALES_VIENTO.SUSPENSION;
     pillClass = 'pill-red';
-    deduction = 35;
-    severityScore = 5;
-    recomendacion = 'Parada mandatoria de grúas e izajes conforme a estándares de seguridad (> 50 km/h). Descenso de plumas.';
   } else if (targetGust >= 32 || targetBoom >= 32 || maxGust >= 32) {
-    nivelLabel = 'Restricción izaje';
+    rule = UMBRALES_VIENTO.RESTRICCION;
     pillClass = 'pill-red';
-    deduction = 20;
-    severityScore = 4;
-    recomendacion = 'Límite legal de izaje alcanzado (≥ 32 km/h D.S. 024-2016-EM). Prohibido izaje de cargas críticas.';
   } else if (targetGust >= 25 || targetBoom >= 25 || maxGust >= 25) {
-    nivelLabel = 'Precaución';
+    rule = UMBRALES_VIENTO.PRECAUCION;
     pillClass = 'pill-amber';
-    deduction = 8;
-    severityScore = 2;
-    recomendacion = 'Inspección de estabilizadores de grúas, vientos guía y uso permanente de barbiquejo.';
   }
 
-  ctx.scoreDeductions += deduction;
-  if (severityScore === 0) ctx.safeCount++; else ctx.alertCount++;
+  ctx.scoreDeductions += rule.deduccion;
+  if (rule.severity === 0) ctx.safeCount++; else ctx.alertCount++;
 
-  if (severityScore > ctx.highestRisk.severityScore) {
+  if (rule.severity > ctx.highestRisk.severityScore) {
     ctx.highestRisk = {
       title: 'Velocidad del viento',
-      subtitle: `${nivelLabel}`,
+      subtitle: `${rule.nivel}`,
       value: Math.round(targetGust),
       unit: 'km/h',
       caption: fc.isRealTime ? `Ráfaga actual: ${Math.round(currentGust)} km/h` : `A las ${fc.targetTimeStr} h: ráfaga ${Math.round(targetGust)} km/h`,
-      recommendation: recomendacion,
-      severityScore
+      recommendation: rule.recomendacion,
+      severityScore: rule.severity
     };
   }
 
-  const hasAlert = severityScore > 0;
-  const cardClass = hasAlert ? (severityScore >= 4 ? 'risk-card card-alert' : 'risk-card card-warning') : 'risk-card';
+  const hasAlert = rule.severity > 0;
+  const cardClass = hasAlert ? (rule.severity >= 4 ? 'risk-card card-alert' : 'risk-card card-warning') : 'risk-card';
 
   const controlBoxHTML = `
     <div class="control-measure-box">
-      <span class="control-box-label">Control SST (Izajes y grúas / ISO):</span>
-      <p class="control-box-text">${escapeHTML(recomendacion)}</p>
+      <span class="control-box-label">Control SST (Izajes, grúas y altura / D.S. 024):</span>
+      <p class="control-box-text">${escapeHTML(rule.recomendacion)}</p>
     </div>
   `;
 
@@ -862,7 +831,7 @@ function createWindCard(data, ctx, fc) {
         <span class="factor-badge-circle">03</span>
         <span class="factor-title">Viento y ráfagas</span>
       </div>
-      <span class="risk-status-pill ${pillClass}">${nivelLabel}</span>
+      <span class="risk-status-pill ${pillClass}">${rule.nivel}</span>
     </div>
 
     <div class="risk-metric-hero-line">
@@ -901,60 +870,40 @@ function createThunderstormCard(data, ctx, fc) {
   }
 
   let level = 'BAJO';
-  if (targetCape > 2500 || maxCape > 2500) level = 'MUY_ALTO';
+  if (targetCape >= 2500 || maxCape >= 2500) level = 'MUY_ALTO';
   else if (targetCape >= 1500 || maxCape >= 1500) level = 'ALTO';
   else if (targetCape >= 500 || maxCape >= 500) level = 'MODERADO';
 
-  let capeRule = UMBRALES_CAPE[level];
-  let nivelLabel = capeRule.nivel;
-  let recomendacion = capeRule.recomendacion;
-  let pillClass = 'pill-green';
-  let deduction = 0;
-  let severityScore = 0;
+  let rule = UMBRALES_CAPE[level];
+  let pillClass = (level === 'MUY_ALTO') ? 'pill-red' : (level === 'ALTO' || level === 'MODERADO') ? 'pill-amber' : 'pill-green';
 
   if (stormDetected) {
+    rule = REGLA_TORMENTA_ACTIVA;
     pillClass = 'pill-red';
-    nivelLabel = fc.isRealTime ? 'Tormenta activa' : 'Tormenta prevista';
-    deduction = 35;
-    severityScore = 5;
-    const horaMsg = fc.isRealTime ? ' en faena.' : ` prevista hacia las ${fc.targetTimeStr} h.`;
-    recomendacion = `Tormenta eléctrica${horaMsg} Activar detector de rayos y evacuar a refugios Faraday (regla 30/30 WMO).`;
-  } else if (level === 'MUY_ALTO') {
-    pillClass = 'pill-red';
-    deduction = 22;
-    severityScore = 4;
-  } else if (level === 'ALTO') {
-    pillClass = 'pill-amber';
-    deduction = 14;
-    severityScore = 3;
-  } else if (level === 'MODERADO') {
-    pillClass = 'pill-amber';
-    deduction = 6;
-    severityScore = 1;
   }
 
-  ctx.scoreDeductions += deduction;
-  if (severityScore === 0) ctx.safeCount++; else ctx.alertCount++;
+  ctx.scoreDeductions += rule.deduccion;
+  if (rule.severity === 0) ctx.safeCount++; else ctx.alertCount++;
 
-  if (severityScore > ctx.highestRisk.severityScore) {
+  if (rule.severity > ctx.highestRisk.severityScore) {
     ctx.highestRisk = {
       title: 'Tormenta eléctrica',
       subtitle: stormDetected ? (fc.isRealTime ? 'Tormenta activa en faena' : `Prevista hacia las ${fc.targetTimeStr} h`) : `Energía CAPE ${Math.round(targetCape)} J/kg`,
       value: Math.round(targetCape),
       unit: 'J/kg',
       caption: fc.isRealTime ? 'Detector de rayos en tiempo real' : `Previsto a las ${fc.targetTimeStr} h`,
-      recommendation: recomendacion,
-      severityScore
+      recommendation: rule.recomendacion,
+      severityScore: rule.severity
     };
   }
 
-  const hasAlert = severityScore > 0 || stormDetected;
-  const cardClass = hasAlert ? (severityScore >= 4 ? 'risk-card card-alert' : 'risk-card card-warning') : 'risk-card';
+  const hasAlert = rule.severity > 0;
+  const cardClass = hasAlert ? (rule.severity >= 4 ? 'risk-card card-alert' : 'risk-card card-warning') : 'risk-card';
 
   const controlBoxHTML = `
     <div class="control-measure-box">
       <span class="control-box-label">Control SST (Refugios Faraday / WMO):</span>
-      <p class="control-box-text">${escapeHTML(recomendacion)}</p>
+      <p class="control-box-text">${escapeHTML(rule.recomendacion)}</p>
     </div>
   `;
 
@@ -975,7 +924,7 @@ function createThunderstormCard(data, ctx, fc) {
         <span class="factor-badge-circle">04</span>
         <span class="factor-title">Tormenta eléctrica</span>
       </div>
-      <span class="risk-status-pill ${pillClass}">${nivelLabel}</span>
+      <span class="risk-status-pill ${pillClass}">${rule.nivel}</span>
     </div>
 
     <div class="risk-metric-hero-line">
