@@ -644,17 +644,25 @@
       </div>
 
       <p>
-        El tablero inicia por defecto en modo <strong>En vivo (Tiempo real)</strong> y permite alternar a proyecciones operativas según la naturaleza de la tarea, con la posibilidad de retornar al modo en tiempo real pulsando «En vivo» en cualquier momento:
+        El tablero inicia por defecto en modo <strong>En vivo (Tiempo real)</strong> y permite alternar a proyecciones
+        operativas según la naturaleza de la tarea, con la posibilidad de retornar al modo en tiempo real pulsando «En
+        vivo» en cualquier momento:
       </p>
 
-      <ul style="margin: 8px 0 16px 20px; font-size: 0.88rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px;">
-        <li><strong>En vivo (Tiempo real):</strong> Modo predeterminado. Lectura instantánea de la telemetría en terreno sin proyecciones hacia adelante. Refleja las condiciones operativas exactas en el momento actual.</li>
-        <li><strong>30 minutos (30m):</strong> Ventana inmediata de alta resolución para maniobras críticas de izaje con grúas y traslados de cargas sobredimensionadas.</li>
-        <li><strong>1 hora (1h):</strong> Alerta táctica para trabajos temporales en altura (andamios, plataformas elevadoras) y frentes expuestos.</li>
-        <li><strong>3 horas (3h):</strong> Ventana de ejecución de tareas programadas (vaciados, tendido de cables, barrenación en tajo).</li>
+      <ul
+        style="margin: 8px 0 16px 20px; font-size: 0.88rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px;">
+        <li><strong>En vivo (Tiempo real):</strong> Modo predeterminado. Lectura instantánea de la telemetría en terreno
+          sin proyecciones hacia adelante. Refleja las condiciones operativas exactas en el momento actual.</li>
+        <li><strong>30 minutos (30m):</strong> Ventana inmediata de alta resolución para maniobras críticas de izaje con
+          grúas y traslados de cargas sobredimensionadas.</li>
+        <li><strong>1 hora (1h):</strong> Alerta táctica para trabajos temporales en altura (andamios, plataformas
+          elevadoras) y frentes expuestos.</li>
+        <li><strong>3 horas (3h):</strong> Ventana de ejecución de tareas programadas (vaciados, tendido de cables,
+          barrenación en tajo).</li>
         <li><strong>9 horas (9h):</strong> Jornada laboral diurna en obras civiles y frentes de superficie.</li>
         <li><strong>12 horas (12h):</strong> Turno estándar de faena minera e industrial (régimen 12x12).</li>
-        <li><strong>24 horas (24h):</strong> Ciclo diario integral para previsión logística, relevo de guardias y planificación del siguiente turno.</li>
+        <li><strong>24 horas (24h):</strong> Ciclo diario integral para previsión logística, relevo de guardias y
+          planificación del siguiente turno.</li>
       </ul>
 
       <div class="table-desktop">
@@ -1047,23 +1055,40 @@
     <section>
       <h2>Márgenes de error, telemetría numérica y microclimas</h2>
       <p>
-        La plataforma utiliza predicción numérica meteorológica (NWP) asimilada con satélites y sondeos. Es fundamental que el supervisor de SST comprenda cómo se relacionan los datos del modelo con la percepción física en terreno:
+        La plataforma utiliza predicción numérica meteorológica (NWP) asimilada con satélites y sondeos. Es fundamental
+        que el supervisor de SST comprenda cómo se relacionan los datos del modelo con la percepción física en terreno:
       </p>
       <ul>
         <li>
-          <strong>Viento a 10 metros de altura (Norma OMM / WMO) vs. Suelo (1.5 m):</strong> Los anemómetros oficiales y los modelos meteorológicos calculan el viento a <strong>10 metros de altura sobre mástil despejado</strong>. En el suelo, la rugosidad del terreno, taludes de tajo, muros y edificaciones frenan el aire por fricción, haciendo que una persona perciba entre 40% y 60% menos viento del que realmente impacta la pluma de una grúa (80 m) o una estructura en altura.
+          <strong>Viento a 10 metros de altura (Norma OMM / WMO) vs. Suelo (1.5 m):</strong> Los anemómetros oficiales y
+          los modelos meteorológicos calculan el viento a <strong>10 metros de altura sobre mástil despejado</strong>.
+          En el suelo, la rugosidad del terreno, taludes de tajo, muros y edificaciones frenan el aire por fricción,
+          haciendo que una persona perciba entre 40% y 60% menos viento del que realmente impacta la pluma de una grúa
+          (80 m) o una estructura en altura.
         </li>
         <li>
-          <strong>Margen de error en viento:</strong> En terreno plano es de &plusmn;3 a 5 km/h. En quebradas o valles estrechos con microclimas de abrigo o encajonamiento, las desviaciones locales pueden rondar entre &plusmn;8 y 15 km/h respecto a la celda promedio del modelo (malla de 1 a 9 km).
+          <strong>Margen de error en viento:</strong> En terreno plano es de &plusmn;3 a 5 km/h. En quebradas o valles
+          estrechos con microclimas de abrigo o encajonamiento, las desviaciones locales pueden rondar entre &plusmn;8 y
+          15 km/h respecto a la celda promedio del modelo (malla de 1 a 9 km).
         </li>
         <li>
-          <strong>Margen de error en temperatura:</strong> Muy alta precisión (&plusmn;1.0° a 1.5°C), ajustada por la cota altimétrica barométrica del punto consultado.
+          <strong>Margen de error en temperatura:</strong> Muy alta precisión (&plusmn;1.0° a 1.5°C), ajustada por la
+          cota altimétrica barométrica del punto consultado.
         </li>
         <li>
-          <strong>Glaciares vs. Precipitación nival activa:</strong> El factor <em>Nieve y congelamiento</em> reporta la <strong>tasa de precipitación sólida activa</strong> (centímetros de nieve cayendo en ese instante). Si se consulta un glaciar o cumbre nevada en un día despejado, la tasa de nevada marcará <code>0.0 cm/h</code> porque en ese instante no está nevando. El riesgo por congelamiento en glaciares se identifica en el factor <em>Temperatura</em> (valores bajo cero) y en la <em>Isoterma 0°C</em> (que se situará por debajo de la cota del terreno).
+          <strong>Glaciares vs. Precipitación nival activa:</strong> El factor <em>Nieve y congelamiento</em> reporta la
+          <strong>tasa de precipitación sólida activa</strong> (centímetros de nieve cayendo en ese instante). Si se
+          consulta un glaciar o cumbre nevada en un día despejado, la tasa de nevada marcará <code>0.0 cm/h</code>
+          porque en ese instante no está nevando. El riesgo por congelamiento en glaciares se identifica en el factor
+          <em>Temperatura</em> (valores bajo cero) y en la <em>Isoterma 0°C</em> (que se situará por debajo de la cota
+          del terreno).
         </li>
         <li>
-          <strong>Temperatura física vs. Sensación y estrés térmico:</strong> La temperatura (°C) es la medida del termómetro de bulbo seco. La sensación térmica incorpora el efecto de enfriamiento por viento (wind chill) o sofocamiento por humedad. El <strong>Estrés térmico</strong> evalúa los límites ergonómicos de tolerancia humana (ISO 7243 y R.M. 375-2008-TR) para prevenir hipotermia o golpe de calor mediante rotación obligatoria de cuadrillas y puntos de hidratación.
+          <strong>Temperatura física vs. Sensación y estrés térmico:</strong> La temperatura (°C) es la medida del
+          termómetro de bulbo seco. La sensación térmica incorpora el efecto de enfriamiento por viento (wind chill) o
+          sofocamiento por humedad. El <strong>Estrés térmico</strong> evalúa los límites ergonómicos de tolerancia
+          humana (ISO 7243 y R.M. 375-2008-TR) para prevenir hipotermia o golpe de calor mediante rotación obligatoria
+          de cuadrillas y puntos de hidratación.
         </li>
       </ul>
     </section>
@@ -1071,7 +1096,8 @@
     <section>
       <h2>Certeza predictiva y fiabilidad operativa por horizonte</h2>
       <p>
-        La fiabilidad de los modelos numéricos de pronóstico decrece gradualmente conforme se amplía la ventana temporal. MiEntorno incorpora un indicador dinámico de fiabilidad en el tablero principal:
+        La fiabilidad de los modelos numéricos de pronóstico decrece gradualmente conforme se amplía la ventana
+        temporal. MiEntorno incorpora un indicador dinámico de fiabilidad en el tablero principal:
       </p>
 
       <div class="table-desktop">
@@ -1120,13 +1146,15 @@
                 <td><strong>12 horas</strong></td>
                 <td><span class="mono" style="color: #fbbf24; font-weight: 700;">78%</span></td>
                 <td>Turno estándar de faena (régimen 12x12)</td>
-                <td>Análisis Seguro de Trabajo (AST) de la guardia. Muy robusto para frentes de viento y ciclo térmico.</td>
+                <td>Análisis Seguro de Trabajo (AST) de la guardia. Muy robusto para frentes de viento y ciclo térmico.
+                </td>
               </tr>
               <tr>
                 <td><strong>24 horas</strong></td>
                 <td><span class="mono" style="color: #fbbf24; font-weight: 700;">72%</span></td>
                 <td>Ciclo circadiano y relevo diario</td>
-                <td>Planificación logística, relevo de guardias y previsión de frentes sinópticos del día siguiente.</td>
+                <td>Planificación logística, relevo de guardias y previsión de frentes sinópticos del día siguiente.
+                </td>
               </tr>
             </tbody>
           </table>
@@ -1134,20 +1162,30 @@
       </div>
 
       <p style="margin-top: 12px; font-size: 0.88rem; color: var(--text-muted);">
-        <strong>¿Por qué mantener 12h y 24h?</strong> En la industria minera, portuaria y de infraestructura a nivel global, los horizontes de 12 horas (turno completo) y 24 horas (relevo diario) son obligatorios para la gestión preventiva de riesgos. Con una fiabilidad del 72% al 78%, los modelos numéricos modernos capturan con gran solvencia los ciclos diurnos de temperatura, el paso de frentes fríos y las aceleraciones de viento sinóptico.
+        <strong></strong> En la industria minera, portuaria y de infraestructura, los horizontes de 12
+        horas (turno completo) y 24 horas (relevo diario) son obligatorios para la gestión preventiva de riesgos. Con
+        una fiabilidad del 72% al 78%, los modelos numéricos modernos capturan con gran solvencia los ciclos diurnos de
+        temperatura, el paso de frentes fríos y las aceleraciones de viento sinóptico.
       </p>
     </section>
 
     <section>
       <h2>Alcance global y equivalencia normativa</h2>
       <p>
-        MiEntorno está diseñado para operar en **cualquier coordenada geográfica del planeta (WGS84)**. Aunque los controles operativos toman como referencia legal el marco sectorial peruano (D.S. 024-2016-EM para minería, R.M. 375-2008-TR para ergonomía y Ley N° 30102 para radiación UV), todos los umbrales físicos se fundamentan en estándares internacionales universales:
+        MiEntorno está diseñado para operar en cualquier coordenada geográfica (WGS84). Aunque los controles operativos
+        toman como referencia legal el marco sectorial peruano (D.S. 024-2016-EM para minería, R.M. 375-2008-TR para
+        ergonomía y Ley N° 30102 para radiación UV), todos los umbrales físicos se fundamentan en estándares
+        internacionales universales:
       </p>
       <ul>
-        <li><strong>Organización Mundial de la Salud (OMS / WHO):</strong> Escala global de Índice Ultravioleta (UVI de 0 a 16+).</li>
-        <li><strong>Organización Meteorológica Mundial (OMM / WMO):</strong> Parámetros de energía convectiva (CAPE en J/kg) y protocolo 30/30 para tormentas eléctricas.</li>
-        <li><strong>Organización Internacional de Normalización (ISO 7243):</strong> Evaluación de estrés térmico y régimen de descanso/hidratación en ambientes calurosos y fríos.</li>
-        <li><strong>OSHA / MSHA (EE.UU.):</strong> Estándares de seguridad para izajes críticos con grúas y detención mandatoria por ráfagas de viento.</li>
+        <li><strong>Organización Mundial de la Salud (OMS / WHO):</strong> Escala global de Índice Ultravioleta (UVI de
+          0 a 16+).</li>
+        <li><strong>Organización Meteorológica Mundial (OMM / WMO):</strong> Parámetros de energía convectiva (CAPE en
+          J/kg) y protocolo 30/30 para tormentas eléctricas.</li>
+        <li><strong>Organización Internacional de Normalización (ISO 7243):</strong> Evaluación de estrés térmico y
+          régimen de descanso/hidratación en ambientes calurosos y fríos.</li>
+        <li><strong>OSHA / MSHA (EE.UU.):</strong> Estándares de seguridad para izajes críticos con grúas y detención
+          mandatoria por ráfagas de viento.</li>
       </ul>
     </section>
 
