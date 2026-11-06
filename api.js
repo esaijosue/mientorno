@@ -43,6 +43,43 @@ export async function searchLocationNominatim(query) {
   }
 }
 
+export async function reverseGeocodeNominatim(lat, lon) {
+  const now = Date.now();
+  const timeSinceLast = now - lastNominatimRequestTime;
+  if (timeSinceLast < 1000) {
+    await new Promise((resolve) => setTimeout(resolve, 1000 - timeSinceLast));
+  }
+  lastNominatimRequestTime = Date.now();
+
+  try {
+    const url = new URL('https://nominatim.openstreetmap.org/reverse');
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('lat', lat.toFixed(5));
+    url.searchParams.set('lon', lon.toFixed(5));
+    url.searchParams.set('zoom', '14');
+
+    const response = await fetch(url.toString(), {
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    const addr = data.address || {};
+    const local = addr.city || addr.town || addr.village || addr.suburb || addr.municipality || addr.county || data.name;
+    const region = addr.state || addr.region;
+
+    if (local && region && local !== region) {
+      return `${local}, ${region}`;
+    }
+    return local || region || data.display_name?.split(',')[0] || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function fetchWeatherData(lat, lon) {
   try {
     const url = new URL('https://api.open-meteo.com/v1/forecast');

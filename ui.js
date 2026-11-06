@@ -99,11 +99,15 @@ export function updateLastRefreshTimestamp() {
 
 export function updateLocationInfo(lat, lon, accuracy, source = 'gps', placeName = null) {
   const els = getElements();
-  if (!els.locationStatus || !els.coordsDisplay) return;
+  if (!els.locationStatus) return;
 
-  els.coordsDisplay.textContent = `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`;
+  if (els.coordsDisplay) {
+    els.coordsDisplay.textContent = `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`;
+  }
 
-  const displayName = placeName || (source === 'inicial' ? 'Lima / Callao' : `${lat >= 0 ? '+' : ''}${lat.toFixed(2)}°, ${lon >= 0 ? '+' : ''}${lon.toFixed(2)}°`);
+  const coordStr = `${lat >= 0 ? '+' : ''}${lat.toFixed(2)}°, ${lon >= 0 ? '+' : ''}${lon.toFixed(2)}°`;
+  const displayName = placeName || coordStr;
+
   if (els.floatingPlaceName) {
     els.floatingPlaceName.textContent = displayName;
   }
@@ -130,9 +134,7 @@ export function updateLocationInfo(lat, lon, accuracy, source = 'gps', placeName
         ? `Punto fijado en el mapa (${displayName})`
         : source === 'busqueda'
           ? `Ubicación: ${displayName}`
-          : source === 'inicial'
-            ? 'Frente de operación activo (Lima / Callao)'
-            : `Ubicación en sesión (${displayName})`;
+          : `Frente operativo (${displayName})`;
 
     els.locationStatus.textContent = label;
     els.accuracyAlert.hidden = true;

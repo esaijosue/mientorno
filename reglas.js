@@ -11,7 +11,7 @@ export const PERU_DEFAULT_COORDS = {
 export const OPERATIONAL_DEFAULT_COORDS = {
   lat: Number(runtimeEnv.DEFAULT_LAT) || -12.0464,
   lon: Number(runtimeEnv.DEFAULT_LON) || -77.0428,
-  name: runtimeEnv.DEFAULT_LOCATION_NAME || 'Lima / Callao (frente operativo)'
+  name: runtimeEnv.DEFAULT_LOCATION_NAME || null
 };
 
 export const ACCURACY_WARNING_THRESHOLD_METERS = Number(runtimeEnv.ACCURACY_THRESHOLD) || 500;

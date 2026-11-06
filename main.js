@@ -6,7 +6,7 @@ import {
   OPERATIONAL_DEFAULT_COORDS,
   AUTO_REFRESH_INTERVAL_MS
 } from './reglas.js';
-import { searchLocationNominatim, fetchWeatherData } from './api.js';
+import { searchLocationNominatim, fetchWeatherData, reverseGeocodeNominatim } from './api.js';
 import { initMap, setMarkerPosition, centerPeru, resizeMap, zoomIn, zoomOut } from './mapa.js';
 import {
   initUI,
@@ -22,18 +22,20 @@ import {
 let currentLocation = {
   lat: null,
   lon: null,
-  accuracy: null
+  accuracy: null,
+  placeName: null
 };
 
 let searchDebounceTimer = null;
 let autoRefreshTimer = null;
 
-function guardarUbicacionLocalStorage(lat, lon, accuracy = null) {
+function guardarUbicacionLocalStorage(lat, lon, accuracy = null, placeName = null) {
   try {
     const data = {
       lat,
       lon,
       accuracy,
+      placeName,
       timestamp: Date.now()
     };
     localStorage.setItem(STORAGE_KEY_LOCATION, JSON.stringify(data));
@@ -73,11 +75,21 @@ async function cargarDatosMeteorologicos(lat, lon) {
   }
 }
 
-function alCambiarUbicacion(lat, lon, accuracy = null, origen = 'manual') {
-  currentLocation = { lat, lon, accuracy };
-  guardarUbicacionLocalStorage(lat, lon, accuracy);
-  updateLocationInfo(lat, lon, accuracy, origen);
+function alCambiarUbicacion(lat, lon, accuracy = null, origen = 'manual', placeName = null) {
+  currentLocation = { lat, lon, accuracy, placeName };
+  guardarUbicacionLocalStorage(lat, lon, accuracy, placeName);
+  updateLocationInfo(lat, lon, accuracy, origen, placeName);
   cargarDatosMeteorologicos(lat, lon);
+
+  if (!placeName) {
+    reverseGeocodeNominatim(lat, lon).then((resolvedName) => {
+      if (resolvedName && currentLocation.lat === lat && currentLocation.lon === lon) {
+        currentLocation.placeName = resolvedName;
+        guardarUbicacionLocalStorage(lat, lon, accuracy, resolvedName);
+        updateLocationInfo(lat, lon, accuracy, origen, resolvedName);
+      }
+    });
+  }
 }
 
 function solicitarGeolocalizacion(isAutoInit = false) {
@@ -391,7 +403,7 @@ function iniciarApp() {
       null,
       (lat, lon, acc, origen) => alCambiarUbicacion(lat, lon, acc, origen)
     );
-    alCambiarUbicacion(saved.lat, saved.lon, saved.accuracy, 'storage');
+    alCambiarUbicacion(saved.lat, saved.lon, saved.accuracy, 'storage', saved.placeName || null);
   } else {
     setMarkerPosition(
       OPERATIONAL_DEFAULT_COORDS.lat,
@@ -401,7 +413,7 @@ function iniciarApp() {
       12,
       (lat, lon, acc, origen) => alCambiarUbicacion(lat, lon, acc, origen)
     );
-    alCambiarUbicacion(OPERATIONAL_DEFAULT_COORDS.lat, OPERATIONAL_DEFAULT_COORDS.lon, null, 'inicial');
+    alCambiarUbicacion(OPERATIONAL_DEFAULT_COORDS.lat, OPERATIONAL_DEFAULT_COORDS.lon, null, 'inicial', OPERATIONAL_DEFAULT_COORDS.name || null);
   }
 
   solicitarGeolocalizacion(true);
