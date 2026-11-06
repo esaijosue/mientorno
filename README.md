@@ -75,7 +75,7 @@ Donde $P_i$ representa la penalidad específica calculada para cada uno de los *
    - CAPE Moderado ($500$ a $1499\text{ J/kg}$): $-6$ puntos (verificación preventiva de detectores portátiles y estado de refugios en frentes remotos).
    - CAPE Alto ($1500$ a $2499\text{ J/kg}$): $-14$ puntos (alerta pre-tormenta; prohibido iniciar voladuras, carguío de explosivos, labores en cumbres o tendido de cables a cielo abierto; identificar rutas de evacuación rápida hacia refugios Faraday).
    - CAPE Muy Alto ($\ge 2500\text{ J/kg}$): $-22$ puntos (potencial convectivo severo; preparación de evacuación y repliegue preventivo).
-   - Tormenta activa o código WMO $95, 96, 99$: $-35$ puntos (**EVACUACIÓN INMEDIATA conforme a regla 30/30 OMM/WMO y D.S. 024-2016-EM**: paralización total a cielo abierto; prohibido guarecerse bajo árboles o estructuras metálicas aisladas; evacuación obligatoria a camionetas o camiones con cabina metálica cerrada o refugios Faraday certificados con puesta a tierra; retorno seguro tras 30 min sin descargas en un radio de 16 km).
+   - Tormenta activa o código WMO $95, 96, 99$: $-35$ puntos (**Evacuación inmediata conforme a regla 30/30 OMM/WMO y D.S. 024-2016-EM**: paralización total a cielo abierto; prohibido guarecerse bajo árboles o estructuras metálicas aisladas; evacuación obligatoria a camionetas o camiones con cabina metálica cerrada o refugios Faraday certificados con puesta a tierra; retorno seguro tras 30 min sin descargas en un radio de 16 km).
 
 5. **Temperatura y estrés térmico ($P_{\text{térmico}}$):**
    - Confort térmico ($8.1^\circ\text{C}$ a $28.0^\circ\text{C}$): $0$ puntos (condiciones óptimas; hidratación regular estándar de 2 L/día).

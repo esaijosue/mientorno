@@ -670,11 +670,72 @@
           <table>
             <thead>
               <tr>
+                <th style="width: 22%;">Rango del índice</th>
+                <th style="width: 25%;">Condición en faena</th>
+                <th>Criterio de acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="mono">&ge; 80.0%</span></td>
+                <td>Condición normal</td>
+                <td>Operaciones regulares sin restricciones climáticas adicionales.</td>
+              </tr>
+              <tr>
+                <td><span class="mono">60.0% a 79.9%</span></td>
+                <td>Atención requerida</td>
+                <td>Operación con restricciones (rotación de cuadrillas a la sombra, monitoreo continuo de anemómetros de pluma, alerta de visibilidad).</td>
+              </tr>
+              <tr>
+                <td><span class="mono">&lt; 60.0%</span></td>
+                <td>Alerta crítica</td>
+                <td>Parada técnica obligatoria de tareas de alto riesgo en cielo abierto (izajes, andamios, tránsito en trochas críticas, trabajos en altura).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="cards-mobile">
+        <div class="scale-card">
+          <div class="scale-card-header">
+            <span class="scale-badge badge-safe">&ge; 80.0%</span>
+            <span class="scale-title">Condición normal</span>
+          </div>
+          <div class="scale-card-desc">Operaciones regulares sin restricciones climáticas adicionales.</div>
+        </div>
+
+        <div class="scale-card">
+          <div class="scale-card-header">
+            <span class="scale-badge badge-warning">60.0% a 79.9%</span>
+            <span class="scale-title">Atención requerida</span>
+          </div>
+          <div class="scale-card-desc">Operación con restricciones (rotación a la sombra, monitoreo de anemómetros de pluma, alerta de visibilidad).</div>
+        </div>
+
+        <div class="scale-card">
+          <div class="scale-card-header">
+            <span class="scale-badge badge-alert">&lt; 60.0%</span>
+            <span class="scale-title">Alerta crítica</span>
+          </div>
+          <div class="scale-card-desc">Parada técnica obligatoria de tareas de alto riesgo en cielo abierto (izajes, andamios, tránsito crítico, trabajos en altura).</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Factores evaluados y deducciones</h2>
+
+      <div class="table-desktop">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
                 <th class="col-factor">Factor</th>
                 <th class="col-metric">Lectura y telemetría</th>
                 <th class="col-limits">Límites y niveles</th>
                 <th class="col-deduction">Deducción</th>
-                <th class="col-action">Medidas de control operativo (SST / HSE)</th>
+                <th class="col-action">Controles</th>
               </tr>
             </thead>
             <tbody>
@@ -697,7 +758,7 @@
                 </td>
                 <td>
                   <strong>EPP obligatorio:</strong> Bloqueador solar FPS 50+ con reaplicación horaria en rostro, cuello y orejas; casco con cortaviento tipo legionario (cubrenuca UPF 50+), visera amplia y lentes UV400.<br>
-                  <strong>Ingeniería y Administrativo:</strong> Habilitación de mallas raschel o toldos en puntos fijos. Rotación a la sombra cada 45 min en UVI &ge; 6 y cada 20&ndash;30 min en UVI &ge; 8. Suspensión de trabajos de alta exigencia a la intemperie entre 11:00 y 15:00 h en UVI &ge; 11 (Ley N° 30102).<br>
+                  <strong>Ingeniería y administrativo:</strong> Habilitación de mallas raschel o toldos en puntos fijos. Rotación a la sombra cada 45 min en UVI &ge; 6 y cada 20&ndash;30 min en UVI &ge; 8. Suspensión de trabajos de alta exigencia a la intemperie entre 11:00 y 15:00 h en UVI &ge; 11 (Ley N° 30102).<br>
                   <strong>Hidratación:</strong> Preventiva (250 ml cada 20&ndash;30 min) y suministro obligatorio de sales de rehidratación oral / electrolitos para prevenir estrés térmico asociado.
                 </td>
               </tr>
@@ -763,9 +824,9 @@
                   &minus;35 pts
                 </td>
                 <td>
-                  <strong>CAPE Estable / Moderado:</strong> Monitoreo continuo de detectores de tormentas (bolsillo o base fija) y verificación de accesibilidad a refugios en frentes remotos.<br>
-                  <strong>CAPE Alto / Muy Alto (&ge; 1500):</strong> Alerta pre-tormenta: prohibir inicio de voladuras, carguío de explosivos, trabajos en cumbres o tendido de líneas a cielo abierto; identificar ruta de evacuación rápida hacia refugios Faraday.<br>
-                  <strong>Tormenta activa / Alerta roja:</strong> <strong>EVACUACIÓN INMEDIATA (Regla 30/30 OMM/WMO y D.S. 024-2016-EM)</strong>: Suspensión absoluta de toda faena a cielo abierto; prohibido guarecerse bajo árboles o estructuras metálicas aisladas; evacuación obligatoria a camionetas o camiones con cabina metálica cerrada o refugios Faraday certificados puestos a tierra; retorno seguro únicamente tras 30 min sin truenos ni descargas en un radio de 16 km (10 millas).
+                  <strong>CAPE estable / moderado:</strong> Monitoreo continuo de detectores de tormentas (bolsillo o base fija) y verificación de accesibilidad a refugios en frentes remotos.<br>
+                  <strong>CAPE alto / muy alto (&ge; 1500):</strong> Alerta pre-tormenta: prohibir inicio de voladuras, carguío de explosivos, trabajos en cumbres o tendido de líneas a cielo abierto; identificar ruta de evacuación rápida hacia refugios Faraday.<br>
+                  <strong>Tormenta activa / alerta roja:</strong> <strong>Evacuación inmediata (Regla 30/30 OMM/WMO y D.S. 024-2016-EM)</strong>: Suspensión absoluta de toda faena a cielo abierto; prohibido guarecerse bajo árboles o estructuras metálicas aisladas; evacuación obligatoria a camionetas o camiones con cabina metálica cerrada o refugios Faraday certificados puestos a tierra; retorno seguro únicamente tras 30 min sin truenos ni descargas en un radio de 16 km (10 millas).
                 </td>
               </tr>
               <tr>
@@ -796,7 +857,7 @@
                   <strong>Confort (8.1° a 28°C):</strong> Zona de confort fisiológico laboral; hidratación regular (2 L/día); ritmo normal de labores.<br>
                   <strong>Calor moderado (28.1° a 32°C):</strong> Hidratación preventiva obligatoria (250 ml cada 45 min); ventilación forzada o aire acondicionado en cabinas de maquinaria; pausas a la sombra.<br>
                   <strong>Estrés térmico (32.1° a 38°C):</strong> Régimen de trabajo-descanso 45 min labor / 15 min sombra fresca (ISO 7243); hidratación obligatoria de 1 L/h con electrolitos; vigilancia activa de signos de desorientación o fatiga térmica.<br>
-                  <strong>Golpe de calor (&gt; 38°C):</strong> <strong>ALERTA ROJA POR RIESGO VITAL</strong>: Suspensión de labores de carga física media/alta a la intemperie; descanso de 30 min por cada 30 min trabajados o parada técnica hasta descenso térmico; tópicos de primeros auxilios y camilla con compresas frías en alerta inmediata.
+                  <strong>Golpe de calor (&gt; 38°C):</strong> <strong>Alerta roja por riesgo vital</strong>: Suspensión de labores de carga física media/alta a la intemperie; descanso de 30 min por cada 30 min trabajados o parada técnica hasta descenso térmico; tópicos de primeros auxilios y camilla con compresas frías en alerta inmediata.
                 </td>
               </tr>
               <tr>
@@ -818,7 +879,7 @@
                   <strong>Seco:</strong> Vías y accesos libres de hielo o nieve; operaciones normales de acarreo y frentes de trabajo.<br>
                   <strong>Escarcha ligera:</strong> Alerta alta por <em>hielo negro (black ice)</em> en calzadas y gratings metálicos de escaleras; esparcir sal o arena en accesos peatonales; técnica estricta de 3 puntos de apoyo en equipos pesados; encender desempañadores de cabina.<br>
                   <strong>Nieve moderada:</strong> Tracción 4x4 y cadenas para nieve obligatorias en neumáticos de vehículos livianos y pesados; velocidad máxima 20 km/h; despeje continuo de haul roads con motoniveladoras; suspensión de trabajos en techos y andamios a la intemperie.<br>
-                  <strong>Nevada severa:</strong> <strong>PARALIZACIÓN DE ACARREO Y EMERGENCIA INVERNAL</strong>: Parada preventiva de volquetes y camiones de extracción; cierre de frentes de tajo no prioritarios; tránsito restringido exclusivamente a motoniveladoras y barredoras viales; personal a resguardo en campamentos o refugios calefaccionados.
+                  <strong>Nevada severa:</strong> <strong>Paralización de acarreo y emergencia invernal</strong>: Parada preventiva de volquetes y camiones de extracción; cierre de frentes de tajo no prioritarios; tránsito restringido exclusivamente a motoniveladoras y barredoras viales; personal a resguardo en campamentos o refugios calefaccionados.
                 </td>
               </tr>
               <tr>
@@ -840,7 +901,7 @@
                   <strong>Óptima:</strong> Visibilidad despejada; tránsito regular de volquetes y equipos móviles a velocidades de faena con luces bajas encendidas permanentemente.<br>
                   <strong>Neblina ligera:</strong> Conducción a la defensiva; encendido mandatorio de luces neblineras y pértiga con luz estroboscópica; velocidad máx. 40 km/h en haul roads; chalecos reflectivos clase 3 para personal de a pie.<br>
                   <strong>Niebla moderada:</strong> Reducción drástica de velocidad (máx. 20&ndash;25 km/h); distancia de seguimiento mínima de 60 metros entre vehículos pesados; prohibición absoluta de adelantar; comunicación radial obligatoria en curvas y cruces de tajo; suspensión de tránsito liviano no esencial.<br>
-                  <strong>Niebla densa (&le; 100 m):</strong> <strong>PARADA TOTAL DE ACARREO Y TRANSPORTE PESADO (D.S. 024-2016-EM)</strong>: Detención ordenada de volquetes en bermas o bahías de parqueo seguro; encender luces de emergencia e intermitentes; prohibido descender de la cabina en ruta; suspensión de tránsito hasta restablecimiento de visibilidad segura.
+                  <strong>Niebla densa (&le; 100 m):</strong> <strong>Parada total de acarreo y transporte pesado (D.S. 024-2016-EM)</strong>: Detención ordenada de volquetes en bermas o bahías de parqueo seguro; encender luces de emergencia e intermitentes; prohibido descender de la cabina en ruta; suspensión de tránsito hasta restablecimiento de visibilidad segura.
                 </td>
               </tr>
               <tr>
@@ -859,7 +920,7 @@
                 <td>
                   <strong>Estable:</strong> Terreno compactado y estable; operaciones regulares de excavación, tránsito de acarreo y posicionamiento de equipos sin restricción geotécnica.<br>
                   <strong>Suelo húmedo:</strong> Pérdida de capacidad portante del terreno: inspección visual diaria de grietas de tracción en cabrestantes y coronas de talud; uso mandatorio de almohadillas (<em>mats</em> de distribución de doble área) bajo zapatas estabilizadoras de grúas y camiones pluma; prohibido estacionar a menos de 3 metros del borde de zanjas o taludes.<br>
-                  <strong>Saturación crítica:</strong> <strong>ALERTA GEOTÉCNICA POR DESLIZAMIENTO</strong>: Evacuación preventiva de cuadrillas al pie de taludes inestables y botaderos; prohibición de izajes o tránsito de maquinaria pesada sobre terreno natural no consolidado; monitoreo continuo con prismas y piezómetros; verificación de bermas de seguridad de 3/4 de llanta en vías de acarreo.
+                  <strong>Saturación crítica:</strong> <strong>Alerta geotécnica por deslizamiento</strong>: Evacuación preventiva de cuadrillas al pie de taludes inestables y botaderos; prohibición de izajes o tránsito de maquinaria pesada sobre terreno natural no consolidado; monitoreo continuo con prismas y piezómetros; verificación de bermas de seguridad de 3/4 de llanta en vías de acarreo.
                 </td>
               </tr>
             </tbody>
@@ -880,7 +941,7 @@
             <div class="factor-level-row"><span>8.0 a 10.9: Muy alto</span><span class="mono">&minus;18 pts</span></div>
             <div class="factor-level-row"><span>&ge; 11.0: Extremo</span><span class="mono">&minus;25 pts</span></div>
           </div>
-          <div class="factor-action"><strong>Control SST:</strong> Bloqueador solar FPS 50+ con reaplicación horaria, casco con cortaviento tipo legionario (cubrenuca UPF 50+), visera amplia y lentes UV400. Mallas raschel o toldos en faena; rotación a sombra cada 45 min (UVI &ge; 6) y cada 20&ndash;30 min (UVI &ge; 8). Suspensión de trabajos pesados de 11:00 a 15:00 h en UVI &ge; 11 con sales rehidratantes orales.</div>
+          <div class="factor-action"><strong>Controles:</strong> Bloqueador solar FPS 50+ con reaplicación horaria, casco con cortaviento tipo legionario (cubrenuca UPF 50+), visera amplia y lentes UV400. Mallas raschel o toldos en faena; rotación a sombra cada 45 min (UVI &ge; 6) y cada 20&ndash;30 min (UVI &ge; 8). Suspensión de trabajos pesados de 11:00 a 15:00 h en UVI &ge; 11 con sales rehidratantes orales.</div>
         </div>
 
         <div class="factor-card">
@@ -894,7 +955,7 @@
             <div class="factor-level-row"><span>Lluvia moderada (1&ndash;4.9 mm/h / 40&ndash;69% prob)</span><span class="mono">&minus;12 pts</span></div>
             <div class="factor-level-row"><span>Lluvia intensa (&ge; 5 mm/h / &ge; 70% prob)</span><span class="mono">&minus;20 pts</span></div>
           </div>
-          <div class="factor-action"><strong>Control SST:</strong> Alerta de <em>efecto jaboncillo</em> por lodo en haul roads: reducir velocidad en 15 km/h en curvas y rampas. Con lluvia moderada, máx. 30 km/h y 50 m de distancia entre volquetes. Con lluvia intensa, restringir rampas empinadas (&gt; 10%), verificar bombeo en fondo de tajo y evacuar pie de taludes.</div>
+          <div class="factor-action"><strong>Controles:</strong> Alerta de <em>efecto jaboncillo</em> por lodo en haul roads: reducir velocidad en 15 km/h en curvas y rampas. Con lluvia moderada, máx. 30 km/h y 50 m de distancia entre volquetes. Con lluvia intensa, restringir rampas empinadas (&gt; 10%), verificar bombeo en fondo de tajo y evacuar pie de taludes.</div>
         </div>
 
         <div class="factor-card">
@@ -908,7 +969,7 @@
             <div class="factor-level-row"><span>32.0 a 49.9 km/h: Restricción izajes</span><span class="mono">&minus;20 pts</span></div>
             <div class="factor-level-row"><span>&ge; 50.0 km/h: Suspensión total</span><span class="mono">&minus;35 pts</span></div>
           </div>
-          <div class="factor-action"><strong>Control SST:</strong> A 25&ndash;31.9 km/h: mínimo 2 vientos guía (taglines) en izajes, barbiquejo de 3 puntos y amarre de herramientas. A partir de 32 km/h: <strong>parada obligatoria de grúas e izajes (D.S. 024-2016-EM Art. 385 / ASME B30.5)</strong>. A &ge; 50 km/h: parada total de trabajos en andamios y plataformas (Norma G.050).</div>
+          <div class="factor-action"><strong>Controles:</strong> A 25&ndash;31.9 km/h: mínimo 2 vientos guía (taglines) en izajes, barbiquejo de 3 puntos y amarre de herramientas. A partir de 32 km/h: <strong>parada obligatoria de grúas e izajes (D.S. 024-2016-EM Art. 385 / ASME B30.5)</strong>. A &ge; 50 km/h: parada total de trabajos en andamios y plataformas (Norma G.050).</div>
         </div>
 
         <div class="factor-card">
@@ -923,7 +984,7 @@
             <div class="factor-level-row"><span>CAPE &ge; 2500: Muy alto</span><span class="mono">&minus;22 pts</span></div>
             <div class="factor-level-row"><span>Tormenta activa (WMO / Rayo): Alerta roja</span><span class="mono">&minus;35 pts</span></div>
           </div>
-          <div class="factor-action"><strong>Control SST:</strong> Con CAPE &ge; 1500: alerta pre-tormenta, prohibir voladuras y trabajos en cumbres. Con tormenta activa: <strong>EVACUACIÓN INMEDIATA (Regla 30/30 OMM y D.S. 024-2016-EM)</strong> a camionetas/camiones con cabina metálica o refugios Faraday puestos a tierra. Reanudar tras 30 min sin descargas en 16 km.</div>
+          <div class="factor-action"><strong>Controles:</strong> Con CAPE &ge; 1500: alerta pre-tormenta, prohibir voladuras y trabajos en cumbres. Con tormenta activa: <strong>Evacuación inmediata (Regla 30/30 OMM y D.S. 024-2016-EM)</strong> a camionetas/camiones con cabina metálica o refugios Faraday puestos a tierra. Reanudar tras 30 min sin descargas en 16 km.</div>
         </div>
 
         <div class="factor-card">
@@ -940,7 +1001,7 @@
             <div class="factor-level-row"><span>32.1° a 38.0°C: Estrés por calor</span><span class="mono">&minus;18 pts</span></div>
             <div class="factor-level-row"><span>&gt; 38.0°C: Golpe de calor</span><span class="mono">&minus;25 pts</span></div>
           </div>
-          <div class="factor-action"><strong>Control SST:</strong> En heladas (&le; &minus;5°C): régimen 30m trabajo / 30m caseta calefaccionada, EPP multicapa y bebidas calientes. En estrés por calor (32&ndash;38°C): régimen 45m labor / 15m sombra fresca e hidratación 1 L/h con electrolitos. Con &gt; 38°C: <strong>alerta roja</strong>, descanso 30m/30m o suspensión de tareas pesadas.</div>
+          <div class="factor-action"><strong>Controles:</strong> En heladas (&le; &minus;5°C): régimen 30m trabajo / 30m caseta calefaccionada, EPP multicapa y bebidas calientes. En estrés por calor (32&ndash;38°C): régimen 45m labor / 15m sombra fresca e hidratación 1 L/h con electrolitos. Con &gt; 38°C: <strong>alerta roja</strong>, descanso 30m/30m o suspensión de tareas pesadas.</div>
         </div>
 
         <div class="factor-card">
@@ -954,7 +1015,7 @@
             <div class="factor-level-row"><span>1.0 a 4.9 cm: Nieve moderada</span><span class="mono">&minus;18 pts</span></div>
             <div class="factor-level-row"><span>&ge; 5.0 cm: Nevada severa</span><span class="mono">&minus;30 pts</span></div>
           </div>
-          <div class="factor-action"><strong>Control SST:</strong> Con escarcha: alerta de <em>hielo negro (black ice)</em> en calzadas y gratings metálicos; esparcir sal o arena y 3 puntos de apoyo. Con nieve moderada: tracción 4x4, cadenas obligatorias en llantas y máx. 20 km/h. Con nevada severa (&ge; 5 cm): <strong>parada preventiva de volquetes</strong> y tránsito exclusivo de motoniveladoras.</div>
+          <div class="factor-action"><strong>Controles:</strong> Con escarcha: alerta de <em>hielo negro (black ice)</em> en calzadas y gratings metálicos; esparcir sal o arena y 3 puntos de apoyo. Con nieve moderada: tracción 4x4, cadenas obligatorias en llantas y máx. 20 km/h. Con nevada severa (&ge; 5 cm): <strong>parada preventiva de volquetes</strong> y tránsito exclusivo de motoniveladoras.</div>
         </div>
 
         <div class="factor-card">
@@ -968,7 +1029,7 @@
             <div class="factor-level-row"><span>101 a 500 m: Niebla moderada</span><span class="mono">&minus;12 pts</span></div>
             <div class="factor-level-row"><span>&le; 100 m: Niebla densa</span><span class="mono">&minus;25 pts</span></div>
           </div>
-          <div class="factor-action"><strong>Control SST:</strong> Con neblina (501&ndash;2000 m): luces neblineras, pértiga estroboscópica y máx. 40 km/h en haul roads. Con niebla moderada (101&ndash;500 m): máx. 20&ndash;25 km/h, 60 m entre volquetes y comunicación radial obligatoria. Con niebla densa (&le; 100 m): <strong>PARADA TOTAL DE ACARREO (D.S. 024-2016-EM)</strong> y parqueo en bermas.</div>
+          <div class="factor-action"><strong>Controles:</strong> Con neblina (501&ndash;2000 m): luces neblineras, pértiga estroboscópica y máx. 40 km/h en haul roads. Con niebla moderada (101&ndash;500 m): máx. 20&ndash;25 km/h, 60 m entre volquetes y comunicación radial obligatoria. Con niebla densa (&le; 100 m): <strong>Parada total de acarreo (D.S. 024-2016-EM)</strong> y parqueo en bermas.</div>
         </div>
 
         <div class="factor-card">
@@ -981,310 +1042,7 @@
             <div class="factor-level-row"><span>28% a 39.9%: Suelo húmedo</span><span class="mono">&minus;10 pts</span></div>
             <div class="factor-level-row"><span>&ge; 40%: Saturación crítica</span><span class="mono">&minus;20 pts</span></div>
           </div>
-          <div class="factor-action"><strong>Control SST:</strong> Con suelo húmedo (28&ndash;39.9%): inspección visual de grietas en crestas de talud, uso obligatorio de almohadillas (<em>mats</em> de doble área) bajo zapatas de grúas y no estacionar a &lt; 3 m del borde. Con saturación crítica (&ge; 40%): <strong>evacuación preventiva de pie de talud</strong> y prohibición de izajes en terreno natural.</div>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <h2>Factores evaluados y deducciones</h2>
-
-      <div class="table-desktop">
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th class="col-factor">Factor</th>
-                <th class="col-metric">Lectura</th>
-                <th class="col-limits">Límites y niveles</th>
-                <th class="col-deduction">Deducción</th>
-                <th class="col-action">Medida de control operativa</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>01. Radiación solar UV</strong></td>
-                <td>Índice UVI actual y horizonte proyectado (Ley N° 30102 / OMS)</td>
-                <td class="cell-limits">
-                  Turno nocturno (UVI &lt; 0.2): Seguro<br>
-                  0.2 a 5.9: Bajo / Moderado<br>
-                  6.0 a 7.9: Alto<br>
-                  8.0 a 10.9: Muy alto<br>
-                  &ge; 11.0: Extremo
-                </td>
-                <td class="cell-deduction mono">
-                  0 pts<br>
-                  0 pts<br>
-                  &minus;10 pts<br>
-                  &minus;18 pts<br>
-                  &minus;25 pts
-                </td>
-                <td>
-                  <strong>EPP y controles obligatorios:</strong> Bloqueador solar FPS 50+, casco con cortaviento tipo legionario (cubrenuca), visera amplia y lentes UV400.<br>
-                  <strong>Hidratación y rotación:</strong> Hidratación programada (250 ml / 45 min) en UVI &ge; 6; rotación obligatoria a sombra (toldos/raschel) e hidratación continua (cada 20-30 min) en UVI &ge; 8; suspensión de trabajos pesados entre 11:00 y 15:00 h con sales de rehidratación oral en UVI &ge; 11. En turno nocturno no aplica deducción.
-                </td>
-              </tr>
-              <tr>
-                <td><strong>02. Precipitación pluvial</strong></td>
-                <td>Probabilidad (%) y acumulación (mm)</td>
-                <td class="cell-limits">
-                  &lt; 20%: Seco<br>
-                  20% a 39%: Ligera<br>
-                  40% a 69%: Probable<br>
-                  &ge; 70% o &ge; 5 mm: Crítico
-                </td>
-                <td class="cell-deduction mono">
-                  0 pts<br>
-                  &minus;6 pts<br>
-                  &minus;12 pts<br>
-                  &minus;20 pts
-                </td>
-                <td>Revisión de adherencia en haul roads, reducción de velocidad en transporte de mineral y drenaje de
-                  tajos.</td>
-              </tr>
-              <tr>
-                <td><strong>03. Viento y ráfagas</strong></td>
-                <td>Sostenido a 10m y en pluma a 80m (km/h)</td>
-                <td class="cell-limits">
-                  &le; 24 km/h: Normal<br>
-                  25 a 35 km/h: Precaución<br>
-                  36 a 50 km/h: Restricción izajes<br>
-                  &gt; 50 km/h: Parada mandatoria
-                </td>
-                <td class="cell-deduction mono">
-                  0 pts<br>
-                  &minus;8 pts<br>
-                  &minus;20 pts<br>
-                  &minus;35 pts
-                </td>
-                <td><strong>Parada técnica mandatoria de grúas e izajes a 32 km/h</strong> (D.S. 024-2016-EM).
-                  Aseguramiento de cargas.</td>
-              </tr>
-              <tr>
-                <td><strong>04. Tormenta eléctrica</strong></td>
-                <td>Energía CAPE (J/kg) y código WMO</td>
-                <td class="cell-limits">
-                  &lt; 500: Bajo<br>
-                  500 a 1499: Moderado<br>
-                  1500 a 2499: Alto<br>
-                  &ge; 2500 o descargas: Crítico
-                </td>
-                <td class="cell-deduction mono">
-                  0 pts<br>
-                  &minus;6 pts<br>
-                  &minus;14 pts<br>
-                  &minus;35 pts
-                </td>
-                <td>Evacuación preventiva a refugios Faraday y detención de labores en áreas abiertas y frentes altos
-                  (regla 30/30).</td>
-              </tr>
-              <tr>
-                <td><strong>05. Estrés térmico</strong></td>
-                <td>Temperatura actual y sensación térmica (°C)</td>
-                <td class="cell-limits">
-                  8° a 28°C: Confort térmico<br>
-                  0° a 8°C: Frío moderado<br>
-                  &le; 0°C: Bajo cero / Helada<br>
-                  &ge; 32°C: Estrés por calor
-                </td>
-                <td class="cell-deduction mono">
-                  0 pts<br>
-                  &minus;6 pts<br>
-                  &minus;15 a &minus;25 pts<br>
-                  &minus;15 a &minus;25 pts
-                </td>
-                <td>Protección contra hipotermia (ropa multicapa) en heladas o pausas de hidratación contra golpe de
-                  calor (R.M. 375-2008-TR).</td>
-              </tr>
-              <tr>
-                <td><strong>06. Nieve y congelamiento</strong></td>
-                <td>Acumulación de nieve (cm) e isoterma 0°C</td>
-                <td class="cell-limits">
-                  0 cm: Seco<br>
-                  0.1 a 0.9 cm: Escarcha ligera<br>
-                  1.0 a 4.9 cm: Nieve moderada<br>
-                  &ge; 5.0 cm: Nevada severa
-                </td>
-                <td class="cell-deduction mono">
-                  0 pts<br>
-                  &minus;8 pts<br>
-                  &minus;18 pts<br>
-                  &minus;30 pts
-                </td>
-                <td>Uso obligatorio de cadenas en llantas, despeje con motoniveladoras y suspensión de trabajos en
-                  altura por superficies congeladas.</td>
-              </tr>
-              <tr>
-                <td><strong>07. Visibilidad en ruta</strong></td>
-                <td>Alcance visual en metros (m) / kilómetros</td>
-                <td class="cell-limits">
-                  &ge; 2000 m: Óptima<br>
-                  500 a 2000 m: Neblina ligera<br>
-                  100 a 500 m: Visibilidad reducida<br>
-                  &lt; 100 m: Niebla densa
-                </td>
-                <td class="cell-deduction mono">
-                  0 pts<br>
-                  &minus;5 pts<br>
-                  &minus;12 pts<br>
-                  &minus;25 pts
-                </td>
-                <td>Detención preventiva de acarreo pesado con volquetes ante niebla densa (&lt; 100 m). Faros
-                  neblineros y pértigas estroboscópicas.</td>
-              </tr>
-              <tr>
-                <td><strong>08. Humedad de suelo</strong></td>
-                <td>Humedad volumétrica en capa superficial (m³/m³)</td>
-                <td class="cell-limits">
-                  &lt; 0.28: Estable / Compactado<br>
-                  0.28 a 0.40: Suelo húmedo<br>
-                  &ge; 0.40: Saturación crítica
-                </td>
-                <td class="cell-deduction mono">
-                  0 pts<br>
-                  &minus;10 pts<br>
-                  &minus;20 pts
-                </td>
-                <td>Inspección geotécnica de estabilidad de taludes, bermas y botaderos. Verificación de capacidad
-                  portante para zapatas de grúas.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="cards-mobile">
-        <div class="factor-card">
-          <div class="factor-card-header">
-            <div class="factor-name">01. Radiación solar UV</div>
-            <div class="factor-reading">UVI actual y proyectado (Ley N° 30102 / OMS)</div>
-          </div>
-          <div class="factor-levels-grid">
-            <div class="factor-level-row"><span>Noche (UVI &lt; 0.2)</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>0.2 a 5.9: Bajo / Moderado</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>6.0 a 7.9: Alto</span><span class="mono">&minus;10 pts</span></div>
-            <div class="factor-level-row"><span>8.0 a 10.9: Muy alto</span><span class="mono">&minus;18 pts</span></div>
-            <div class="factor-level-row"><span>&ge; 11.0: Extremo</span><span class="mono">&minus;25 pts</span></div>
-          </div>
-          <div class="factor-action"><strong>Control SST:</strong> Bloqueador solar FPS 50+, casco con cortaviento tipo legionario (cubrenuca) y visera. Hidratación programada en UVI &ge; 6, rotación a toldos/mallas raschel en UVI &ge; 8 y suspensión de tareas pesadas 11:00–15:00 h con sales orales en UVI &ge; 11.</div>
-        </div>
-
-        <div class="factor-card">
-          <div class="factor-card-header">
-            <div class="factor-name">02. Precipitación pluvial</div>
-            <div class="factor-reading">Probabilidad (%) y acumulación (mm) en 12h/24h</div>
-          </div>
-          <div class="factor-levels-grid">
-            <div class="factor-level-row"><span>&lt; 20%: Seco</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>20% a 39%: Ligera</span><span class="mono">&minus;6 pts</span></div>
-            <div class="factor-level-row"><span>40% a 69%: Probable</span><span class="mono">&minus;12 pts</span></div>
-            <div class="factor-level-row"><span>&ge; 70% o &ge; 5 mm: Crítico</span><span class="mono">&minus;20
-                pts</span></div>
-          </div>
-          <div class="factor-action"><strong>Control SST:</strong> Revisión de adherencia en haul roads, reducción de
-            velocidad y monitoreo de drenajes.</div>
-        </div>
-
-        <div class="factor-card">
-          <div class="factor-card-header">
-            <div class="factor-name">03. Viento y ráfagas</div>
-            <div class="factor-reading">Velocidad sostenida y ráfaga en pluma (km/h)</div>
-          </div>
-          <div class="factor-levels-grid">
-            <div class="factor-level-row"><span>&le; 24 km/h: Normal</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>25 a 35 km/h: Precaución</span><span class="mono">&minus;8 pts</span>
-            </div>
-            <div class="factor-level-row"><span>36 a 50 km/h: Restricción</span><span class="mono">&minus;20 pts</span>
-            </div>
-            <div class="factor-level-row"><span>&gt; 50 km/h: Suspensión mandatoria</span><span class="mono">&minus;35
-                pts</span></div>
-          </div>
-          <div class="factor-action"><strong>Control SST:</strong> Parada técnica obligatoria de grúas e izajes a partir
-            de 32 km/h (D.S. 024-2016-EM).</div>
-        </div>
-
-        <div class="factor-card">
-          <div class="factor-card-header">
-            <div class="factor-name">04. Tormenta eléctrica</div>
-            <div class="factor-reading">Energía convectiva CAPE (J/kg) y código WMO</div>
-          </div>
-          <div class="factor-levels-grid">
-            <div class="factor-level-row"><span>&lt; 500: Bajo</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>500 a 1499: Moderado</span><span class="mono">&minus;6 pts</span></div>
-            <div class="factor-level-row"><span>1500 a 2499: Alto</span><span class="mono">&minus;14 pts</span></div>
-            <div class="factor-level-row"><span>&ge; 2500 o descargas: Crítico</span><span class="mono">&minus;35
-                pts</span></div>
-          </div>
-          <div class="factor-action"><strong>Control SST:</strong> Evacuación preventiva a refugios Faraday ante alerta
-            de descargas (regla 30/30 WMO).</div>
-        </div>
-
-        <div class="factor-card">
-          <div class="factor-card-header">
-            <div class="factor-name">05. Temperatura y sensación térmica</div>
-            <div class="factor-reading">Temperatura de bulbo seco (°C), sensación térmica y límites ergonómicos</div>
-          </div>
-          <div class="factor-levels-grid">
-            <div class="factor-level-row"><span>8° a 28°C: Confort</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>0° a 8°C: Frío moderado</span><span class="mono">&minus;6 pts</span>
-            </div>
-            <div class="factor-level-row"><span>&le; 0°C: Bajo cero / Helada</span><span class="mono">&minus;15 a
-                &minus;25 pts</span></div>
-            <div class="factor-level-row"><span>&ge; 32°C: Estrés por calor</span><span class="mono">&minus;15 a
-                &minus;25 pts</span></div>
-          </div>
-          <div class="factor-action"><strong>Control SST:</strong> Ropa térmica multicapa contra congelamiento o pausas
-            de hidratación contra golpe de calor (R.M. 375-2008-TR / ISO 7243).</div>
-        </div>
-
-        <div class="factor-card">
-          <div class="factor-card-header">
-            <div class="factor-name">06. Nieve y congelamiento</div>
-            <div class="factor-reading">Acumulación reciente (cm) e isoterma 0°C en alta montaña</div>
-          </div>
-          <div class="factor-levels-grid">
-            <div class="factor-level-row"><span>0 cm: Seco</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>0.1 a 0.9 cm: Escarcha</span><span class="mono">&minus;8 pts</span>
-            </div>
-            <div class="factor-level-row"><span>1.0 a 4.9 cm: Moderada</span><span class="mono">&minus;18 pts</span>
-            </div>
-            <div class="factor-level-row"><span>&ge; 5.0 cm: Nevada severa</span><span class="mono">&minus;30 pts</span>
-            </div>
-          </div>
-          <div class="factor-action"><strong>Control SST:</strong> Uso mandatorio de cadenas en neumáticos, despeje de
-            accesos y precaución en escaleras metálicas.</div>
-        </div>
-
-        <div class="factor-card">
-          <div class="factor-card-header">
-            <div class="factor-name">07. Visibilidad en ruta</div>
-            <div class="factor-reading">Alcance visual en metros (m) en frente de acarreo</div>
-          </div>
-          <div class="factor-levels-grid">
-            <div class="factor-level-row"><span>&ge; 2000 m: Óptima</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>500 a 2000 m: Neblina</span><span class="mono">&minus;5 pts</span></div>
-            <div class="factor-level-row"><span>100 a 500 m: Reducida</span><span class="mono">&minus;12 pts</span>
-            </div>
-            <div class="factor-level-row"><span>&lt; 100 m: Niebla densa</span><span class="mono">&minus;25 pts</span>
-            </div>
-          </div>
-          <div class="factor-action"><strong>Control SST:</strong> Parada preventiva de acarreo pesado ante visibilidad
-            menor a 100 m. Luces bajas y pértigas estroboscópicas.</div>
-        </div>
-
-        <div class="factor-card">
-          <div class="factor-card-header">
-            <div class="factor-name">08. Humedad de suelo</div>
-            <div class="factor-reading">Saturación en capa superficial (m³/m³)</div>
-          </div>
-          <div class="factor-levels-grid">
-            <div class="factor-level-row"><span>&lt; 0.28: Estable</span><span class="mono">0 pts</span></div>
-            <div class="factor-level-row"><span>0.28 a 0.40: Húmedo</span><span class="mono">&minus;10 pts</span></div>
-            <div class="factor-level-row"><span>&ge; 0.40: Saturación crítica</span><span class="mono">&minus;20
-                pts</span></div>
-          </div>
-          <div class="factor-action"><strong>Control SST:</strong> Inspección geotécnica de taludes, bermas de seguridad
-            y verificación de sustentación de zapatas.</div>
+          <div class="factor-action"><strong>Controles:</strong> Con suelo húmedo (28&ndash;39.9%): inspección visual de grietas en crestas de talud, uso obligatorio de almohadillas (<em>mats</em> de doble área) bajo zapatas de grúas y no estacionar a &lt; 3 m del borde. Con saturación crítica (&ge; 40%): <strong>evacuación preventiva de pie de talud</strong> y prohibición de izajes en terreno natural.</div>
         </div>
       </div>
     </section>

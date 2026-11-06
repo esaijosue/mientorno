@@ -605,7 +605,7 @@ function createUVCard(data, ctx, fc) {
 
   const controlBoxHTML = `
     <div class="control-measure-box">
-      <span class="control-box-label">Control SST (Protección solar / OMS):</span>
+      <span class="control-box-label">Controles:</span>
       <p class="control-box-text">${escapeHTML(rule.recomendacion)}</p>
     </div>
   `;
@@ -730,7 +730,7 @@ function createRainCard(data, ctx, fc) {
 
   const controlBoxHTML = `
     <div class="control-measure-box">
-      <span class="control-box-label">Control SST (Haul roads y accesos):</span>
+      <span class="control-box-label">Controles:</span>
       <p class="control-box-text">${escapeHTML(rule.recomendacion)}</p>
     </div>
   `;
@@ -810,7 +810,7 @@ function createWindCard(data, ctx, fc) {
 
   const controlBoxHTML = `
     <div class="control-measure-box">
-      <span class="control-box-label">Control SST (Izajes, grúas y altura / D.S. 024):</span>
+      <span class="control-box-label">Controles:</span>
       <p class="control-box-text">${escapeHTML(rule.recomendacion)}</p>
     </div>
   `;
@@ -902,7 +902,7 @@ function createThunderstormCard(data, ctx, fc) {
 
   const controlBoxHTML = `
     <div class="control-measure-box">
-      <span class="control-box-label">Control SST (Refugios Faraday / WMO):</span>
+      <span class="control-box-label">Controles:</span>
       <p class="control-box-text">${escapeHTML(rule.recomendacion)}</p>
     </div>
   `;
@@ -1013,7 +1013,7 @@ function createTemperatureCard(data, ctx, fc) {
 
   const controlBoxHTML = `
     <div class="control-measure-box">
-      <span class="control-box-label">Control SST (Estrés térmico / ISO 7243):</span>
+      <span class="control-box-label">Controles:</span>
       <p class="control-box-text">${escapeHTML(rule.recomendacion)}</p>
     </div>
   `;
@@ -1108,7 +1108,7 @@ function createSnowCard(data, ctx, fc) {
 
   const controlBoxHTML = `
     <div class="control-measure-box">
-      <span class="control-box-label">Control SST (Alta montaña y frentes fríos):</span>
+      <span class="control-box-label">Controles:</span>
       <p class="control-box-text">${escapeHTML(rule.recomendacion)}</p>
     </div>
   `;
@@ -1205,7 +1205,7 @@ function createVisibilityCard(data, ctx, fc) {
 
   const controlBoxHTML = `
     <div class="control-measure-box">
-      <span class="control-box-label">Control SST (Acarreo y flota pesada):</span>
+      <span class="control-box-label">Controles:</span>
       <p class="control-box-text">${escapeHTML(rule.recomendacion)}</p>
     </div>
   `;
@@ -1294,7 +1294,7 @@ function createSoilCard(data, ctx, fc) {
 
   const soilControlBoxHTML = `
     <div class="control-measure-box">
-      <span class="control-box-label">Control SST (Geotecnia y taludes):</span>
+      <span class="control-box-label">Controles:</span>
       <p class="control-box-text">${escapeHTML(rule.recomendacion)}</p>
     </div>
   `;

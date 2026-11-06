@@ -1054,11 +1054,11 @@ body.theme-control-room {
 
 .control-box-label {
   display: block;
-  font-size: 0.64rem;
+  font-size: 0.70rem;
   font-weight: 700;
   color: #38bdf8;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  margin-bottom: 2px;
 }
 
 .risk-card.card-alert .control-box-label {
