@@ -34,7 +34,7 @@ Los algoritmos de cálculo, umbrales de alerta y medidas de contingencia impleme
 
 | Norma / Estándar | Ámbito de aplicación | Factor evaluado en el sistema |
 | :--- | :--- | :--- |
-| **D.S. 024-2016-EM** (Arts. 136, 137, 271, 385) | Seguridad y Salud Ocupacional en Minería | Límite mandatorio de parada técnica para izajes y grúas móviles por ráfagas de viento ($\ge 32\text{ km/h}$). Protocolo de refugio ante tormentas eléctricas. |
+| **D.S. 024-2016-EM** (Arts. 136, 137, 271, 385) | Seguridad y Salud Ocupacional en Minería | Límite obligatorio de parada técnica para izajes y grúas móviles por ráfagas de viento ($\ge 32\text{ km/h}$). Protocolo de refugio ante tormentas eléctricas. |
 | **Ley 30102 / OMS (WHO)** | Prevención contra radiación solar ultravioleta | Clasificación estandarizada del índice UV (escala global OMS de 0 a 16+) y obligatoriedad de fotoprotección, rotación a sombra y cubrenucas. |
 | **ISO 7243 / R.M. 375-2008-TR** | Ergonomía y estrés térmico en el trabajo | Criterios de confort térmico, regímenes de hidratación (500 ml/h) y pausas obligatorias por calor severo o temperaturas bajo cero. |
 | **Organización Meteorológica Mundial (OMM / WMO)** | Clasificación de inestabilidad convectiva | Gradiente de energía potencial convectiva disponible (CAPE en $\text{J/kg}$) y protocolo 30/30 para evacuación inmediata a refugios jaula de Faraday. |
@@ -67,15 +67,14 @@ Donde $P_i$ representa la penalidad específica calculada para cada uno de los *
 3. **Velocidad del viento y ráfagas ($P_{\text{viento}}$):**
    - Normal ($< 25.0\text{ km/h}$): $0$ puntos (maniobras de grúas, izajes y trabajos en altura autorizados sin restricción).
    - Precaución ($25.0$ a $31.9\text{ km/h}$): $-8$ puntos (uso obligatorio de mínimo dos vientos guía / *taglines* en izajes, barbiquejo de 3 puntos en cascos, amarre de herramientas de mano y prohibición de izar cargas de gran superficie tipo vela).
-   - Restricción izajes ($32.0$ a $49.9\text{ km/h}$): $-20$ puntos (**Límite mandatorio de parada técnica de grúas e izajes conforme a D.S. 024-2016-EM Art. 385 y ASME B30.5**: descenso y bloqueo de plumas, suspensión de canastillas manlift y montaje estructural).
-   - Suspensión total ($\ge 50.0\text{ km/h}$): $-35$ puntos (**Parada mandatoria de trabajos en altura según Norma G.050**: evacuación inmediata de andamios y plataformas, repliegue total de plumas y aseguramiento de paneles sueltos).
+   - Restricción izajes ($32.0$ a $49.9\text{ km/h}$): $-20$ puntos (**Límite obligatorio de parada técnica de grúas e izajes conforme a D.S. 024-2016-EM Art. 385 y ASME B30.5**: descenso y bloqueo de plumas, suspensión de canastillas manlift y montaje estructural).
+   - Suspensión total ($\ge 50.0\text{ km/h}$): $-35$ puntos (**Parada obligatoria de trabajos en altura según Norma G.050**: evacuación inmediata de andamios y plataformas, repliegue total de plumas y aseguramiento de paneles sueltos).
 
-4. **Inestabilidad convectiva y tormenta eléctrica ($P_{\text{tormenta}}$):**
-   - CAPE Bajo / Estable ($< 500\text{ J/kg}$): $0$ puntos (atmósfera estable; monitoreo rutinario del sistema de detección).
-   - CAPE Moderado ($500$ a $1499\text{ J/kg}$): $-6$ puntos (verificación preventiva de detectores portátiles y estado de refugios en frentes remotos).
-   - CAPE Alto ($1500$ a $2499\text{ J/kg}$): $-14$ puntos (alerta pre-tormenta; prohibido iniciar voladuras, carguío de explosivos, labores en cumbres o tendido de cables a cielo abierto; identificar rutas de evacuación rápida hacia refugios Faraday).
-   - CAPE Muy Alto ($\ge 2500\text{ J/kg}$): $-22$ puntos (potencial convectivo severo; preparación de evacuación y repliegue preventivo).
-   - Tormenta activa o código WMO $95, 96, 99$: $-35$ puntos (**Evacuación inmediata conforme a regla 30/30 OMM/WMO y D.S. 024-2016-EM**: paralización total a cielo abierto; prohibido guarecerse bajo árboles o estructuras metálicas aisladas; evacuación obligatoria a camionetas o camiones con cabina metálica cerrada o refugios Faraday certificados con puesta a tierra; retorno seguro tras 30 min sin descargas en un radio de 16 km).
+4. **Tormenta eléctrica y protocolo ThunderBolt ($P_{\text{tormenta}}$):**
+   - Condición Verde / Normal ($\text{CAPE} < 500\text{ J/kg}$ o radio $> 50\text{ km}$): $0$ puntos (atmósfera estable; monitoreo rutinario del detector de tormentas).
+   - Alerta Amarilla ($500 \le \text{CAPE} < 1500\text{ J/kg}$ o celda a $32$–$50\text{ km}$): $-6$ puntos (vigilancia preventiva, verificación de disponibilidad de refugios Faraday y prohibición de iniciar voladuras a la intemperie).
+   - Alerta Naranja ($1500 \le \text{CAPE} < 2500\text{ J/kg}$ o celda a $16$–$32\text{ km}$): $-14$ puntos (restricción operativa: suspensión obligatoria de izajes con grúas, trabajos en altura y voladuras; repliegue preventivo de cuadrillas en cumbres hacia refugios).
+   - Alerta Roja ($\text{CAPE} \ge 2500\text{ J/kg}$, descargas a $< 16\text{ km}$ o código WMO $95, 96, 99$): $-35$ puntos (evacuación inmediata obligatoria a refugios Faraday certificados o camionetas con cabina metálica cerrada según D.S. 024-2016-EM; aplicación estricta de regla 30/30 OMM con 30 min sin descargas para reanudar).
 
 5. **Temperatura y estrés térmico ($P_{\text{térmico}}$):**
    - Confort térmico ($8.1^\circ\text{C}$ a $28.0^\circ\text{C}$): $0$ puntos (condiciones óptimas; hidratación regular estándar de 2 L/día).
@@ -96,11 +95,11 @@ Donde $P_i$ representa la penalidad específica calculada para cada uno de los *
    - Óptima ($\ge 2000\text{ m}$): $0$ puntos (tránsito regular de flota pesada y liviana a velocidades autorizadas con luces bajas encendidas permanentemente).
    - Neblina ligera ($501$ a $2000\text{ m}$): $-5$ puntos (conducción a la defensiva; encendido de luces neblineras y pértiga con luz estroboscópica; velocidad máx. 40 km/h en haul roads; chalecos reflectivos clase 3 para personal de a pie).
    - Niebla moderada ($101$ a $500\text{ m}$): $-12$ puntos (velocidad máx. 20–25 km/h; distancia mínima de seguimiento de 60 metros entre volquetes; prohibición absoluta de adelantar; comunicación radial obligatoria en curvas y cruces de tajo).
-   - Niebla densa crítica ($\le 100\text{ m}$): $-25$ puntos (**Parada mandatoria de acarreo y transporte pesado según D.S. 024-2016-EM**: detención ordenada de volquetes en bermas o bahías de parqueo seguro; encender luces de emergencia e intermitentes; prohibido descender de cabinas en ruta).
+   - Niebla densa crítica ($\le 100\text{ m}$): $-25$ puntos (**Parada obligatoria de acarreo y transporte pesado según D.S. 024-2016-EM**: detención ordenada de volquetes en bermas o bahías de parqueo seguro; encender luces de emergencia e intermitentes; prohibido descender de cabinas en ruta).
 
 8. **Humedad de suelo y estabilidad geotécnica ($P_{\text{suelo}}$):**
    - Terreno estable ($< 0.28\text{ m}^3/\text{m}^3$, $< 28\%$ saturación): $0$ puntos (soporte geotécnico óptimo; excavaciones, acarreo y posicionamiento de grúas autorizados sin restricción).
-   - Suelo húmedo ($0.28$ a $0.399\text{ m}^3/\text{m}^3$, $28\%$ a $39.9\%$ saturación): $-10$ puntos (pérdida de capacidad portante del terreno: inspección visual diaria de fisuras o grietas de tracción en crestas de talud; uso mandatorio de almohadillas / *mats* de distribución de carga de doble área bajo zapatas de grúas; prohibido estacionar a menos de 3 metros del borde de zanjas o taludes).
+   - Suelo húmedo ($0.28$ a $0.399\text{ m}^3/\text{m}^3$, $28\%$ a $39.9\%$ saturación): $-10$ puntos (pérdida de capacidad portante del terreno: inspección visual diaria de fisuras o grietas de tracción en crestas de talud; uso obligatorio de almohadillas / *mats* de distribución de carga de doble área bajo zapatas de grúas; prohibido estacionar a menos de 3 metros del borde de zanjas o taludes).
    - Saturación crítica ($\ge 0.40\text{ m}^3/\text{m}^3$, $\ge 40\%$ saturación): $-20$ puntos (**Alerta geotécnica por deslizamiento**: evacuación preventiva de cuadrillas al pie de taludes inestables y botaderos; prohibición de izajes o tránsito de maquinaria pesada sobre terreno natural no consolidado; monitoreo continuo con prismas y piezómetros; verificación de bermas de seguridad de 3/4 de llanta en vías de acarreo).
 
 ---

@@ -138,7 +138,7 @@ export const UMBRALES_VIENTO = {
     badge: 'Restricción izaje',
     deduccion: 20,
     severity: 4,
-    recomendacion: 'Parada mandatoria de izajes de cargas críticas y grúas móviles (≥ 32 km/h D.S. 024-2016-EM Art. 385). Descenso de personal de manlifts y plataformas.'
+    recomendacion: 'Parada obligatoria de izajes de cargas críticas y grúas móviles (≥ 32 km/h D.S. 024-2016-EM Art. 385). Descenso de personal de manlifts y plataformas.'
   },
   SUSPENSION: {
     minRafaga: 50.0,
@@ -147,59 +147,59 @@ export const UMBRALES_VIENTO = {
     badge: 'Suspensión',
     deduccion: 35,
     severity: 5,
-    recomendacion: 'Parada mandatoria total de trabajos en altura (Norma G.050 / OSHA): desalojo de andamios y techos, aseguramiento de plumas en posición de reposo y repliegue de cuadrillas.'
+    recomendacion: 'Parada obligatoria total de trabajos en altura (Norma G.050 / OSHA): desalojo de andamios y techos, aseguramiento de plumas en posición de reposo y repliegue de cuadrillas.'
   }
 };
 
 export const UMBRALES_CAPE = {
   BAJO: {
     maxCape: 499,
-    nivel: 'Bajo',
+    nivel: 'Verde (Normal)',
     color: 'verde',
-    badge: 'Bajo',
+    badge: 'Estable (> 50 km)',
     deduccion: 0,
     severity: 0,
-    recomendacion: 'Atmósfera estable: riesgo convectivo mínimo para el personal de campo. Monitoreo regular del detector de tormentas.'
+    recomendacion: 'Condición normal: atmósfera estable sin potencial convectivo. Operaciones regulares de campo y monitoreo rutinario del detector de tormentas.'
   },
   MODERADO: {
     minCape: 500,
     maxCape: 1499,
-    nivel: 'Moderado',
+    nivel: 'Alerta Amarilla',
     color: 'amarillo',
-    badge: 'Moderado',
+    badge: 'Vigilancia (32-50 km)',
     deduccion: 6,
     severity: 1,
-    recomendacion: 'Alerta amarilla: inestabilidad convectiva en desarrollo. Identificar refugios Faraday más cercanos y verificar operatividad de detectores de tormenta.'
+    recomendacion: 'Alerta Amarilla (Vigilancia 32-50 km): inestabilidad convectiva en desarrollo. Notificación radial preventiva a supervisores, verificar disponibilidad de refugios Faraday y prohibir inicio de voladuras a la intemperie.'
   },
   ALTO: {
     minCape: 1500,
     maxCape: 2499,
-    nivel: 'Alto',
+    nivel: 'Alerta Naranja',
     color: 'naranja',
-    badge: 'Alto',
+    badge: 'Restricción (16-32 km)',
     deduccion: 14,
     severity: 3,
-    recomendacion: 'Alerta naranja: fuerte energía convectiva. Suspender trasvase de combustible, manipulación de explosivos y preparar evacuación de frentes abiertos y crestas.'
+    recomendacion: 'Alerta Naranja (Restricción 16-32 km): fuerte energía convectiva. Suspensión obligatoria de izajes con grúas, trabajos en altura (andamios) y voladuras; repliegue preventivo de cuadrillas en crestas y cumbres hacia refugios.'
   },
   MUY_ALTO: {
     minCape: 2500,
-    nivel: 'Muy alto',
+    nivel: 'Alerta Roja',
     color: 'rojo',
-    badge: 'Muy alto',
+    badge: 'Evacuación (< 16 km)',
     deduccion: 22,
     severity: 4,
-    recomendacion: 'Alerta roja por convección severa: riesgo inminente de descargas a tierra. Pre-evacuación mandatoria a refugios Faraday certificados.'
+    recomendacion: 'Alerta Roja (Evacuación inminente < 16 km): energía convectiva extrema con alto potencial de descargas directas. Evacuación inmediata de frentes abiertos a refugios Faraday certificados o vehículos cerrados.'
   }
 };
 
 export const WEATHER_CODES_TORMENTA = [95, 96, 99];
 
 export const REGLA_TORMENTA_ACTIVA = {
-  nivel: 'Tormenta activa',
-  badge: 'Tormenta activa',
+  nivel: 'Alerta Roja',
+  badge: 'Descargas en faena (< 16 km)',
   deduccion: 35,
   severity: 5,
-  recomendacion: 'Alerta roja de emergencia: evacuación inmediata obligatoria a refugios Faraday certificados o vehículos cerrados (regla 30/30 OMM / D.S. 024-2016-EM). Prohibido ubicarse cerca de estructuras metálicas o árboles.'
+  recomendacion: 'Alerta Roja de emergencia (Descargas en faena < 16 km): evacuación inmediata obligatoria a refugios Faraday certificados o vehículos con cabina metálica cerrada (D.S. 024-2016-EM). Aplicar regla 30/30 OMM: esperar 30 min sin descargas para reanudar.'
 };
 
 export const UMBRALES_TEMPERATURA = {
@@ -310,7 +310,7 @@ export const UMBRALES_NIEVE = {
     badge: 'Nevada severa',
     deduccion: 30,
     severity: 5,
-    recomendacion: 'Parada mandatoria de acarreo y movimiento de tierras: repliegue de cuadrillas a refugios. Tránsito exclusivo de motoniveladoras y tractores para despeje de vías de emergencia.'
+    recomendacion: 'Parada obligatoria de acarreo y movimiento de tierras: repliegue de cuadrillas a refugios. Tránsito exclusivo de motoniveladoras y tractores para despeje de vías de emergencia.'
   }
 };
 

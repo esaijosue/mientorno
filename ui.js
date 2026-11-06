@@ -875,7 +875,7 @@ function createThunderstormCard(data, ctx, fc) {
   else if (targetCape >= 500 || maxCape >= 500) level = 'MODERADO';
 
   let rule = UMBRALES_CAPE[level];
-  let pillClass = (level === 'MUY_ALTO') ? 'pill-red' : (level === 'ALTO' || level === 'MODERADO') ? 'pill-amber' : 'pill-green';
+  let pillClass = (level === 'MUY_ALTO') ? 'pill-red' : (level === 'ALTO') ? 'pill-amber' : (level === 'MODERADO') ? 'pill-amber' : 'pill-green';
 
   if (stormDetected) {
     rule = REGLA_TORMENTA_ACTIVA;
@@ -888,10 +888,10 @@ function createThunderstormCard(data, ctx, fc) {
   if (rule.severity > ctx.highestRisk.severityScore) {
     ctx.highestRisk = {
       title: 'Tormenta eléctrica',
-      subtitle: stormDetected ? (fc.isRealTime ? 'Tormenta activa en faena' : `Prevista hacia las ${fc.targetTimeStr} h`) : `Energía CAPE ${Math.round(targetCape)} J/kg`,
+      subtitle: stormDetected ? (fc.isRealTime ? 'Alerta Roja: Tormenta en faena (< 16 km)' : `Alerta Roja hacia las ${fc.targetTimeStr} h`) : `${rule.nivel} (${rule.badge})`,
       value: Math.round(targetCape),
       unit: 'J/kg',
-      caption: fc.isRealTime ? 'Detector de rayos en tiempo real' : `Previsto a las ${fc.targetTimeStr} h`,
+      caption: fc.isRealTime ? 'Protocolo ThunderBolt / D.S. 024' : `Previsto a las ${fc.targetTimeStr} h`,
       recommendation: rule.recomendacion,
       severityScore: rule.severity
     };
@@ -907,14 +907,13 @@ function createThunderstormCard(data, ctx, fc) {
     </div>
   `;
 
-  const stormBadgeVal = stormDetected ? 'Activas' : targetCape < 300 ? 'Estable' : targetCape < 1000 ? 'Moderada' : 'Severa';
   const badgeHTML = fc.isRealTime
-    ? `<div class="metric-projection-badge" title="Inestabilidad convectiva instantánea"><span class="projection-label">${stormDetected ? 'Descargas:' : 'Inestabilidad:'}</span><span class="projection-val"${stormDetected ? ' style="color:#ef4444;"' : ''}>${stormBadgeVal}</span></div>`
-    : `<div class="metric-projection-badge" title="Energía convectiva pico en ventana"><span class="projection-label">Pico ${fc.badgeText}:</span><span class="projection-val">${Math.round(maxCape)} J/kg</span></div>`;
+    ? `<div class="metric-projection-badge" title="Protocolo operativo de tormenta (ThunderBolt)"><span class="projection-label">Protocolo:</span><span class="projection-val"${stormDetected ? ' style="color:#ef4444;"' : ''}>${rule.badge}</span></div>`
+    : `<div class="metric-projection-badge" title="Energía convectiva pico en ventana"><span class="projection-label">${fc.badgeText}:</span><span class="projection-val">${rule.badge}</span></div>`;
 
   const secondaryText = stormDetected
-    ? (fc.isRealTime ? 'Descargas activas en faena &bull; Regla 30/30' : `Descargas previstas hacia las ${fc.targetTimeStr} h &bull; Regla 30/30`)
-    : (fc.isRealTime ? 'Atmósfera monitoreada &bull; Sin riesgo de descargas' : `Previsto a las ${fc.targetTimeStr} h &bull; Atmósfera monitoreada`);
+    ? (fc.isRealTime ? 'Alerta Roja activa &bull; Tormenta &lt; 16 km &bull; Regla 30/30' : `Alerta Roja prevista a las ${fc.targetTimeStr} h &bull; Regla 30/30`)
+    : (fc.isRealTime ? 'Monitoreo de descargas &bull; Protocolo ThunderBolt / D.S. 024' : `Previsto a las ${fc.targetTimeStr} h &bull; Pico: ${Math.round(maxCape)} J/kg`);
 
   const card = document.createElement('article');
   card.className = cardClass;
