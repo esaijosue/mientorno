@@ -33,7 +33,8 @@
       padding: 0;
     }
 
-    html, body {
+    html,
+    body {
       overflow-x: hidden;
     }
 
@@ -263,11 +264,25 @@
       font-size: 0.78rem;
     }
 
-    .col-factor { width: 15%; }
-    .col-metric { width: 18%; }
-    .col-limits { width: 24%; }
-    .col-deduction { width: 13%; }
-    .col-action { width: 30%; }
+    .col-factor {
+      width: 15%;
+    }
+
+    .col-metric {
+      width: 18%;
+    }
+
+    .col-limits {
+      width: 24%;
+    }
+
+    .col-deduction {
+      width: 13%;
+    }
+
+    .col-action {
+      width: 30%;
+    }
 
     .cell-limits,
     .cell-deduction {
@@ -489,7 +504,8 @@
         margin-bottom: 10px;
       }
 
-      p, ul {
+      p,
+      ul {
         font-size: 0.88rem;
         line-height: 1.6;
       }
@@ -515,7 +531,8 @@
         font-size: 0.78rem;
       }
 
-      th, td {
+      th,
+      td {
         padding: 8px 10px;
       }
     }
@@ -574,7 +591,8 @@
         <p class="law-desc">
           En su artículo 385 y normas conexas, exige suspender maniobras de izaje con grúas cuando la velocidad del
           viento supere los 32 km/h (o el límite establecido por el fabricante), así como paralizar trabajos en altura
-          ante tormentas o lluvias continuas.
+          ante tormentas o lluvias continuas. Asimismo, norma las distancias de frenado y tránsito seguro de volquetes
+          en tajos y botaderos.
         </p>
       </div>
 
@@ -583,7 +601,16 @@
         <p class="law-desc">
           Dispone medidas preventivas obligatorias para trabajadores expuestos al sol: uso de fotoprotector (mínimo SPF
           50+), cubrenucas, lentes con filtro UV al 100% y rotación horaria a la sombra en niveles de radiación muy
-          altos (&ge; 8 UVI).
+          altos (&ge; 8 UVI). El monitoreo nocturno registra índice cero y proyecta la hora pico del turno diurno.
+        </p>
+      </div>
+
+      <div class="law-item">
+        <div class="law-name">R.M. N° 375-2008-TR (Ergonomía y estrés térmico)</div>
+        <p class="law-desc">
+          Establece los límites permisibles de exposición térmica para evitar estrés por frío extremo (hipotermia en
+          puna y operaciones sobre 3,500 msnm) y estrés por calor (agotamiento y golpe de calor), normando regímenes de
+          descanso e hidratación.
         </p>
       </div>
 
@@ -607,14 +634,28 @@
     <section>
       <h2>Cálculo del índice de seguridad en terreno</h2>
       <p>
-        El índice de seguridad resume la aptitud física del entorno en una escala de 0% a 100%. El cálculo inicia con
-        una base de 100 puntos y aplica deducciones directas acumulativas según la severidad de los factores que superen
-        los límites tolerables:
+        El índice de seguridad resume la aptitud física del entorno en una escala de 0% a 100% (con cota operativa de
+        20.0% a 99.0%). El cálculo inicia con una base de 100 puntos y aplica deducciones directas acumulativas según la
+        severidad de los factores climáticos y geofísicos que superen los límites permisibles.
       </p>
 
       <div class="calc-box">
-        Índice de seguridad = 100 &minus; (Deducción UV + Deducción lluvia + Deducción viento + Deducción tormenta)
+        Índice de seguridad = 100 &minus; &sum; (Deducciones acumuladas de los factores evaluados)
       </div>
+
+      <p>
+        El tablero inicia por defecto en modo <strong>En vivo (Tiempo real)</strong> y permite alternar a proyecciones operativas según la naturaleza de la tarea, con la posibilidad de retornar al modo en tiempo real pulsando «En vivo» en cualquier momento:
+      </p>
+
+      <ul style="margin: 8px 0 16px 20px; font-size: 0.88rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px;">
+        <li><strong>En vivo (Tiempo real):</strong> Modo predeterminado. Lectura instantánea de la telemetría en terreno sin proyecciones hacia adelante. Refleja las condiciones operativas exactas en el momento actual.</li>
+        <li><strong>30 minutos (30m):</strong> Ventana inmediata de alta resolución para maniobras críticas de izaje con grúas y traslados de cargas sobredimensionadas.</li>
+        <li><strong>1 hora (1h):</strong> Alerta táctica para trabajos temporales en altura (andamios, plataformas elevadoras) y frentes expuestos.</li>
+        <li><strong>3 horas (3h):</strong> Ventana de ejecución de tareas programadas (vaciados, tendido de cables, barrenación en tajo).</li>
+        <li><strong>9 horas (9h):</strong> Jornada laboral diurna en obras civiles y frentes de superficie.</li>
+        <li><strong>12 horas (12h):</strong> Turno estándar de faena minera e industrial (régimen 12x12).</li>
+        <li><strong>24 horas (24h):</strong> Ciclo diario integral para previsión logística, relevo de guardias y planificación del siguiente turno.</li>
+      </ul>
 
       <div class="table-desktop">
         <div class="table-container">
@@ -635,14 +676,15 @@
               <tr>
                 <td><span class="mono">60.0% a 79.9%</span></td>
                 <td>Atención requerida</td>
-                <td>Operación con restricciones (rotación de cuadrillas a la sombra, monitoreo continuo de anemómetros de
-                  pluma).</td>
+                <td>Operación con restricciones (rotación de cuadrillas a la sombra, monitoreo continuo de anemómetros
+                  de
+                  pluma, alerta de visibilidad).</td>
               </tr>
               <tr>
                 <td><span class="mono">&lt; 60.0%</span></td>
                 <td>Alerta crítica</td>
-                <td>Parada técnica obligatoria de tareas de alto riesgo en cielo abierto (izajes, andamios, trabajos en
-                  altura).</td>
+                <td>Parada técnica obligatoria de tareas de alto riesgo en cielo abierto (izajes, andamios, tránsito en
+                  trochas críticas, trabajos en altura).</td>
               </tr>
             </tbody>
           </table>
@@ -663,7 +705,8 @@
             <span class="scale-badge badge-warning">60.0% a 79.9%</span>
             <span class="scale-title">Atención requerida</span>
           </div>
-          <div class="scale-card-desc">Operación con restricciones (rotación de cuadrillas a la sombra, monitoreo continuo de anemómetros de pluma).</div>
+          <div class="scale-card-desc">Operación con restricciones (rotación a la sombra, monitoreo de anemómetros de
+            pluma, alerta de visibilidad).</div>
         </div>
 
         <div class="scale-card">
@@ -671,7 +714,8 @@
             <span class="scale-badge badge-alert">&lt; 60.0%</span>
             <span class="scale-title">Alerta crítica</span>
           </div>
-          <div class="scale-card-desc">Parada técnica obligatoria de tareas de alto riesgo en cielo abierto (izajes, andamios, trabajos en altura).</div>
+          <div class="scale-card-desc">Parada técnica obligatoria de tareas de alto riesgo en cielo abierto (izajes,
+            andamios, tránsito crítico, trabajos en altura).</div>
         </div>
       </div>
     </section>
@@ -693,10 +737,10 @@
             </thead>
             <tbody>
               <tr>
-                <td><strong>Radiación solar UV</strong></td>
-                <td>Índice UVI diario máximo y actual</td>
+                <td><strong>01. Radiación solar UV</strong></td>
+                <td>Índice UVI actual y pico proyectado</td>
                 <td class="cell-limits">
-                  0 a 5: Normal<br>
+                  Turno nocturno (UVI 0): Seguro<br>
                   6 a 7: Alto<br>
                   8 a 10: Muy alto<br>
                   &ge; 11: Extremo
@@ -707,10 +751,11 @@
                   &minus;18 pts<br>
                   &minus;25 pts
                 </td>
-                <td>Fotoprotector SPF 50+, cubrenucas y rotación horaria a sombra obligatoria.</td>
+                <td>Fotoprotector SPF 50+, cubrenucas y rotación horaria a sombra obligatoria (Ley N° 30102). De noche
+                  no aplica deducción.</td>
               </tr>
               <tr>
-                <td><strong>Precipitación pluvial</strong></td>
+                <td><strong>02. Precipitación pluvial</strong></td>
                 <td>Probabilidad (%) y acumulación (mm)</td>
                 <td class="cell-limits">
                   &lt; 20%: Seco<br>
@@ -720,43 +765,118 @@
                 </td>
                 <td class="cell-deduction mono">
                   0 pts<br>
-                  &minus;5 pts<br>
+                  &minus;6 pts<br>
                   &minus;12 pts<br>
                   &minus;20 pts
                 </td>
-                <td>Revisión de adherencia en haul roads, reducción de velocidad en transporte de mineral y drenaje.</td>
+                <td>Revisión de adherencia en haul roads, reducción de velocidad en transporte de mineral y drenaje de
+                  tajos.</td>
               </tr>
               <tr>
-                <td><strong>Viento y ráfagas</strong></td>
-                <td>Velocidad sostenida y ráfagas (km/h)</td>
+                <td><strong>03. Viento y ráfagas</strong></td>
+                <td>Sostenido a 10m y en pluma a 80m (km/h)</td>
                 <td class="cell-limits">
-                  &le; 20 km/h: Normal<br>
-                  21 a 31 km/h: Precaución<br>
-                  &ge; 32 km/h: Límite D.S. 024
+                  &le; 24 km/h: Normal<br>
+                  25 a 35 km/h: Precaución<br>
+                  36 a 50 km/h: Restricción izajes<br>
+                  &gt; 50 km/h: Parada mandatoria
                 </td>
                 <td class="cell-deduction mono">
                   0 pts<br>
-                  &minus;12 pts<br>
-                  &minus;28 pts
+                  &minus;8 pts<br>
+                  &minus;20 pts<br>
+                  &minus;35 pts
                 </td>
                 <td><strong>Parada técnica mandatoria de grúas e izajes a 32 km/h</strong> (D.S. 024-2016-EM).
                   Aseguramiento de cargas.</td>
               </tr>
               <tr>
-                <td><strong>Tormenta eléctrica</strong></td>
-                <td>Energía convectiva CAPE (J/kg)</td>
+                <td><strong>04. Tormenta eléctrica</strong></td>
+                <td>Energía CAPE (J/kg) y código WMO</td>
                 <td class="cell-limits">
-                  &lt; 300: Estable<br>
-                  300 a 999: Inestable<br>
-                  &ge; 1000 o descargas: Severo
+                  &lt; 500: Bajo<br>
+                  500 a 1499: Moderado<br>
+                  1500 a 2499: Alto<br>
+                  &ge; 2500 o descargas: Crítico
+                </td>
+                <td class="cell-deduction mono">
+                  0 pts<br>
+                  &minus;6 pts<br>
+                  &minus;14 pts<br>
+                  &minus;35 pts
+                </td>
+                <td>Evacuación preventiva a refugios Faraday y detención de labores en áreas abiertas y frentes altos
+                  (regla 30/30).</td>
+              </tr>
+              <tr>
+                <td><strong>05. Estrés térmico</strong></td>
+                <td>Temperatura actual y sensación térmica (°C)</td>
+                <td class="cell-limits">
+                  8° a 28°C: Confort térmico<br>
+                  0° a 8°C: Frío moderado<br>
+                  &le; 0°C: Bajo cero / Helada<br>
+                  &ge; 32°C: Estrés por calor
+                </td>
+                <td class="cell-deduction mono">
+                  0 pts<br>
+                  &minus;6 pts<br>
+                  &minus;15 a &minus;25 pts<br>
+                  &minus;15 a &minus;25 pts
+                </td>
+                <td>Protección contra hipotermia (ropa multicapa) en heladas o pausas de hidratación contra golpe de
+                  calor (R.M. 375-2008-TR).</td>
+              </tr>
+              <tr>
+                <td><strong>06. Nieve y congelamiento</strong></td>
+                <td>Acumulación de nieve (cm) e isoterma 0°C</td>
+                <td class="cell-limits">
+                  0 cm: Seco<br>
+                  0.1 a 0.9 cm: Escarcha ligera<br>
+                  1.0 a 4.9 cm: Nieve moderada<br>
+                  &ge; 5.0 cm: Nevada severa
+                </td>
+                <td class="cell-deduction mono">
+                  0 pts<br>
+                  &minus;8 pts<br>
+                  &minus;18 pts<br>
+                  &minus;30 pts
+                </td>
+                <td>Uso obligatorio de cadenas en llantas, despeje con motoniveladoras y suspensión de trabajos en
+                  altura por superficies congeladas.</td>
+              </tr>
+              <tr>
+                <td><strong>07. Visibilidad en ruta</strong></td>
+                <td>Alcance visual en metros (m) / kilómetros</td>
+                <td class="cell-limits">
+                  &ge; 2000 m: Óptima<br>
+                  500 a 2000 m: Neblina ligera<br>
+                  100 a 500 m: Visibilidad reducida<br>
+                  &lt; 100 m: Niebla densa
+                </td>
+                <td class="cell-deduction mono">
+                  0 pts<br>
+                  &minus;5 pts<br>
+                  &minus;12 pts<br>
+                  &minus;25 pts
+                </td>
+                <td>Detención preventiva de acarreo pesado con volquetes ante niebla densa (&lt; 100 m). Faros
+                  neblineros y pértigas estroboscópicas.</td>
+              </tr>
+              <tr>
+                <td><strong>08. Humedad de suelo</strong></td>
+                <td>Humedad volumétrica en capa superficial (m³/m³)</td>
+                <td class="cell-limits">
+                  &lt; 0.28: Estable / Compactado<br>
+                  0.28 a 0.40: Suelo húmedo<br>
+                  &ge; 0.40: Saturación crítica
                 </td>
                 <td class="cell-deduction mono">
                   0 pts<br>
                   &minus;10 pts<br>
-                  &minus;30 pts
+                  &minus;20 pts
                 </td>
-                <td>Evacuación preventiva a refugios Faraday y detención de labores en áreas abiertas y frentes altos.
-                </td>
+                <td>Inspección geotécnica de estabilidad de taludes, bermas y botaderos. Verificación de capacidad
+                  portante para zapatas de grúas.</td>
               </tr>
             </tbody>
           </table>
@@ -766,106 +886,135 @@
       <div class="cards-mobile">
         <div class="factor-card">
           <div class="factor-card-header">
-            <div class="factor-name">Radiación solar UV</div>
-            <div class="factor-reading">Lectura: Índice UVI diario máximo y actual</div>
+            <div class="factor-name">01. Radiación solar UV</div>
+            <div class="factor-reading">UVI actual y pico proyectado (Ley N° 30102)</div>
           </div>
           <div class="factor-levels-grid">
-            <div class="factor-level-row">
-              <span>0 a 5: Normal</span>
-              <span class="mono">0 pts</span>
-            </div>
-            <div class="factor-level-row">
-              <span>6 a 7: Alto</span>
-              <span class="mono">&minus;10 pts</span>
-            </div>
-            <div class="factor-level-row">
-              <span>8 a 10: Muy alto</span>
-              <span class="mono">&minus;18 pts</span>
-            </div>
-            <div class="factor-level-row">
-              <span>&ge; 11: Extremo</span>
-              <span class="mono">&minus;25 pts</span>
-            </div>
+            <div class="factor-level-row"><span>Turno nocturno (UVI 0)</span><span class="mono">0 pts</span></div>
+            <div class="factor-level-row"><span>6 a 7: Alto</span><span class="mono">&minus;10 pts</span></div>
+            <div class="factor-level-row"><span>8 a 10: Muy alto</span><span class="mono">&minus;18 pts</span></div>
+            <div class="factor-level-row"><span>&ge; 11: Extremo</span><span class="mono">&minus;25 pts</span></div>
           </div>
-          <div class="factor-action">
-            <strong>Control operativo:</strong> Fotoprotector SPF 50+, cubrenucas y rotación horaria a sombra obligatoria.
-          </div>
+          <div class="factor-action"><strong>Control SST:</strong> Fotoprotector SPF 50+, cubrenucas y rotación horaria
+            a sombra. De noche no deduce puntos.</div>
         </div>
 
         <div class="factor-card">
           <div class="factor-card-header">
-            <div class="factor-name">Precipitación pluvial</div>
-            <div class="factor-reading">Lectura: Probabilidad (%) y acumulación (mm)</div>
+            <div class="factor-name">02. Precipitación pluvial</div>
+            <div class="factor-reading">Probabilidad (%) y acumulación (mm) en 12h/24h</div>
           </div>
           <div class="factor-levels-grid">
-            <div class="factor-level-row">
-              <span>&lt; 20%: Seco</span>
-              <span class="mono">0 pts</span>
-            </div>
-            <div class="factor-level-row">
-              <span>20% a 39%: Ligera</span>
-              <span class="mono">&minus;5 pts</span>
-            </div>
-            <div class="factor-level-row">
-              <span>40% a 69%: Probable</span>
-              <span class="mono">&minus;12 pts</span>
-            </div>
-            <div class="factor-level-row">
-              <span>&ge; 70% o &ge; 5 mm: Crítico</span>
-              <span class="mono">&minus;20 pts</span>
-            </div>
+            <div class="factor-level-row"><span>&lt; 20%: Seco</span><span class="mono">0 pts</span></div>
+            <div class="factor-level-row"><span>20% a 39%: Ligera</span><span class="mono">&minus;6 pts</span></div>
+            <div class="factor-level-row"><span>40% a 69%: Probable</span><span class="mono">&minus;12 pts</span></div>
+            <div class="factor-level-row"><span>&ge; 70% o &ge; 5 mm: Crítico</span><span class="mono">&minus;20
+                pts</span></div>
           </div>
-          <div class="factor-action">
-            <strong>Control operativo:</strong> Revisión de adherencia en haul roads, reducción de velocidad en transporte de mineral y drenaje.
-          </div>
+          <div class="factor-action"><strong>Control SST:</strong> Revisión de adherencia en haul roads, reducción de
+            velocidad y monitoreo de drenajes.</div>
         </div>
 
         <div class="factor-card">
           <div class="factor-card-header">
-            <div class="factor-name">Viento y ráfagas</div>
-            <div class="factor-reading">Lectura: Velocidad sostenida y ráfagas (km/h)</div>
+            <div class="factor-name">03. Viento y ráfagas</div>
+            <div class="factor-reading">Velocidad sostenida y ráfaga en pluma (km/h)</div>
           </div>
           <div class="factor-levels-grid">
-            <div class="factor-level-row">
-              <span>&le; 20 km/h: Normal</span>
-              <span class="mono">0 pts</span>
+            <div class="factor-level-row"><span>&le; 24 km/h: Normal</span><span class="mono">0 pts</span></div>
+            <div class="factor-level-row"><span>25 a 35 km/h: Precaución</span><span class="mono">&minus;8 pts</span>
             </div>
-            <div class="factor-level-row">
-              <span>21 a 31 km/h: Precaución</span>
-              <span class="mono">&minus;12 pts</span>
+            <div class="factor-level-row"><span>36 a 50 km/h: Restricción</span><span class="mono">&minus;20 pts</span>
             </div>
-            <div class="factor-level-row">
-              <span>&ge; 32 km/h: Límite D.S. 024</span>
-              <span class="mono">&minus;28 pts</span>
-            </div>
+            <div class="factor-level-row"><span>&gt; 50 km/h: Suspensión mandatoria</span><span class="mono">&minus;35
+                pts</span></div>
           </div>
-          <div class="factor-action">
-            <strong>Control operativo:</strong> <strong>Parada técnica mandatoria de grúas e izajes a 32 km/h</strong> (D.S. 024-2016-EM). Aseguramiento de cargas.
-          </div>
+          <div class="factor-action"><strong>Control SST:</strong> Parada técnica obligatoria de grúas e izajes a partir
+            de 32 km/h (D.S. 024-2016-EM).</div>
         </div>
 
         <div class="factor-card">
           <div class="factor-card-header">
-            <div class="factor-name">Tormenta eléctrica</div>
-            <div class="factor-reading">Lectura: Energía convectiva CAPE (J/kg)</div>
+            <div class="factor-name">04. Tormenta eléctrica</div>
+            <div class="factor-reading">Energía convectiva CAPE (J/kg) y código WMO</div>
           </div>
           <div class="factor-levels-grid">
-            <div class="factor-level-row">
-              <span>&lt; 300: Estable</span>
-              <span class="mono">0 pts</span>
+            <div class="factor-level-row"><span>&lt; 500: Bajo</span><span class="mono">0 pts</span></div>
+            <div class="factor-level-row"><span>500 a 1499: Moderado</span><span class="mono">&minus;6 pts</span></div>
+            <div class="factor-level-row"><span>1500 a 2499: Alto</span><span class="mono">&minus;14 pts</span></div>
+            <div class="factor-level-row"><span>&ge; 2500 o descargas: Crítico</span><span class="mono">&minus;35
+                pts</span></div>
+          </div>
+          <div class="factor-action"><strong>Control SST:</strong> Evacuación preventiva a refugios Faraday ante alerta
+            de descargas (regla 30/30 WMO).</div>
+        </div>
+
+        <div class="factor-card">
+          <div class="factor-card-header">
+            <div class="factor-name">05. Estrés térmico</div>
+            <div class="factor-reading">Temperatura ambiente y sensación térmica (°C)</div>
+          </div>
+          <div class="factor-levels-grid">
+            <div class="factor-level-row"><span>8° a 28°C: Confort</span><span class="mono">0 pts</span></div>
+            <div class="factor-level-row"><span>0° a 8°C: Frío moderado</span><span class="mono">&minus;6 pts</span>
             </div>
-            <div class="factor-level-row">
-              <span>300 a 999: Inestable</span>
-              <span class="mono">&minus;10 pts</span>
+            <div class="factor-level-row"><span>&le; 0°C: Bajo cero / Helada</span><span class="mono">&minus;15 a
+                &minus;25 pts</span></div>
+            <div class="factor-level-row"><span>&ge; 32°C: Estrés por calor</span><span class="mono">&minus;15 a
+                &minus;25 pts</span></div>
+          </div>
+          <div class="factor-action"><strong>Control SST:</strong> Ropa térmica multicapa contra congelamiento o pausas
+            de hidratación contra golpe de calor (R.M. 375-2008-TR).</div>
+        </div>
+
+        <div class="factor-card">
+          <div class="factor-card-header">
+            <div class="factor-name">06. Nieve y congelamiento</div>
+            <div class="factor-reading">Acumulación (cm) e isoterma 0°C en faena andina</div>
+          </div>
+          <div class="factor-levels-grid">
+            <div class="factor-level-row"><span>0 cm: Seco</span><span class="mono">0 pts</span></div>
+            <div class="factor-level-row"><span>0.1 a 0.9 cm: Escarcha</span><span class="mono">&minus;8 pts</span>
             </div>
-            <div class="factor-level-row">
-              <span>&ge; 1000 o descargas: Severo</span>
-              <span class="mono">&minus;30 pts</span>
+            <div class="factor-level-row"><span>1.0 a 4.9 cm: Moderada</span><span class="mono">&minus;18 pts</span>
+            </div>
+            <div class="factor-level-row"><span>&ge; 5.0 cm: Nevada severa</span><span class="mono">&minus;30 pts</span>
             </div>
           </div>
-          <div class="factor-action">
-            <strong>Control operativo:</strong> Evacuación preventiva a refugios Faraday y detención de labores en áreas abiertas y frentes altos.
+          <div class="factor-action"><strong>Control SST:</strong> Uso mandatorio de cadenas en neumáticos, despeje de
+            accesos y precaución en escaleras metálicas.</div>
+        </div>
+
+        <div class="factor-card">
+          <div class="factor-card-header">
+            <div class="factor-name">07. Visibilidad en ruta</div>
+            <div class="factor-reading">Alcance visual en metros (m) en frente de acarreo</div>
           </div>
+          <div class="factor-levels-grid">
+            <div class="factor-level-row"><span>&ge; 2000 m: Óptima</span><span class="mono">0 pts</span></div>
+            <div class="factor-level-row"><span>500 a 2000 m: Neblina</span><span class="mono">&minus;5 pts</span></div>
+            <div class="factor-level-row"><span>100 a 500 m: Reducida</span><span class="mono">&minus;12 pts</span>
+            </div>
+            <div class="factor-level-row"><span>&lt; 100 m: Niebla densa</span><span class="mono">&minus;25 pts</span>
+            </div>
+          </div>
+          <div class="factor-action"><strong>Control SST:</strong> Parada preventiva de acarreo pesado ante visibilidad
+            menor a 100 m. Luces bajas y pértigas estroboscópicas.</div>
+        </div>
+
+        <div class="factor-card">
+          <div class="factor-card-header">
+            <div class="factor-name">08. Humedad de suelo</div>
+            <div class="factor-reading">Saturación en capa superficial (m³/m³)</div>
+          </div>
+          <div class="factor-levels-grid">
+            <div class="factor-level-row"><span>&lt; 0.28: Estable</span><span class="mono">0 pts</span></div>
+            <div class="factor-level-row"><span>0.28 a 0.40: Húmedo</span><span class="mono">&minus;10 pts</span></div>
+            <div class="factor-level-row"><span>&ge; 0.40: Saturación crítica</span><span class="mono">&minus;20
+                pts</span></div>
+          </div>
+          <div class="factor-action"><strong>Control SST:</strong> Inspección geotécnica de taludes, bermas de seguridad
+            y verificación de sustentación de zapatas.</div>
         </div>
       </div>
     </section>
@@ -874,17 +1023,23 @@
       <h2>Fuentes de datos y telemetría</h2>
       <ul>
         <li>
-          <strong>Modelos numéricos atmosféricos:</strong> Datos obtenidos de modelos de alta resolución ECMWF y GFS
-          procesados a través de Open-Meteo, con actualización horaria de radiación, viento, precipitaciones e índices
-          de inestabilidad convectiva.
+          <strong>Modelos numéricos atmosféricos globales:</strong> Telemetría procesada mediante la API de Open-Meteo,
+          integrando las corridas de alta resolución de ECMWF IFS (malla de 9 km), NOAA GFS y DWD ICON, con asimilación
+          continua y pronósticos horarios a 12 y 24 horas.
         </li>
         <li>
-          <strong>Imágenes satelitales:</strong> Capa base de alta definición de Esri World Imagery (sensores Maxar y
-          Earthstar Geographics), permitiendo ubicar tajos, plataformas, depósitos de relaves y campamentos.
+          <strong>Doble régimen temporal:</strong> Diferenciación técnica entre la condición instantánea en tiempo real
+          (temperatura actual, UVI actual, ráfaga actual) y las proyecciones horarias del turno (picos de viento,
+          precipitación acumulada, horas de tormenta).
         </li>
         <li>
-          <strong>Georreferenciación:</strong> Sistema de coordenadas WGS84 mediante geolocalización satelital del
-          navegador y búsqueda toponímica en OpenStreetMap.
+          <strong>Imágenes satelitales ortorrectificadas:</strong> Capa base de alta definición de Esri World Imagery
+          (sensores Maxar y Earthstar Geographics), permitiendo ubicar tajos, plataformas, depósitos de relaves y
+          campamentos.
+        </li>
+        <li>
+          <strong>Georreferenciación toponímica:</strong> Sistema de coordenadas WGS84 mediante geolocalización
+          satelital del navegador y búsqueda toponímica en OpenStreetMap Nominatim.
         </li>
       </ul>
     </section>

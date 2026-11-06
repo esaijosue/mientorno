@@ -172,8 +172,19 @@
       </div>
 
       <div class="factors-section-header">
-        <span class="factors-title">Factores evaluados en tiempo real</span>
-        <span id="last-updated" class="factors-timestamp">Sincronizado</span>
+        <div class="factors-header-top">
+          <span class="factors-title">Factores de faena</span>
+          <span id="last-updated" class="factors-timestamp">Sincronizado</span>
+        </div>
+        <div class="horizon-toggle-group" role="group" aria-label="Modo de monitoreo y proyección">
+          <button class="horizon-btn active" type="button" data-horizon="0" title="Lectura instantánea en tiempo real"><span class="live-pulse-dot"></span> En vivo</button>
+          <button class="horizon-btn" type="button" data-horizon="0.5" title="Proyección a 30 minutos (Maniobras críticas)">30m</button>
+          <button class="horizon-btn" type="button" data-horizon="1" title="Proyección a 1 hora (Alerta táctica)">1h</button>
+          <button class="horizon-btn" type="button" data-horizon="3" title="Proyección a 3 horas (Frentes dinámicos)">3h</button>
+          <button class="horizon-btn" type="button" data-horizon="9" title="Proyección a 9 horas (Jornada diurna)">9h</button>
+          <button class="horizon-btn" type="button" data-horizon="12" title="Proyección a 12 horas (Turno de faena 12x12)">12h</button>
+          <button class="horizon-btn" type="button" data-horizon="24" title="Proyección a 24 horas (Ciclo circadiano completo)">24h</button>
+        </div>
       </div>
 
       <div id="cards-container" class="risk-cards-grid" aria-label="Tarjetas de evaluación de riesgo"></div>

@@ -132,3 +132,169 @@ export const UMBRALES_CAPE = {
 };
 
 export const WEATHER_CODES_TORMENTA = [95, 96, 99];
+
+export const UMBRALES_TEMPERATURA = {
+  FRIO_EXTREMO: {
+    maxTemp: -5.0,
+    nivel: 'Helada extrema',
+    color: 'rojo',
+    badge: 'Helada extrema',
+    deduccion: 25,
+    recomendacion: 'Riesgo crítico de hipotermia y congelamiento: suspender labores exteriores no esenciales, proveer calefacción y bebidas calientes.'
+  },
+  FRIO_SEVERO: {
+    minTemp: -4.9,
+    maxTemp: 0.0,
+    nivel: 'Bajo cero',
+    color: 'naranja',
+    badge: 'Bajo cero',
+    deduccion: 15,
+    recomendacion: 'Temperaturas bajo cero: uso de ropa térmica multicapa, guantes aislantes y pausas en refugios térmicos.'
+  },
+  FRIO_MODERADO: {
+    minTemp: 0.1,
+    maxTemp: 8.0,
+    nivel: 'Frío moderado',
+    color: 'amarillo',
+    badge: 'Frío moderado',
+    deduccion: 6,
+    recomendacion: 'Uso obligatorio de cortavientos, ropa térmica y monitoreo del estado físico del personal.'
+  },
+  CONFORT: {
+    minTemp: 8.1,
+    maxTemp: 28.0,
+    nivel: 'Confort térmico',
+    color: 'verde',
+    badge: 'Normal',
+    deduccion: 0,
+    recomendacion: 'Rango térmico confortable para operaciones en campo.'
+  },
+  CALOR_MODERADO: {
+    minTemp: 28.1,
+    maxTemp: 32.0,
+    nivel: 'Calor moderado',
+    color: 'amarillo',
+    badge: 'Calor moderado',
+    deduccion: 8,
+    recomendacion: 'Puntos de hidratación cada 100 m, consumo mínimo de 500 ml de agua por hora y pausas a la sombra.'
+  },
+  CALOR_SEVERO: {
+    minTemp: 32.1,
+    maxTemp: 38.0,
+    nivel: 'Estrés térmico',
+    color: 'naranja',
+    badge: 'Estrés térmico',
+    deduccion: 18,
+    recomendacion: 'Riesgo de deshidratación y calambres: rotación obligatoria de cuadrillas 45 min trabajo / 15 min descanso a la sombra.'
+  },
+  GOLPE_CALOR: {
+    minTemp: 38.1,
+    nivel: 'Golpe de calor',
+    color: 'rojo',
+    badge: 'Golpe de calor',
+    deduccion: 25,
+    recomendacion: 'Peligro inminente de shock térmico: suspender trabajos físicos pesados a cielo abierto.'
+  }
+};
+
+export const UMBRALES_NIEVE = {
+  INTENSA: {
+    minNieve: 5.0,
+    nivel: 'Nevada intensa',
+    color: 'rojo',
+    badge: 'Nevada severa',
+    deduccion: 30,
+    recomendacion: 'Bloqueo crítico de vías y taludes: suspender tránsito de acarreo, izajes y trabajos en altura. Despeje mecánico con motoniveladoras.'
+  },
+  MODERADA: {
+    minNieve: 1.0,
+    maxNieve: 4.9,
+    nivel: 'Nevada moderada',
+    color: 'naranja',
+    badge: 'Nieve / hielo',
+    deduccion: 18,
+    recomendacion: 'Acumulación de nieve en bermas y accesos: uso obligatorio de cadenas en llantas y velocidad reducida a 20 km/h.'
+  },
+  LIGERA: {
+    minNieve: 0.1,
+    maxNieve: 0.9,
+    nivel: 'Nevada ligera',
+    color: 'amarillo',
+    badge: 'Escarcha / aguanieve',
+    deduccion: 8,
+    recomendacion: 'Presencia de escarcha o aguanieve en superficies metálicas y calzadas. Precaución en escaleras y andamios.'
+  },
+  SIN_NIEVE: {
+    maxNieve: 0.0,
+    nivel: 'Sin nieve',
+    color: 'verde',
+    badge: 'Seco',
+    deduccion: 0,
+    recomendacion: 'Sin precipitación sólida ni acumulación de nieve en terreno.'
+  }
+};
+
+export const UMBRALES_VISIBILIDAD = {
+  CRITICA: {
+    maxMetros: 100,
+    nivel: 'Niebla densa',
+    color: 'rojo',
+    badge: 'Niebla < 100 m',
+    deduccion: 25,
+    recomendacion: 'Visibilidad nula en frente de tajo: detención inmediata de tránsito de volquetes gigantes y vehículos livianos.'
+  },
+  REDUCIDA: {
+    minMetros: 101,
+    maxMetros: 500,
+    nivel: 'Niebla moderada',
+    color: 'naranja',
+    badge: 'Visibilidad < 500 m',
+    deduccion: 12,
+    recomendacion: 'Circulación restringida: encendido de faros neblineros, pértiga con luz estroboscópica y distancia mínima de 50 m entre unidades.'
+  },
+  LIGERA: {
+    minMetros: 501,
+    maxMetros: 2000,
+    nivel: 'Neblina ligera',
+    color: 'amarillo',
+    badge: 'Neblina ligera',
+    deduccion: 5,
+    recomendacion: 'Conducción a la defensiva con luces bajas obligatorias.'
+  },
+  OPTIMA: {
+    minMetros: 2001,
+    nivel: 'Óptima',
+    color: 'verde',
+    badge: 'Óptima',
+    deduccion: 0,
+    recomendacion: 'Visibilidad despejada para operaciones regulares en faena.'
+  }
+};
+
+export const UMBRALES_SUELO = {
+  SATURADO: {
+    minHumedad: 0.40,
+    nivel: 'Suelo saturado',
+    color: 'rojo',
+    badge: 'Suelo saturado',
+    deduccion: 20,
+    recomendacion: 'Saturación hídrica crítica en taludes y botaderos: riesgo inminente de deslizamientos y asentamiento de zapatas de grúas.'
+  },
+  HUMEDO: {
+    minHumedad: 0.28,
+    maxHumedad: 0.399,
+    nivel: 'Suelo húmedo',
+    color: 'amarillo',
+    badge: 'Suelo húmedo',
+    deduccion: 10,
+    recomendacion: 'Terreno blando: verificar capacidad portante antes de posicionar equipos pesados o grúas móviles.'
+  },
+  ESTABLE: {
+    maxHumedad: 0.279,
+    nivel: 'Suelo estable',
+    color: 'verde',
+    badge: 'Estable',
+    deduccion: 0,
+    recomendacion: 'Humedad de terreno en rango normal y compactado.'
+  }
+};

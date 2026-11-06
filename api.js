@@ -86,12 +86,22 @@ export async function fetchWeatherData(lat, lon) {
     url.searchParams.set('latitude', lat.toFixed(4));
     url.searchParams.set('longitude', lon.toFixed(4));
     url.searchParams.set('timezone', 'auto');
-    url.searchParams.set('current', 'temperature_2m,weather_code,wind_speed_10m,wind_gusts_10m');
+    url.searchParams.set(
+      'current',
+      'temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,wind_direction_10m,surface_pressure'
+    );
     url.searchParams.set(
       'hourly',
-      'precipitation_probability,precipitation,wind_speed_10m,wind_gusts_10m,uv_index,cape,weather_code'
+      'temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,surface_pressure,visibility,wind_speed_10m,wind_speed_80m,wind_gusts_10m,wind_direction_10m,uv_index,cape,freezing_level_height,snowfall,snow_depth,soil_moisture_0_to_7cm'
     );
-    url.searchParams.set('daily', 'uv_index_max,sunrise,sunset');
+    url.searchParams.set(
+      'minutely_15',
+      'temperature_2m,apparent_temperature,precipitation,precipitation_probability,weather_code,wind_speed_10m,wind_gusts_10m,visibility,uv_index,cape,snowfall'
+    );
+    url.searchParams.set(
+      'daily',
+      'uv_index_max,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max,sunrise,sunset'
+    );
 
     const response = await fetch(url.toString());
 
