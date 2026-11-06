@@ -204,7 +204,7 @@ body.theme-control-room {
 
 .brand-main-title {
   font-size: 1.05rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-pure);
   letter-spacing: -0.02em;
   line-height: 1.15;
@@ -304,7 +304,7 @@ body.theme-control-room {
 
 .suggestion-main-title {
   font-size: 0.88rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-pure);
 }
 
@@ -334,7 +334,7 @@ body.theme-control-room {
   color: var(--text-pure);
   font-family: var(--font-sans);
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 400;
   padding: 6px 14px;
   border-radius: var(--radius-pill);
   cursor: pointer;
@@ -362,7 +362,7 @@ body.theme-control-room {
   text-decoration: none;
   font-family: var(--font-sans);
   font-size: 0.78rem;
-  font-weight: 500;
+  font-weight: 400;
   padding: 6px 13px;
   border-radius: var(--radius-pill);
   transition: all 0.18s ease;
@@ -525,7 +525,7 @@ body.theme-control-room {
 .counter-label {
   font-size: 0.74rem;
   color: var(--text-secondary);
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .counter-number {
@@ -558,7 +558,7 @@ body.theme-control-room {
 
 .efficiency-title {
   font-size: 0.84rem;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--text-pure);
 }
 
@@ -612,7 +612,7 @@ body.theme-control-room {
 
 .target-value {
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--text-secondary);
 }
 
@@ -679,7 +679,7 @@ body.theme-control-room {
 
 .factors-title {
   font-size: 0.74rem;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--text-secondary);
   letter-spacing: 0.03em;
 }
@@ -736,7 +736,7 @@ body.theme-control-room {
 }
 
 .reliability-score {
-  font-weight: 500;
+  font-weight: 400;
   color: #e2e8f0;
   font-family: var(--font-mono);
 }
@@ -778,7 +778,7 @@ body.theme-control-room {
   color: #94a3b8;
   font-family: var(--font-sans);
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 400;
   padding: 4px 2px;
   text-align: center;
   border-radius: 14px;
@@ -819,17 +819,19 @@ body.theme-control-room {
 }
 
 .horizon-btn.active {
-  background: rgba(56, 189, 248, 0.2);
-  color: #38bdf8;
-  border-color: rgba(56, 189, 248, 0.4);
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: none;
+  font-weight: 400;
 }
 
 .horizon-btn.active[data-horizon="0"] {
-  background: rgba(34, 197, 94, 0.18);
+  background: rgba(34, 197, 94, 0.12);
   color: #4ade80;
-  border-color: rgba(34, 197, 94, 0.45);
-  box-shadow: 0 0 12px rgba(34, 197, 94, 0.25);
+  border-color: rgba(34, 197, 94, 0.3);
+  box-shadow: none;
+  font-weight: 400;
 }
 
 /* Cuadrícula de tarjetas de evaluación (columna única fluida) */
@@ -893,7 +895,7 @@ body.theme-control-room {
   align-items: center;
   justify-content: center;
   font-size: 0.62rem;
-  font-weight: 500;
+  font-weight: 400;
   background: rgba(255, 255, 255, 0.05);
   color: #94a3b8;
   font-family: var(--font-mono);
@@ -902,7 +904,7 @@ body.theme-control-room {
 
 .factor-title {
   font-size: 0.78rem;
-  font-weight: 500;
+  font-weight: 400;
   color: #f1f5f9;
   white-space: nowrap;
   overflow: hidden;
@@ -925,9 +927,9 @@ body.theme-control-room {
 
 .metric-hero-val {
   font-size: 1.45rem;
-  font-weight: 500;
+  font-weight: 300;
   color: #ffffff;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   line-height: 1.1;
   font-family: var(--font-sans);
 }
@@ -956,13 +958,13 @@ body.theme-control-room {
 
 .projection-val {
   color: #cbd5e1;
-  font-weight: 500;
+  font-weight: 400;
   font-family: var(--font-mono);
 }
 
 .risk-status-pill {
   font-size: 0.66rem;
-  font-weight: 500;
+  font-weight: 400;
   padding: 2px 7px;
   border-radius: var(--radius-pill);
   white-space: nowrap;
@@ -1055,7 +1057,7 @@ body.theme-control-room {
 .control-box-label {
   display: block;
   font-size: 0.67rem;
-  font-weight: 500;
+  font-weight: 400;
   color: #94a3b8;
   letter-spacing: 0.02em;
   margin-bottom: 1px;
@@ -1110,7 +1112,7 @@ body.theme-control-room {
   background: #ef4444;
   color: white;
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1119,7 +1121,7 @@ body.theme-control-room {
 
 .dash-alert-title {
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 500;
   color: #fca5a5;
 }
 
@@ -1142,7 +1144,7 @@ body.theme-control-room {
 
 .protocol-tag {
   font-size: 0.62rem;
-  font-weight: 600;
+  font-weight: 400;
   color: #94a3b8;
 }
 
@@ -1204,7 +1206,7 @@ body.theme-control-room {
   color: var(--text-pure);
   font-family: var(--font-sans);
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 400;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
@@ -1263,7 +1265,7 @@ body.theme-control-room {
 .glass-metric-label {
   font-size: 0.75rem;
   color: var(--text-secondary);
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .glass-arrow {
@@ -1345,7 +1347,7 @@ body.theme-control-room {
 
 .accordion-main-title {
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-pure);
 }
 
@@ -1385,7 +1387,7 @@ body.theme-control-room {
   gap: 6px;
   color: var(--text-secondary);
   font-size: 0.72rem;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .warning-alert-box {
@@ -1411,7 +1413,7 @@ body.theme-control-room {
   background: #ef4444;
   color: white;
   font-size: 0.62rem;
-  font-weight: 700;
+  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1426,7 +1428,7 @@ body.theme-control-room {
 
 .warning-bold-title {
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: 500;
   color: #fca5a5;
   line-height: 1.25;
 }
@@ -1451,7 +1453,7 @@ body.theme-control-room {
 .impact-label {
   font-size: 0.68rem;
   color: rgba(255, 255, 255, 0.6);
-  font-weight: 500;
+  font-weight: 400;
   flex-shrink: 0;
 }
 
@@ -1475,7 +1477,7 @@ body.theme-control-room {
   gap: 5px;
   color: #e2e8f0;
   font-size: 0.68rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .recommend-sparkle {
@@ -1514,7 +1516,7 @@ body.theme-control-room {
 
 .protocol-title {
   font-size: 0.72rem;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--text-pure);
 }
 
@@ -1593,7 +1595,7 @@ body.theme-control-room {
   color: var(--text-secondary);
   font-family: var(--font-sans);
   font-size: 0.72rem;
-  font-weight: 500;
+  font-weight: 400;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1622,7 +1624,7 @@ body.theme-control-room {
 .dock-action-btn.active {
   background: transparent;
   color: var(--color-accent);
-  font-weight: 600;
+  font-weight: 400;
   box-shadow: none;
 }
 
@@ -1638,7 +1640,7 @@ body.theme-control-room {
   height: 2.5px;
   background: var(--color-accent);
   border-radius: 2px;
-  box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
+  box-shadow: 0 0 6px rgba(148, 163, 184, 0.4);
 }
 
 
@@ -1800,7 +1802,7 @@ body.theme-control-room {
 
   .brand-main-title {
     font-size: 0.92rem;
-    font-weight: 700;
+    font-weight: 500;
     color: #ffffff;
     line-height: 1.15;
   }
@@ -2098,7 +2100,7 @@ body.theme-control-room {
     padding: 5px 12px;
     color: #ffffff;
     font-size: 0.72rem;
-    font-weight: 500;
+    font-weight: 400;
     cursor: pointer;
     transition: background 0.18s ease;
   }
@@ -2170,7 +2172,7 @@ body.theme-control-room {
     background: transparent;
     color: #94a3b8;
     font-size: 0.72rem;
-    font-weight: 500;
+    font-weight: 400;
     border-radius: 20px;
     cursor: pointer;
     transition: color 0.18s ease, transform 0.18s ease;
@@ -2183,7 +2185,7 @@ body.theme-control-room {
   .dock-action-btn.active {
     background: transparent !important;
     color: #f1f5f9 !important;
-    font-weight: 500;
+    font-weight: 400;
     box-shadow: none !important;
   }
 
