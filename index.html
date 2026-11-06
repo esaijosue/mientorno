@@ -6,10 +6,10 @@
   <title>MiEntorno &bull; Monitoreo de campo</title>
   <meta name="description" content="Plataforma de evaluación y monitoreo de riesgos climáticos y físicos en tiempo real para faenas mineras, energéticas, construcción y puertos del Perú.">
   
-  <!-- Favicon oficial con logo del usuario -->
+  <!-- Favicon -->
   <link rel="icon" type="image/webp" href="logo.webp">
 
-  <!-- Tipografía Inter oficial -->
+  <!-- Tipografía Inter y JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -21,17 +21,13 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="theme-control-room">
-  <!-- =====================================================================
-       1. MAPA SATELITAL DE FONDO COMPLETO
-       ===================================================================== -->
+  <!-- Mapa satelital base -->
   <div id="map" class="fullscreen-map-canvas"></div>
 
-  <!-- Viñeta fotográfica suave: centro nítido/claro y oscurecimiento difuminado hacia los bordes -->
+  <!-- Capa de viñeta perimetral -->
   <div class="map-photographic-vignette" aria-hidden="true"></div>
 
-  <!-- =====================================================================
-       2. BARRA SUPERIOR SÓLIDA, LIMPIA Y UNIFORME
-       ===================================================================== -->
+  <!-- Cabecera principal -->
   <header class="app-top-header">
     <div class="header-brand-section">
       <img src="logo.webp" alt="Logo MiEntorno" class="brand-logo-img">
@@ -96,13 +92,11 @@
     </div>
   </header>
 
-  <!-- =====================================================================
-       3. CONTENIDO FLOTANTE SOBRE EL MAPA
-       ===================================================================== -->
+  <!-- Espacio de trabajo flotante -->
   <div class="app-floating-workspace">
-    <!-- PANEL LATERAL IZQUIERDO COMPACTO / SHEET MÓVIL INTERACTIVO -->
+    <!-- Panel lateral de métricas -->
     <aside id="panel-dashboard" class="intelligence-floating-panel">
-      <!-- Encabezado de control móvil -->
+      <!-- Encabezado móvil del panel -->
       <div class="mobile-sheet-header">
         <div class="mobile-sheet-drag-handle" aria-hidden="true" title="Desliza para alternar vista">
           <span class="drag-bar"></span>
@@ -112,7 +106,7 @@
           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
       </div>
-      <!-- Fila de contadores duales compactos (Online 12 / Offline 4) -->
+      <!-- Resumen de condiciones operativas -->
       <div class="dual-status-kpi-row">
         <div class="status-counter-card">
           <div class="counter-head">
@@ -139,7 +133,7 @@
         </div>
       </div>
 
-      <!-- Tarjeta Hero compacta: Índice de seguridad en faena (78.3%) -->
+      <!-- Índice de seguridad en faena -->
       <section class="safety-efficiency-card">
         <div class="efficiency-card-head">
           <div>
@@ -206,10 +200,10 @@
         <span id="last-updated" class="factors-timestamp">Sincronizado</span>
       </div>
 
-      <!-- Cuadrícula 2x2 compacta de tarjetas de riesgo (todo entra en pantalla) -->
+      <!-- Cuadrícula de tarjetas de evaluación -->
       <div id="cards-container" class="risk-cards-grid" aria-label="Tarjetas de evaluación de riesgo"></div>
 
-      <!-- Pie de página del tablero (crédito y estado de misión) -->
+      <!-- Pie de página del panel -->
       <footer class="panel-dashboard-footer">
         <span>Desarrollado por Esai Josue Huaman Meza</span>
         <span class="footer-separator">&bull;</span>
@@ -217,9 +211,9 @@
       </footer>
     </aside>
 
-    <!-- ZONA FLOTANTE SOBRE EL MAPA A LA DERECHA -->
+    <!-- Capa de elementos flotantes sobre el mapa -->
     <div class="map-floating-content-layer">
-      <!-- Título flotante sobre el mapa satelital (Traffic Management) -->
+      <!-- Selector de ubicación -->
       <div class="floating-map-hero-header">
         <h1 class="map-hero-title">Monitoreo de campo</h1>
         <div class="map-pills-row">
@@ -236,7 +230,7 @@
         </div>
       </div>
 
-      <!-- Tarjeta de cristal flotante sobre el mapa satelital -->
+      <!-- Métrica operativa destacada -->
       <div id="map-floating-card" class="frosted-glass-metric-card">
         <div class="glass-card-top">
           <span id="floating-kpi-title" class="glass-metric-label">Estado operativo</span>
@@ -250,8 +244,7 @@
         <span id="floating-kpi-caption" class="glass-caption-note">Parámetros dentro de umbrales permitidos</span>
       </div>
 
-      <!-- Panel Acordeón de Alertas y Controles SST (Warning) -->
-      <!-- Panel Acordeón de Alertas y Controles SST (sidebar derecho) -->
+      <!-- Panel de alertas y controles SST -->
       <aside class="floating-warning-accordion" id="warning-accordion">
         <div class="accordion-header" id="accordion-toggle-btn">
           <div class="accordion-header-left">
@@ -322,9 +315,7 @@
     </div>
   </div>
 
-  <!-- =====================================================================
-       4. BARRA DOCK INFERIOR PARA MÓVIL
-       ===================================================================== -->
+  <!-- Barra de navegación inferior móvil -->
   <nav class="mobile-bottom-dock-bar" aria-label="Navegación móvil">
     <div class="dock-capsule-container">
       <button id="dock-btn-dashboard" class="dock-action-btn active" type="button" data-target="dashboard">

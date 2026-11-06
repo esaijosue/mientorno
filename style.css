@@ -1,17 +1,10 @@
 /**
- * style.css - Plataforma de Monitoreo Ambiental de Misión Crítica
- * Proyecto: MiEntorno
- * 
- * Sistema visual inspirado 100% en interfaces de alta gama (estilo Imagen 2 y 3 de referencia).
- * - Header sólido y uniforme en toda la pantalla (sin transparencias irregulares)
- * - Viñeta fotográfica suave sobre el mapa (centro claro/nítido, oscurecimiento difuminado hacia los bordes)
- * - Sidebar compacto en cuadrícula 2x2 para que toda la información crítica entre en pantalla
- * - Barra de desplazamiento totalmente invisible
- * - Paleta neutra en tonos carbón y grafito (libre de tintes azulados artificiales)
+ * MiEntorno - Hoja de estilos principal
+ * Plataforma de monitoreo ambiental y riesgos físicos en faena
  */
 
 :root {
-  /* Fondo general y superficies neutras de Imagen 3 (grafito/carbón) */
+  /* Fondo general y superficies neutras */
   --bg-app: #0c0e14;
   --bg-header: #0c0e14;
   --bg-sidebar: rgba(12, 15, 21, 0.94);
@@ -78,9 +71,7 @@ body.theme-control-room {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* =========================================================================
-   1. MAPA SATELITAL DE FONDO COMPLETO
-   ========================================================================= */
+/* Mapa satelital */
 .fullscreen-map-canvas {
   position: fixed;
   inset: 0;
@@ -90,7 +81,7 @@ body.theme-control-room {
   background: #06090e;
 }
 
-/* El mapa satelital se visualiza nítido, claro y con relieve definido */
+/* Ajustes de capa satelital */
 .leaflet-tile {
   filter: brightness(0.96) contrast(1.08) saturate(1.05) !important;
 }
@@ -100,7 +91,7 @@ body.theme-control-room {
   display: none !important;
 }
 
-/* Viñeta fotográfica suave: centro transparente/despejado y oscurecimiento difuminado hacia los bordes */
+/* Viñeta perimetral sobre el mapa */
 .map-photographic-vignette {
   position: fixed;
   inset: 0;
@@ -176,9 +167,7 @@ body.theme-control-room {
   100% { transform: scale(2.2); opacity: 0; }
 }
 
-/* =========================================================================
-   2. BARRA SUPERIOR SÓLIDA, LIMPIA Y UNIFORME
-   ========================================================================= */
+/* Barra superior */
 .app-top-header {
   position: fixed;
   top: 0;
@@ -186,7 +175,7 @@ body.theme-control-room {
   right: 0;
   height: 60px;
   z-index: 1000;
-  background: var(--bg-header); /* Sólido en toda la pantalla */
+  background: var(--bg-header);
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
@@ -468,9 +457,7 @@ body.theme-control-room {
   to { transform: rotate(360deg); }
 }
 
-/* =========================================================================
-   3. CONTENIDO FLOTANTE SOBRE EL MAPA
-   ========================================================================= */
+/* Espacio de trabajo flotante */
 .app-floating-workspace {
   position: fixed;
   top: 60px;
@@ -482,9 +469,7 @@ body.theme-control-room {
   pointer-events: none;
 }
 
-/* -------------------------------------------------------------------------
-   PANEL LATERAL IZQUIERDO: INTEGRACIÓN FLOTANTE SIN LÍNEAS ARTIFICIALES
-   ------------------------------------------------------------------------- */
+/* Panel lateral izquierdo */
 .intelligence-floating-panel {
   pointer-events: auto;
   width: 460px;
@@ -497,7 +482,7 @@ body.theme-control-room {
   flex-direction: column;
   gap: 12px;
 
-  /* Barra de desplazamiento totalmente oculta */
+  /* Barra de desplazamiento oculta */
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -508,7 +493,7 @@ body.theme-control-room {
   height: 0;
 }
 
-/* Contadores duales compactos (Online 12 / Offline 4 de Imagen 3) */
+/* Contadores de estado */
 .dual-status-kpi-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -569,9 +554,7 @@ body.theme-control-room {
   font-family: var(--font-sans);
 }
 
-/* -------------------------------------------------------------------------
-   TARJETA HERO COMPACTA: ÍNDICE DE SEGURIDAD EN FAENA (78.3%)
-   ------------------------------------------------------------------------- */
+/* Tarjeta del índice de seguridad en faena */
 .safety-efficiency-card {
   background: var(--bg-card-glass);
   border: 1px solid var(--border-card);
@@ -717,10 +700,7 @@ body.theme-control-room {
   color: var(--text-muted);
 }
 
-/* =========================================================================
-   CUADRÍCULA COMPACTA 2X2 DE TARJETAS DE RIESGO (ESTILO IMAGEN 3)
-   Permite que todas las tarjetas entren directamente en la pantalla
-   ========================================================================= */
+/* Cuadrícula de tarjetas de evaluación */
 .risk-cards-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -873,7 +853,7 @@ body.theme-control-room {
   font-size: 0.6rem;
 }
 
-/* Caja de medidas de control SST compacta sin truncamiento artificial */
+/* Medidas de control SST */
 .control-measure-box {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -976,9 +956,7 @@ body.theme-control-room {
   display: none;
 }
 
-/* =========================================================================
-   4. CAPA DE CONTENIDO FLOTANTE SOBRE EL MAPA A LA DERECHA
-   ========================================================================= */
+/* Capa de contenido flotante sobre el mapa */
 .map-floating-content-layer {
   position: absolute;
   inset: 0;
@@ -1055,7 +1033,7 @@ body.theme-control-room {
   box-shadow: 0 0 8px var(--color-safe);
 }
 
-/* Tarjeta de cristal flotante sobre el mapa (Passenger Load 87%) */
+/* Métrica operativa destacada sobre el mapa */
 .frosted-glass-metric-card {
   pointer-events: auto;
   position: absolute;
@@ -1122,7 +1100,7 @@ body.theme-control-room {
   color: #cbd5e1;
 }
 
-/* Panel acordeón de alertas SST (sidebar derecho compacto) */
+/* Panel de alertas SST */
 .floating-warning-accordion {
   pointer-events: auto;
   position: absolute;
@@ -1381,9 +1359,7 @@ body.theme-control-room {
   transform: translateY(-1px);
 }
 
-/* =========================================================================
-   5. BARRA DOCK INFERIOR PARA MÓVIL
-   ========================================================================= */
+/* Barra de navegación inferior móvil */
 .mobile-bottom-dock-bar {
   display: none;
   position: fixed;
@@ -1467,9 +1443,7 @@ body.theme-control-room {
   color: rgba(255, 255, 255, 0.2);
 }
 
-/* =========================================================================
-   6. RESPONSIVE DESIGN (PC, TABLETS Y CELULARES)
-   ========================================================================= */
+/* Diseño responsive */
 
 /* Laptops y pantallas medianas (1025px a 1240px) */
 @media (max-width: 1240px) {
@@ -1789,7 +1763,7 @@ body.theme-control-room {
     pointer-events: auto;
   }
 
-  /* Tarjeta de métrica prioritaria sobre el mapa (estilo Passenger Load 87%) */
+  /* Tarjeta de métrica destacada en móvil */
   .frosted-glass-metric-card {
     position: absolute;
     top: 60px;
@@ -1840,14 +1814,12 @@ body.theme-control-room {
     border: 1px solid rgba(255, 255, 255, 0.16);
   }
 
-  /* -----------------------------------------------------------------------
-     TABLERO DESLIZABLE (DRAWER / BOTTOM SHEET) EN MÓVIL
-     ----------------------------------------------------------------------- */
+  /* Panel deslizable en dispositivos móviles */
   .intelligence-floating-panel {
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
   }
 
-  /* MODO MAPA ACTIVO: El mapa satelital es 100% visible sin ningún panel que lo tape */
+  /* Modo mapa activo: visualización completa del mapa satelital */
   body.mobile-map-focus .intelligence-floating-panel {
     position: fixed;
     transform: translateY(105%);
@@ -1856,7 +1828,7 @@ body.theme-control-room {
     visibility: hidden;
   }
 
-  /* MODO TABLERO ACTIVO: El panel se desliza cubriendo la pantalla para consultar métricas completas */
+  /* Modo tablero activo: visualización de métricas completas */
   body.mobile-dashboard-focus .intelligence-floating-panel {
     position: fixed;
     top: 52px;

@@ -1,50 +1,47 @@
 /**
- * reglas.js - Constantes, umbrales y reglas de negocio SST / HSE
+ * reglas.js - Constantes de configuración, umbrales y reglas de negocio SST
  * Proyecto: MiEntorno
  * 
- * NOTA PARA AUDITORÍA Y PERSONALIZACIÓN TÉCNICA:
- * Los umbrales definidos en este archivo corresponden a normativas nacionales
- * (D.S. 024-2016-EM Minería, Norma G.050 Construcción) y estándares internacionales (OSHA, OMS, OMM).
- * Son valores por defecto y totalmente editables según los estándares internos de cada empresa.
+ * Umbrales técnicos basados en:
+ * - D.S. 024-2016-EM (Reglamento de Seguridad y Salud Ocupacional en Minería)
+ * - Ley 30102 (Medidas preventivas contra efectos nocivos de radiación solar)
+ * - Ley 29783 (Ley de Seguridad y Salud en el Trabajo)
+ * - Norma Técnica G.050 (Seguridad durante la Construcción)
+ * - ASME B30.5 / OSHA 1926.1431 (Límites operacionales de viento en izaje)
+ * - Estándares de la Organización Meteorológica Mundial (OMM / WMO)
  */
 
-// Nombre oficial de la aplicación (única constante para cambiarlo fácilmente)
-export const APP_NAME = 'MiEntorno';
+// Configuración opcional inyectada por entorno o valores por defecto
+const runtimeEnv = (typeof window !== 'undefined' && window.ENV) ? window.ENV : {};
 
-// Coordenadas por defecto para centrar en Perú (si no hay GPS o el usuario rechaza permisos)
+export const APP_NAME = runtimeEnv.APP_NAME || 'MiEntorno';
+
 export const PERU_DEFAULT_COORDS = {
-  lat: -9.189967,
-  lon: -75.015152,
-  zoom: 6
+  lat: Number(runtimeEnv.PERU_LAT) || -9.189967,
+  lon: Number(runtimeEnv.PERU_LON) || -75.015152,
+  zoom: Number(runtimeEnv.PERU_ZOOM) || 6
 };
 
-// Ubicación operativa inicial para carga instantánea sin esperar GPS
 export const OPERATIONAL_DEFAULT_COORDS = {
-  lat: -12.0464,
-  lon: -77.0428,
-  name: 'Lima / Callao (frente operativo)'
+  lat: Number(runtimeEnv.DEFAULT_LAT) || -12.0464,
+  lon: Number(runtimeEnv.DEFAULT_LON) || -77.0428,
+  name: runtimeEnv.DEFAULT_LOCATION_NAME || 'Lima / Callao (frente operativo)'
 };
 
-// Umbral de precisión para considerar la ubicación como aproximada (en metros)
-export const ACCURACY_WARNING_THRESHOLD_METERS = 500;
+export const ACCURACY_WARNING_THRESHOLD_METERS = Number(runtimeEnv.ACCURACY_THRESHOLD) || 500;
 
-// Configuración requerida de geolocalización de alta precisión
 export const GEOLOCATION_CONFIG = {
   enableHighAccuracy: true,
-  timeout: 15000, // 15 segundos
+  timeout: 15000,
   maximumAge: 0
 };
 
-// Clave de almacenamiento local seguro
 export const STORAGE_KEY_LOCATION = 'mientorno_ubicacion_v1';
 
-// Intervalo de actualización automática en milisegundos (10 minutos)
-export const AUTO_REFRESH_INTERVAL_MS = 10 * 60 * 1000;
+export const AUTO_REFRESH_INTERVAL_MS = Number(runtimeEnv.REFRESH_INTERVAL_MS) || (10 * 60 * 1000);
 
 /**
- * =========================================================================
- * REGLAS DE RADIACIÓN UV (Estándar OMS / SENAMHI)
- * =========================================================================
+ * Reglas de radiación UV (OMS, Senamhi, Ley 30102)
  */
 export const REGLAS_UV = [
   {
@@ -90,10 +87,7 @@ export const REGLAS_UV = [
 ];
 
 /**
- * =========================================================================
- * REGLAS DE VIENTO Y RÁFAGAS (Umbrales configurables SST / Izaje / Altura)
- * D.S. 024-2016-EM Minería / Norma G.050 / ASME B30.5
- * =========================================================================
+ * Reglas de viento y ráfagas (D.S. 024-2016-EM, Norma G.050, ASME B30.5)
  */
 export const UMBRALES_VIENTO = {
   NORMAL: {
@@ -125,10 +119,7 @@ export const UMBRALES_VIENTO = {
 };
 
 /**
- * =========================================================================
- * REGLAS DE TORMENTA ELÉCTRICA (CAPE - Convective Available Potential Energy)
- * Conforme a estándares de alerta temprana de tormentas en minería de tajo abierto
- * =========================================================================
+ * Reglas de potencial de tormenta eléctrica (CAPE - Convective Available Potential Energy)
  */
 export const UMBRALES_CAPE = {
   BAJO: {

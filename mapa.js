@@ -1,9 +1,9 @@
 /**
- * mapa.js - Inicialización y control del mapa satelital de fondo completo
+ * mapa.js - Inicialización y control del mapa satelital
  * Proyecto: MiEntorno
  * 
- * Mapa satelital cinemático de fondo completo (Esri World Imagery + Etiquetas de referencia)
- * con compensación óptica del centro para visibilidad óptima sobre el panel flotante.
+ * Capas satelitales (Esri World Imagery + referencias cartográficas)
+ * y gestión del marcador interactivo de geolocalización.
  */
 
 import { PERU_DEFAULT_COORDS } from './reglas.js';

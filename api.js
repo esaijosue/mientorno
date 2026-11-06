@@ -1,9 +1,9 @@
 /**
- * api.js - Módulo de llamadas a servicios externos
+ * api.js - Módulo de integración con servicios externos
  * Proyecto: MiEntorno
  * 
- * En Fase 1: búsqueda de lugares vía OpenStreetMap Nominatim.
- * En Fase 2: llamada unificada a Open-Meteo Forecast (gratis, sin clave de API).
+ * Consultas a servicios de geocodificación (Nominatim OpenStreetMap) y
+ * telemetría meteorológica en tiempo real (Open-Meteo API).
  */
 
 let lastNominatimRequestTime = 0;
@@ -59,7 +59,7 @@ export async function searchLocationNominatim(query) {
 }
 
 /**
- * Consulta unificada a Open-Meteo Forecast API (gratis, sin API key).
+ * Consulta a Open-Meteo Forecast API.
  * Obtiene variables actuales, horarias y diarias requeridas para la matriz de riesgos SST.
  * 
  * @param {number} lat Latitud

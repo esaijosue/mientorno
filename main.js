@@ -1,8 +1,8 @@
 /**
- * main.js - Orquestador principal de la aplicación SST/HSE
+ * main.js - Orquestador principal de la aplicación
  * Proyecto: MiEntorno
  * 
- * Centro de Control y Monitoreo Ambiental de Misión Crítica.
+ * Plataforma de monitoreo ambiental y riesgos físicos en faena.
  */
 
 import {
@@ -472,7 +472,7 @@ function iniciarApp() {
   solicitarGeolocalizacion(true);
 }
 
-// Ejecución infalible (maneja tanto DOMContentLoaded como ejecución diferida de type=module)
+// Inicialización al cargar el documento
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', iniciarApp);
 } else {

@@ -1,11 +1,9 @@
 /**
- * ui.js - Manejo visual de la plataforma de inteligencia ambiental y centro de control
+ * ui.js - Renderizado y gestión de interfaz de usuario
  * Proyecto: MiEntorno
  * 
- * Sistema visual inspirado 100% en interfaces de misión crítica de alta gama.
- * Textos en mayúsculas y minúsculas naturales (sentence case), cálculo dinámico del
- * índice de seguridad de faena (0-100%), curva sparkline interactiva de 24 horas,
- * tarjetas limpias sin bordes toscos y panel flotante de alertas y recomendaciones.
+ * Orquestación de vistas, cálculo del índice de seguridad de faena (0-100%),
+ * visualización de curva 24h en SVG y despacho de recomendaciones técnicas SST.
  */
 
 import {
@@ -227,9 +225,8 @@ export function hideSearchResults() {
 }
 
 /**
- * =========================================================================
- * RENDERIZADO DE EVALUACIÓN DE RIESGOS E ÍNDICE DE SEGURIDAD
- * =========================================================================
+ * Renderizado de tarjetas de evaluación de riesgo y cálculo de indicadores.
+ * @param {object} weatherData Datos meteorológicos obtenidos de la API
  */
 export function renderRiskCards(weatherData) {
   const els = getElements();
