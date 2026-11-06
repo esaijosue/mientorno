@@ -569,7 +569,7 @@ function createUVCard(data, ctx, fc) {
       nivel: 'Noche',
       badge: 'Noche',
       recomendacion: fc.isRealTime
-        ? 'Sin radiación solar UV durante el turno nocturno. No se requiere fotoprotector en horas de oscuridad.'
+        ? 'Sin radiación solar UV durante el turno nocturno. No se requiere bloqueador solar en horas de oscuridad.'
         : `Horario nocturno previsto a las ${fc.targetTimeStr} h (+${fc.badgeText}). Sin radiación solar ultravioleta.`
     };
   } else {
@@ -611,8 +611,8 @@ function createUVCard(data, ctx, fc) {
   const secondaryText = isNight
     ? (fc.isRealTime ? 'Turno nocturno &bull; Sin exposición solar actínica' : `Ventana nocturna a las ${fc.targetTimeStr} h &bull; 0.0 UVI`)
     : (fc.isRealTime
-        ? 'Sensor en faena &bull; Exposición solar directa'
-        : `Previsto a las ${fc.targetTimeStr} h &bull; Radiación ${rule.nivel.toLowerCase()}`);
+      ? 'Sensor en faena &bull; Exposición solar directa'
+      : `Previsto a las ${fc.targetTimeStr} h &bull; Radiación ${rule.nivel.toLowerCase()}`);
 
   const badgeHTML = fc.isRealTime
     ? `<div class="metric-projection-badge" title="Pico máximo diurno previsto hoy"><span class="projection-label">Máx hoy:</span><span class="projection-val">${dailyMaxUV.toFixed(1)} UVI</span></div>`

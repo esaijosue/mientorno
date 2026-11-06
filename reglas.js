@@ -33,7 +33,7 @@ export const REGLAS_UV = [
     nivel: 'Bajo',
     color: 'verde',
     badge: 'Bajo',
-    recomendacion: 'Protección mínima requerida: uso de lentes de seguridad con filtro UV para trabajos exteriores.'
+    recomendacion: 'Riesgo bajo: uso obligatorio de lentes de seguridad con filtro UV400 para personal en áreas abiertas.'
   },
   {
     min: 3,
@@ -41,7 +41,7 @@ export const REGLAS_UV = [
     nivel: 'Moderado',
     color: 'amarillo',
     badge: 'Moderado',
-    recomendacion: 'Usar bloqueador solar FPS 50+ cada 3 horas, cortavientos/sombrero de ala ancha y gafas oscuras.'
+    recomendacion: 'Uso obligatorio de bloqueador solar FPS 50+ (reaplicar cada 3 h), casco con cortaviento/cubrenuca y camisa manga larga.'
   },
   {
     min: 6,
@@ -49,7 +49,7 @@ export const REGLAS_UV = [
     nivel: 'Alto',
     color: 'naranja',
     badge: 'Alto',
-    recomendacion: 'Manga larga, casco con cubrenuca y bloqueador cada 2 horas.'
+    recomendacion: 'Casco con cortaviento tipo legionario (cubrenuca), visera amplia y camisa manga larga. Hidratación programada (mínimo 250 ml cada 45 min) y reaplicación de bloqueador cada 2 h.'
   },
   {
     min: 8,
@@ -57,7 +57,7 @@ export const REGLAS_UV = [
     nivel: 'Muy alto',
     color: 'rojo',
     badge: 'Muy alto',
-    recomendacion: 'Protección extrema: rotación de cuadrillas a la sombra y reaplicación horaria de fotoprotector.'
+    recomendacion: 'Riesgo severo: habilitar toldos o mallas raschel en frentes de trabajo y rotar cuadrillas a la sombra. Hidratación continua obligatoria cada 20-30 min y reaplicación horaria de bloqueador FPS 50+.'
   },
   {
     min: 11,
@@ -65,7 +65,7 @@ export const REGLAS_UV = [
     nivel: 'Extremo',
     color: 'rojo-extremo',
     badge: 'Extremo',
-    recomendacion: 'Riesgo crítico de quemaduras solares: suspender trabajos a cielo abierto no esenciales entre 11:00 y 15:00 h.'
+    recomendacion: 'Peligro crítico de quemaduras y golpe de calor: suspender tareas pesadas a cielo abierto entre 11:00 y 15:00 h. Disponer de sales de rehidratación oral en refugios y descanso obligatorio bajo sombra.'
   }
 ];
 

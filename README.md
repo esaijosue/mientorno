@@ -53,10 +53,10 @@ Donde $P_i$ representa la penalidad específica calculada para cada uno de los *
 ### Factores evaluados y penalidades
 
 1. **Radiación solar ultravioleta ($P_{\text{UV}}$):**
-   - $UV < 6.0$ o noche: $0$ puntos (bajo a confortable).
-   - $6.0 \le UV < 8.0$: $-10$ puntos (alto; fotoprotector cada 2 h).
-   - $8.0 \le UV < 11.0$: $-18$ puntos (muy alto; rotación a la sombra).
-   - $UV \ge 11.0$: $-25$ puntos (extremo; minimización de labores a cielo abierto).
+   - $UV < 6.0$ o turno nocturno: $0$ puntos (bajo a moderado; lentes UV400 y bloqueador FPS 50+).
+   - $6.0 \le UV < 8.0$: $-10$ puntos (alto; casco con cortaviento tipo legionario, visera amplia e hidratación programada cada 45 min).
+   - $8.0 \le UV < 11.0$: $-18$ puntos (muy alto; rotación obligatoria a toldos/mallas raschel e hidratación continua cada 20–30 min).
+   - $UV \ge 11.0$: $-25$ puntos (extremo; suspensión de tareas pesadas entre 11:00 y 15:00 h con sales de rehidratación oral).
 
 2. **Precipitación pluvial y acumulación ($P_{\text{lluvia}}$):**
    - Seco ($< 0.1\text{ mm/h}$ y prob. $< 20\%$): $0$ puntos.
