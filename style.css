@@ -2069,7 +2069,7 @@ body.theme-control-room {
   .mobile-sheet-header {
     display: flex !important;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     padding: 4px 0 10px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     margin-bottom: 10px;

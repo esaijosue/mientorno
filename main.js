@@ -286,15 +286,6 @@ function iniciarApp() {
     });
   }
 
-  const btnCloseMobile = document.getElementById('btn-close-dashboard-mobile');
-  if (btnCloseMobile) {
-    btnCloseMobile.addEventListener('click', () => {
-      document.body.classList.remove('mobile-dashboard-focus');
-      document.body.classList.add('mobile-map-focus');
-      updateActiveDock('map');
-      setTimeout(resizeMap, 150);
-    });
-  }
 
   const floatingCard = document.getElementById('map-floating-card');
   if (floatingCard) {
