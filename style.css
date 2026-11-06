@@ -1,10 +1,5 @@
-/**
- * MiEntorno - Hoja de estilos principal
- * Plataforma de monitoreo ambiental y riesgos físicos en faena
- */
-
 :root {
-  /* Fondo general y superficies neutras */
+  
   --bg-app: #0c0e14;
   --bg-header: #0c0e14;
   --bg-sidebar: rgba(12, 15, 21, 0.94);
@@ -12,19 +7,19 @@
   --bg-card-glass-hover: rgba(26, 30, 38, 0.85);
   --bg-pill-glass: rgba(22, 26, 33, 0.86);
 
-  /* Bordes sutiles de precisión */
+  
   --border-subtle: rgba(255, 255, 255, 0.07);
   --border-card: rgba(255, 255, 255, 0.08);
   --border-glass: rgba(255, 255, 255, 0.12);
 
-  /* Escala de texto sobria */
+  
   --text-pure: #ffffff;
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   --text-dimmed: #475569;
 
-  /* Estados operativos sobrios */
+  
   --color-safe: #22c55e;
   --color-safe-bg: rgba(34, 197, 94, 0.14);
   --color-warning: #f59e0b;
@@ -33,23 +28,23 @@
   --color-alert-bg: rgba(239, 68, 68, 0.15);
   --color-accent: #38bdf8;
 
-  /* Tipografías */
+  
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Radios */
+  
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 14px;
   --radius-xl: 18px;
   --radius-pill: 9999px;
 
-  /* Sombras */
+  
   --shadow-float: 0 16px 40px rgba(0, 0, 0, 0.65);
   --shadow-card: 0 6px 24px rgba(0, 0, 0, 0.4);
 }
 
-/* Reseteo general */
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -81,12 +76,12 @@ body.theme-control-room {
   background: #06090e;
 }
 
-/* Ajustes de capa satelital */
+
 .leaflet-tile {
   filter: brightness(0.96) contrast(1.08) saturate(1.05) !important;
 }
 
-/* Ocultar barra de atribución para máxima limpieza visual */
+
 .leaflet-control-attribution {
   display: none !important;
 }
@@ -114,7 +109,7 @@ body.theme-control-room {
     );
 }
 
-/* Marcador satelital de radar pulsante */
+
 .sat-marker-wrapper {
   position: relative;
 }
@@ -337,7 +332,7 @@ body.theme-control-room {
   margin-top: 2px;
 }
 
-/* Controles de cabecera a la derecha */
+
 .header-controls-group {
   display: flex;
   align-items: center;
@@ -371,7 +366,7 @@ body.theme-control-room {
   cursor: not-allowed;
 }
 
-/* Enlace a ficha técnica y metodología en cabecera */
+
 .header-nav-link {
   display: inline-flex;
   align-items: center;
@@ -482,7 +477,7 @@ body.theme-control-room {
   flex-direction: column;
   gap: 12px;
 
-  /* Barra de desplazamiento oculta */
+  
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -634,7 +629,7 @@ body.theme-control-room {
   color: var(--text-secondary);
 }
 
-/* Sparkline compacto */
+
 .efficiency-chart-container {
   width: 100%;
   margin-top: 2px;
@@ -655,7 +650,7 @@ body.theme-control-room {
   font-family: var(--font-mono);
 }
 
-/* Alerta de precisión GPS si > 500m */
+
 .accuracy-banner-container {
   margin-top: -2px;
 }
@@ -681,7 +676,7 @@ body.theme-control-room {
   color: #fca5a5;
 }
 
-/* Encabezado sin mayúsculas sostenidas */
+
 .factors-section-header {
   display: flex;
   align-items: center;
@@ -809,7 +804,7 @@ body.theme-control-room {
   color: var(--color-alert);
 }
 
-/* Micro-histograma de lluvia compacto */
+
 .mini-histogram-chart {
   display: flex;
   align-items: flex-end;
@@ -836,7 +831,7 @@ body.theme-control-room {
   background: var(--color-alert);
 }
 
-/* Telemetría secundaria enriquecida sin perder capacidad técnica */
+
 .metric-secondary-telemetry {
   display: flex;
   align-items: center;
@@ -882,7 +877,7 @@ body.theme-control-room {
   text-overflow: clip;
 }
 
-/* Banner de alerta SST destacado en el tablero */
+
 .dashboard-sst-alert-banner {
   background: rgba(45, 20, 24, 0.75);
   border: 1px solid rgba(239, 68, 68, 0.35);
@@ -964,7 +959,7 @@ body.theme-control-room {
   pointer-events: none;
 }
 
-/* Título flotante sobre el mapa satelital */
+
 .floating-map-hero-header {
   position: absolute;
   top: 24px;
@@ -1033,7 +1028,7 @@ body.theme-control-room {
   box-shadow: 0 0 8px var(--color-safe);
 }
 
-/* Métrica operativa destacada sobre el mapa */
+
 .frosted-glass-metric-card {
   pointer-events: auto;
   position: absolute;
@@ -1323,7 +1318,7 @@ body.theme-control-room {
   line-height: 1.3;
 }
 
-/* Controles de navegación y zoom en mapa */
+
 .map-floating-navigation-controls {
   pointer-events: auto;
   position: absolute;
@@ -1424,7 +1419,7 @@ body.theme-control-room {
   background: var(--color-alert);
 }
 
-/* Pie de página del tablero */
+
 .panel-dashboard-footer {
   margin-top: 14px;
   padding: 12px 6px 6px 6px;
@@ -1476,7 +1471,7 @@ body.theme-control-room {
     top: 56px;
   }
 
-  /* Panel lateral en tablet: 360px fijo con espacio satelital abierto a la derecha */
+  
   .intelligence-floating-panel {
     width: 360px;
     padding: 12px 14px;
@@ -1522,7 +1517,7 @@ body.theme-control-room {
     font-size: 2.1rem;
   }
 
-  /* En tablet el acordeón se posiciona abajo a la derecha para no tapar el mapa */
+  
   .floating-warning-accordion {
     top: auto;
     bottom: 24px;
@@ -1543,7 +1538,7 @@ body.theme-control-room {
 
 /* Teléfonos móviles y smartphones (<= 768px) */
 @media (max-width: 768px) {
-  /* Cabecera superior móvil: altura 52px, sin saltos de línea ni desbordes */
+  
   .app-top-header {
     height: 52px;
     padding: 0 12px;
@@ -1606,7 +1601,7 @@ body.theme-control-room {
     display: none !important;
   }
 
-  /* Controles de cabecera: 3 botones circulares de 34px perfectamente alineados */
+  
   .header-controls-group {
     display: flex;
     align-items: center;
@@ -1642,7 +1637,7 @@ body.theme-control-room {
     color: #ffffff !important;
   }
 
-  /* Ocultar absolutamente cualquier texto en el botón GPS móvil */
+  
   .btn-gps-trigger span,
   .btn-gps-text {
     display: none !important;
@@ -1684,7 +1679,7 @@ body.theme-control-room {
     color: #ffffff !important;
   }
 
-  /* Buscador global como overlay flotante en móvil */
+  
   .header-search-wrapper {
     display: none;
   }
@@ -1718,7 +1713,7 @@ body.theme-control-room {
     max-height: 220px;
   }
 
-  /* Workspace flotante en móvil */
+  
   .app-floating-workspace {
     top: 52px;
     left: 0;
@@ -1729,12 +1724,12 @@ body.theme-control-room {
     z-index: 100;
   }
 
-  /* Viñeta fotográfica móvil: centro transparente para ver el mapa satelital nítido */
+  
   .map-photographic-vignette {
     background: radial-gradient(circle at 50% 36%, transparent 32%, rgba(12, 14, 20, 0.25) 65%, rgba(12, 14, 20, 0.75) 100%) !important;
   }
 
-  /* Capa flotante sobre el mapa */
+  
   .map-floating-content-layer {
     display: block !important;
     position: absolute;
@@ -1763,7 +1758,7 @@ body.theme-control-room {
     pointer-events: auto;
   }
 
-  /* Tarjeta de métrica destacada en móvil */
+  
   .frosted-glass-metric-card {
     position: absolute;
     top: 60px;
@@ -1792,12 +1787,12 @@ body.theme-control-room {
     font-size: 0.65rem;
   }
 
-  /* En móvil, el acordeón flotante sobre el mapa se oculta: se muestra dentro del tablero */
+  
   .map-floating-content-layer .floating-warning-accordion {
     display: none !important;
   }
 
-  /* Controles de zoom y centrado satelital en móvil */
+  
   .map-floating-navigation-controls {
     position: fixed;
     bottom: 76px;
@@ -1814,12 +1809,12 @@ body.theme-control-room {
     border: 1px solid rgba(255, 255, 255, 0.16);
   }
 
-  /* Panel deslizable en dispositivos móviles */
+  
   .intelligence-floating-panel {
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
   }
 
-  /* Modo mapa activo: visualización completa del mapa satelital */
+  
   body.mobile-map-focus .intelligence-floating-panel {
     position: fixed;
     transform: translateY(105%);
@@ -1828,7 +1823,7 @@ body.theme-control-room {
     visibility: hidden;
   }
 
-  /* Modo tablero activo: visualización de métricas completas */
+  
   body.mobile-dashboard-focus .intelligence-floating-panel {
     position: fixed;
     top: 52px;
@@ -1857,7 +1852,7 @@ body.theme-control-room {
     display: none;
   }
 
-  /* Encabezado del tablero en móvil */
+  
   .mobile-sheet-header {
     display: flex !important;
     align-items: center;
@@ -1901,7 +1896,7 @@ body.theme-control-room {
     background: rgba(255, 255, 255, 0.15);
   }
 
-  /* Cuadrícula de tarjetas de riesgo en móvil */
+  
   .risk-cards-grid {
     grid-template-columns: 1fr 1fr;
     gap: 8px;
@@ -1923,7 +1918,7 @@ body.theme-control-room {
     height: 52px;
   }
 
-  /* Barra dock inferior móvil flotante siempre accesible */
+  
   .mobile-bottom-dock-bar {
     display: flex !important;
     position: fixed;
@@ -1975,7 +1970,7 @@ body.theme-control-room {
   }
 }
 
-/* Teléfonos compactos (<= 480px) */
+
 @media (max-width: 480px) {
   .risk-cards-grid {
     grid-template-columns: 1fr;
@@ -1992,7 +1987,7 @@ body.theme-control-room {
   }
 }
 
-/* Pantallas ultra estrechas (<= 360px) */
+
 @media (max-width: 360px) {
   .brand-separator,
   .brand-sub-title {

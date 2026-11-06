@@ -1,11 +1,3 @@
-/**
- * ui.js - Renderizado y gestión de interfaz de usuario
- * Proyecto: MiEntorno
- * 
- * Orquestación de vistas, cálculo del índice de seguridad de faena (0-100%),
- * visualización de curva 24h en SVG y despacho de recomendaciones técnicas SST.
- */
-
 import {
   APP_NAME,
   ACCURACY_WARNING_THRESHOLD_METERS,
@@ -17,9 +9,6 @@ import {
 
 let elements = {};
 
-/**
- * Inicializa y recupera los elementos del DOM.
- */
 export function initUI() {
   elements = {
     btnLocation: document.getElementById('btn-location'),
@@ -58,14 +47,12 @@ export function initUI() {
     dockBtnGps: document.getElementById('dock-btn-gps')
   };
 
-  // Configurar toggle del acordeón de alertas
   if (elements.accordionToggleBtn && elements.warningAccordion) {
     elements.accordionToggleBtn.addEventListener('click', () => {
       elements.warningAccordion.classList.toggle('collapsed');
     });
   }
 
-  // Atajo de teclado global Ctrl+K para enfocar el buscador
   window.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
       e.preventDefault();
@@ -86,9 +73,6 @@ function getElements() {
   return elements;
 }
 
-/**
- * Estado del botón de geolocalización.
- */
 export function setLocationButtonLoading(isLoading, text = null) {
   const btn = getElements().btnLocation;
   if (!btn) return;
@@ -98,9 +82,6 @@ export function setLocationButtonLoading(isLoading, text = null) {
     : `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg><span class="btn-gps-text">${text || 'Usar mi GPS'}</span>`;
 }
 
-/**
- * Estado del botón de actualización manual.
- */
 export function setRefreshButtonLoading(isRefreshing) {
   const btn = getElements().btnRefresh;
   if (!btn) return;
@@ -108,9 +89,6 @@ export function setRefreshButtonLoading(isRefreshing) {
   btn.classList.toggle('spinning', isRefreshing);
 }
 
-/**
- * Actualiza la hora de la última sincronización en tiempo real.
- */
 export function updateLastRefreshTimestamp() {
   const timeEl = getElements().lastUpdated;
   if (!timeEl) return;
@@ -119,9 +97,6 @@ export function updateLastRefreshTimestamp() {
   timeEl.textContent = `Actualizado ${timeStr}`;
 }
 
-/**
- * Muestra el estado de la ubicación y la precisión en metros con caracteres limpios (sin entidades crudas).
- */
 export function updateLocationInfo(lat, lon, accuracy, source = 'gps', placeName = null) {
   const els = getElements();
   if (!els.locationStatus || !els.coordsDisplay) return;
@@ -164,9 +139,6 @@ export function updateLocationInfo(lat, lon, accuracy, source = 'gps', placeName
   }
 }
 
-/**
- * Muestra mensaje de notificación al usuario.
- */
 export function showNotification(message, type = 'error') {
   const alertEl = getElements().accuracyAlert;
   if (!alertEl) return;
@@ -180,9 +152,6 @@ export function showNotification(message, type = 'error') {
   alertEl.hidden = false;
 }
 
-/**
- * Renderiza la lista de sugerencias de búsqueda.
- */
 export function renderSearchResults(results, onSelect) {
   const listEl = getElements().searchResults;
   const inputEl = getElements().searchInput;
@@ -214,9 +183,6 @@ export function renderSearchResults(results, onSelect) {
   listEl.hidden = false;
 }
 
-/**
- * Oculta la lista de sugerencias.
- */
 export function hideSearchResults() {
   const listEl = getElements().searchResults;
   if (listEl) {
@@ -224,10 +190,6 @@ export function hideSearchResults() {
   }
 }
 
-/**
- * Renderizado de tarjetas de evaluación de riesgo y cálculo de indicadores.
- * @param {object} weatherData Datos meteorológicos obtenidos de la API
- */
 export function renderRiskCards(weatherData) {
   const els = getElements();
   if (!els.cardsContainer) return;
@@ -248,7 +210,6 @@ export function renderRiskCards(weatherData) {
     }
   };
 
-  // 1. Radiación UV
   try {
     const uvCard = createUVCard(weatherData, riskContext);
     els.cardsContainer.appendChild(uvCard);
@@ -257,7 +218,6 @@ export function renderRiskCards(weatherData) {
     els.cardsContainer.appendChild(createErrorCard('Radiación solar UV'));
   }
 
-  // 2. Lluvia y precipitación
   try {
     const rainCard = createRainCard(weatherData, riskContext);
     els.cardsContainer.appendChild(rainCard);
@@ -266,7 +226,6 @@ export function renderRiskCards(weatherData) {
     els.cardsContainer.appendChild(createErrorCard('Precipitación y lluvia'));
   }
 
-  // 3. Viento y ráfagas (D.S. 024-2016-EM)
   try {
     const windCard = createWindCard(weatherData, riskContext);
     els.cardsContainer.appendChild(windCard);
@@ -275,7 +234,6 @@ export function renderRiskCards(weatherData) {
     els.cardsContainer.appendChild(createErrorCard('Velocidad del viento'));
   }
 
-  // 4. Tormenta eléctrica y energía convectiva (CAPE)
   try {
     const stormCard = createThunderstormCard(weatherData, riskContext);
     els.cardsContainer.appendChild(stormCard);
@@ -284,21 +242,12 @@ export function renderRiskCards(weatherData) {
     els.cardsContainer.appendChild(createErrorCard('Potencial de tormenta'));
   }
 
-  // Actualizar métricas ejecutivas en la tarjeta hero del índice de seguridad
   const finalScore = updateSafetyIndexSummary(riskContext, weatherData);
-
-  // Actualizar tarjeta de cristal flotante sobre el mapa satelital (estado macro sin duplicar métricas)
   updateFloatingMapCard(riskContext, finalScore);
-
-  // Actualizar panel de alertas y recomendaciones SST del mapa
   updateWarningAccordion(riskContext);
-
   updateLastRefreshTimestamp();
 }
 
-/**
- * Actualiza el índice general de seguridad de campo y dibuja la curva sparkline.
- */
 function updateSafetyIndexSummary(context, weatherData) {
   const els = getElements();
   if (!els.safetyScoreNumber) return 100;
@@ -309,14 +258,10 @@ function updateSafetyIndexSummary(context, weatherData) {
   if (els.tallySafeCount) els.tallySafeCount.textContent = context.safeCount;
   if (els.tallyAlertCount) els.tallyAlertCount.textContent = context.alertCount;
 
-  // Actualizar curva sparkline SVG interactiva con datos horarios reales
   renderSparklineCurve(weatherData, finalScore);
   return finalScore;
 }
 
-/**
- * Dibuja la curva SVG de 24 horas del índice de seguridad basada en datos climáticos reales.
- */
 function renderSparklineCurve(weatherData, currentScore) {
   const els = getElements();
   if (!els.chartLinePath || !els.chartAreaPath) return;
@@ -335,7 +280,6 @@ function renderSparklineCurve(weatherData, currentScore) {
     const uvVal = hourlyUV[hourIdx] || 0;
     const windVal = hourlyWind[hourIdx] || 15;
 
-    // Simulación de fluctuación diaria: a mediodía la radiación UV genera un valle de alerta
     const middayArc = Math.sin((i / (steps - 1)) * Math.PI);
     const dip = middayArc * (uvVal > 7 ? 20 : 10);
     const windWobble = Math.sin(i * 1.5) * (windVal > 25 ? 5 : 2);
@@ -343,7 +287,6 @@ function renderSparklineCurve(weatherData, currentScore) {
     const baseScore = currentScore || 78.3;
     const projectedScore = Math.max(38, Math.min(94, baseScore - dip + windWobble + (i > 11 ? 10 : 0)));
 
-    // Mapeo a Y en SVG (80% umbral permisible a Y = 35)
     const y = Math.round(75 - ((projectedScore - 38) / 56) * 50);
     points.push({ x, y });
   }
@@ -363,10 +306,6 @@ function renderSparklineCurve(weatherData, currentScore) {
   }
 }
 
-/**
- * Actualiza la tarjeta de cristal flotante sobre el mapa satelital.
- * Muestra el estado operativo macro de la faena sin duplicar métricas individuales.
- */
 function updateFloatingMapCard(context, score) {
   const els = getElements();
   if (!els.floatingKpiTitle || !els.floatingKpiValue) return;
@@ -387,9 +326,6 @@ function updateFloatingMapCard(context, score) {
   }
 }
 
-/**
- * Actualiza el panel de alertas y recomendaciones SST del mapa.
- */
 function updateWarningAccordion(context) {
   const els = getElements();
   if (els.headerAlertBadge) {
@@ -411,7 +347,6 @@ function updateWarningAccordion(context) {
     els.warningRecommendText.textContent = context.highestRisk.recommendation;
   }
 
-  // Actualizar banner en el tablero principal
   if (els.dashboardAlertBanner) {
     if (context.alertCount > 0 && context.highestRisk.severityScore > 0) {
       els.dashboardAlertBanner.hidden = false;
@@ -438,9 +373,6 @@ function getCurrentHourIndex(hourlyTime, currentTimeStr) {
   return idx !== -1 ? idx : 0;
 }
 
-/**
- * 1. Tarjeta Radiación UV
- */
 function createUVCard(data, ctx) {
   const currentHourIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
   const currentUV = data?.hourly?.uv_index ? (data.hourly.uv_index[currentHourIdx] ?? 0) : 0;
@@ -514,9 +446,6 @@ function createUVCard(data, ctx) {
   return card;
 }
 
-/**
- * 2. Tarjeta Lluvia y precipitación pluvial
- */
 function createRainCard(data, ctx) {
   const currentIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
   const times = data?.hourly?.time?.slice(currentIdx, currentIdx + 24) || [];
@@ -618,9 +547,6 @@ function createRainCard(data, ctx) {
   return card;
 }
 
-/**
- * 3. Tarjeta Viento y ráfagas (D.S. 024-2016-EM)
- */
 function createWindCard(data, ctx) {
   const currentSpeed = data?.current?.wind_speed_10m ?? 0;
   const currentGust = data?.current?.wind_gusts_10m ?? currentSpeed;
@@ -703,9 +629,6 @@ function createWindCard(data, ctx) {
   return card;
 }
 
-/**
- * 4. Tarjeta Tormenta eléctrica y energía convectiva (CAPE)
- */
 function createThunderstormCard(data, ctx) {
   const currentIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
   const times = data?.hourly?.time?.slice(currentIdx, currentIdx + 24) || [];
@@ -809,9 +732,6 @@ function createThunderstormCard(data, ctx) {
   return card;
 }
 
-/**
- * Tarjeta de contingencia
- */
 function createErrorCard(title) {
   const card = document.createElement('article');
   card.className = 'risk-card';

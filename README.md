@@ -182,3 +182,4 @@ Para otorgar formalidad institucional ante clientes mineros o entidades fiscaliz
 ## 11. Licencia
 
 Este proyecto está bajo la Licencia MIT. Para mayor información, consulte el archivo [LICENSE](LICENSE).
+

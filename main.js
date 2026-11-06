@@ -1,10 +1,3 @@
-/**
- * main.js - Orquestador principal de la aplicación
- * Proyecto: MiEntorno
- * 
- * Plataforma de monitoreo ambiental y riesgos físicos en faena.
- */
-
 import {
   APP_NAME,
   GEOLOCATION_CONFIG,
@@ -26,22 +19,15 @@ import {
   renderRiskCards
 } from './ui.js';
 
-// Estado global de la ubicación seleccionada
 let currentLocation = {
   lat: null,
   lon: null,
   accuracy: null
 };
 
-// Variable para el temporizador de búsqueda con debounce
 let searchDebounceTimer = null;
-
-// Variable para el temporizador de auto-refresco (cada 10 min)
 let autoRefreshTimer = null;
 
-/**
- * Guarda la última ubicación en localStorage dentro de try/catch seguro.
- */
 function guardarUbicacionLocalStorage(lat, lon, accuracy = null) {
   try {
     const data = {
@@ -56,9 +42,6 @@ function guardarUbicacionLocalStorage(lat, lon, accuracy = null) {
   }
 }
 
-/**
- * Recupera la última ubicación guardada en localStorage.
- */
 function recuperarUbicacionLocalStorage() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_LOCATION);
@@ -73,9 +56,6 @@ function recuperarUbicacionLocalStorage() {
   return null;
 }
 
-/**
- * Consulta la API meteorológica y actualiza todas las tarjetas de riesgo.
- */
 async function cargarDatosMeteorologicos(lat, lon) {
   if (lat === null || lon === null) return;
 
@@ -93,25 +73,13 @@ async function cargarDatosMeteorologicos(lat, lon) {
   }
 }
 
-/**
- * Función central de cambio de ubicación (recalcula tarjetas al mover marcador o seleccionar punto).
- */
 function alCambiarUbicacion(lat, lon, accuracy = null, origen = 'manual') {
   currentLocation = { lat, lon, accuracy };
-
-  // Guardar en almacenamiento seguro
   guardarUbicacionLocalStorage(lat, lon, accuracy);
-
-  // Actualizar indicadores visuales de precisión y coordenadas
   updateLocationInfo(lat, lon, accuracy, origen);
-
-  // Recalcular inmediatamente las tarjetas de riesgo para las nuevas coordenadas
   cargarDatosMeteorologicos(lat, lon);
 }
 
-/**
- * Solicita geolocalización al navegador mediante navigator.geolocation.
- */
 function solicitarGeolocalizacion(isAutoInit = false) {
   if (!('geolocation' in navigator)) {
     if (!isAutoInit) {
@@ -123,12 +91,10 @@ function solicitarGeolocalizacion(isAutoInit = false) {
   setLocationButtonLoading(true, isAutoInit ? 'Detectando GPS...' : 'Obteniendo GPS...');
 
   navigator.geolocation.getCurrentPosition(
-    // Éxito
     (pos) => {
       setLocationButtonLoading(false);
       const { latitude, longitude, accuracy } = pos.coords;
 
-      // Actualizar marcador y vista en el mapa
       setMarkerPosition(
         latitude,
         longitude,
@@ -138,10 +104,8 @@ function solicitarGeolocalizacion(isAutoInit = false) {
         (lat, lon, acc, origen) => alCambiarUbicacion(lat, lon, acc, origen)
       );
 
-      // Actualizar estado general y calcular tarjetas
       alCambiarUbicacion(latitude, longitude, accuracy, 'gps');
     },
-    // Error / Rechazo
     (error) => {
       setLocationButtonLoading(false);
 
@@ -182,9 +146,6 @@ function solicitarGeolocalizacion(isAutoInit = false) {
   );
 }
 
-/**
- * Maneja el evento de búsqueda con debounce de 1 segundo (máx 1 req/seg para Nominatim).
- */
 function manejarBusqueda(texto) {
   clearTimeout(searchDebounceTimer);
 
@@ -214,9 +175,6 @@ function manejarBusqueda(texto) {
   }, 1000);
 }
 
-/**
- * Configuración del ciclo de auto-refresco cada 10 minutos.
- */
 function iniciarAutoRefresco() {
   if (autoRefreshTimer) {
     clearInterval(autoRefreshTimer);
@@ -224,19 +182,14 @@ function iniciarAutoRefresco() {
 
   autoRefreshTimer = setInterval(() => {
     if (currentLocation.lat !== null && currentLocation.lon !== null) {
-      console.log('Ejecutando auto-refresco periódico de riesgos (10 min)...');
       cargarDatosMeteorologicos(currentLocation.lat, currentLocation.lon);
     }
   }, AUTO_REFRESH_INTERVAL_MS);
 }
 
-/**
- * Inicialización de la aplicación al cargar el DOM.
- */
 function iniciarApp() {
   initUI();
 
-  // Inicializar mapa interactivo Leaflet con captura segura
   try {
     initMap('map', (lat, lon, acc, origen) => {
       alCambiarUbicacion(lat, lon, acc, origen);
@@ -245,13 +198,11 @@ function iniciarApp() {
     console.error('Error al inicializar mapa Leaflet:', err);
   }
 
-  // Configurar botón "Usar mi GPS"
   const btnLocation = document.getElementById('btn-location');
   if (btnLocation) {
     btnLocation.addEventListener('click', () => solicitarGeolocalizacion(false));
   }
 
-  // Configurar botón "Actualizar"
   const btnRefresh = document.getElementById('btn-refresh');
   if (btnRefresh) {
     btnRefresh.addEventListener('click', () => {
@@ -263,7 +214,6 @@ function iniciarApp() {
     });
   }
 
-  // Configurar controles flotantes del mapa satelital
   const btnZoomIn = document.getElementById('map-zoom-in');
   if (btnZoomIn) {
     btnZoomIn.addEventListener('click', zoomIn);
@@ -277,7 +227,6 @@ function iniciarApp() {
     btnRecenter.addEventListener('click', () => solicitarGeolocalizacion(false));
   }
 
-  // Píldora de ubicación en el mapa para enfocar buscador
   const mapLocationPill = document.getElementById('map-location-pill');
   const searchInput = document.getElementById('search-input');
   if (mapLocationPill && searchInput) {
@@ -287,7 +236,6 @@ function iniciarApp() {
     });
   }
 
-  // Configurar campo de búsqueda
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
       manejarBusqueda(e.target.value);
@@ -300,14 +248,12 @@ function iniciarApp() {
     });
   }
 
-  // Ocultar resultados de búsqueda al hacer clic fuera
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.header-search-wrapper')) {
       hideSearchResults();
     }
   });
 
-  // Configurar pestañas de navegación superior
   const navTabs = document.querySelectorAll('.nav-tab-pill');
   navTabs.forEach(tab => {
     tab.addEventListener('click', () => {
@@ -316,7 +262,6 @@ function iniciarApp() {
     });
   });
 
-  // Botón buscador móvil desplegable
   const btnSearchMobile = document.getElementById('btn-search-mobile-toggle');
   const searchWrapper = document.getElementById('header-search-wrapper');
   if (btnSearchMobile && searchWrapper) {
@@ -329,7 +274,6 @@ function iniciarApp() {
     });
   }
 
-  // Botón para cerrar el tablero en móvil y volver al mapa satelital
   const btnCloseMobile = document.getElementById('btn-close-dashboard-mobile');
   if (btnCloseMobile) {
     btnCloseMobile.addEventListener('click', () => {
@@ -340,7 +284,6 @@ function iniciarApp() {
     });
   }
 
-  // Al hacer clic en la tarjeta de riesgo flotante sobre el mapa en móvil, abrir el tablero
   const floatingCard = document.getElementById('map-floating-card');
   if (floatingCard) {
     floatingCard.addEventListener('click', () => {
@@ -353,7 +296,6 @@ function iniciarApp() {
     });
   }
 
-  // Tirador táctil del panel inferior móvil
   const dragHandle = document.querySelector('.mobile-sheet-drag-handle');
   if (dragHandle) {
     dragHandle.addEventListener('click', () => {
@@ -370,7 +312,6 @@ function iniciarApp() {
     });
   }
 
-  // Configurar barra dock inferior móvil
   const dockBtns = document.querySelectorAll('.dock-action-btn');
   function updateActiveDock(targetName) {
     dockBtns.forEach(b => {
@@ -414,16 +355,13 @@ function iniciarApp() {
     });
   });
 
-  // Modo móvil inicial por defecto si la pantalla es <= 768px (mapa satelital interactivo prioritario)
   if (window.innerWidth <= 768) {
     document.body.classList.add('mobile-map-focus');
     updateActiveDock('map');
   }
 
-  // Iniciar temporizador de actualización periódica de 10 minutos
   iniciarAutoRefresco();
 
-  // Ajuste responsive automático del mapa ante redimensionamiento o rotación de pantalla
   let resizeTimeout = null;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
@@ -443,7 +381,6 @@ function iniciarApp() {
     setTimeout(resizeMap, 300);
   });
 
-  // 1. Cargar ubicación inicial instantánea (evita pantallas en blanco o esperas de GPS)
   const saved = recuperarUbicacionLocalStorage();
   if (saved) {
     setMarkerPosition(
@@ -456,7 +393,6 @@ function iniciarApp() {
     );
     alCambiarUbicacion(saved.lat, saved.lon, saved.accuracy, 'storage');
   } else {
-    // Carga inmediata de la base operativa de referencia para disponibilidad 100% instantánea
     setMarkerPosition(
       OPERATIONAL_DEFAULT_COORDS.lat,
       OPERATIONAL_DEFAULT_COORDS.lon,
@@ -468,11 +404,9 @@ function iniciarApp() {
     alCambiarUbicacion(OPERATIONAL_DEFAULT_COORDS.lat, OPERATIONAL_DEFAULT_COORDS.lon, null, 'inicial');
   }
 
-  // 2. Intentar reconocimiento automático de GPS de inmediato
   solicitarGeolocalizacion(true);
 }
 
-// Inicialización al cargar el documento
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', iniciarApp);
 } else {

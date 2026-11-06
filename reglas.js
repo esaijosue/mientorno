@@ -1,17 +1,3 @@
-/**
- * reglas.js - Constantes de configuración, umbrales y reglas de negocio SST
- * Proyecto: MiEntorno
- * 
- * Umbrales técnicos basados en:
- * - D.S. 024-2016-EM (Reglamento de Seguridad y Salud Ocupacional en Minería)
- * - Ley 30102 (Medidas preventivas contra efectos nocivos de radiación solar)
- * - Ley 29783 (Ley de Seguridad y Salud en el Trabajo)
- * - Norma Técnica G.050 (Seguridad durante la Construcción)
- * - ASME B30.5 / OSHA 1926.1431 (Límites operacionales de viento en izaje)
- * - Estándares de la Organización Meteorológica Mundial (OMM / WMO)
- */
-
-// Configuración opcional inyectada por entorno o valores por defecto
 const runtimeEnv = (typeof window !== 'undefined' && window.ENV) ? window.ENV : {};
 
 export const APP_NAME = runtimeEnv.APP_NAME || 'MiEntorno';
@@ -40,9 +26,6 @@ export const STORAGE_KEY_LOCATION = 'mientorno_ubicacion_v1';
 
 export const AUTO_REFRESH_INTERVAL_MS = Number(runtimeEnv.REFRESH_INTERVAL_MS) || (10 * 60 * 1000);
 
-/**
- * Reglas de radiación UV (OMS, Senamhi, Ley 30102)
- */
 export const REGLAS_UV = [
   {
     min: 0,
@@ -86,9 +69,6 @@ export const REGLAS_UV = [
   }
 ];
 
-/**
- * Reglas de viento y ráfagas (D.S. 024-2016-EM, Norma G.050, ASME B30.5)
- */
 export const UMBRALES_VIENTO = {
   NORMAL: {
     maxRafaga: 24.9,
@@ -118,9 +98,6 @@ export const UMBRALES_VIENTO = {
   }
 };
 
-/**
- * Reglas de potencial de tormenta eléctrica (CAPE - Convective Available Potential Energy)
- */
 export const UMBRALES_CAPE = {
   BAJO: {
     maxCape: 499,
@@ -154,5 +131,4 @@ export const UMBRALES_CAPE = {
   }
 };
 
-// Códigos meteorológicos WMO que indican tormenta eléctrica activa o inminente
 export const WEATHER_CODES_TORMENTA = [95, 96, 99];

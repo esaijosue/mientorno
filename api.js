@@ -1,26 +1,11 @@
-/**
- * api.js - Módulo de integración con servicios externos
- * Proyecto: MiEntorno
- * 
- * Consultas a servicios de geocodificación (Nominatim OpenStreetMap) y
- * telemetría meteorológica en tiempo real (Open-Meteo API).
- */
-
 let lastNominatimRequestTime = 0;
 
-/**
- * Busca ubicaciones por nombre en OpenStreetMap (Nominatim).
- * Respeta la política de uso de máximo 1 consulta por segundo.
- * @param {string} query Texto a buscar
- * @returns {Promise<Array<{name: string, displayName: string, lat: number, lon: number}>>}
- */
 export async function searchLocationNominatim(query) {
   const cleanQuery = query?.trim();
   if (!cleanQuery || cleanQuery.length < 2) {
     return [];
   }
 
-  // Control estricto de tasa: mínimo 1 segundo entre solicitudes a Nominatim
   const now = Date.now();
   const timeSinceLast = now - lastNominatimRequestTime;
   if (timeSinceLast < 1000) {
@@ -58,31 +43,17 @@ export async function searchLocationNominatim(query) {
   }
 }
 
-/**
- * Consulta a Open-Meteo Forecast API.
- * Obtiene variables actuales, horarias y diarias requeridas para la matriz de riesgos SST.
- * 
- * @param {number} lat Latitud
- * @param {number} lon Longitud
- * @returns {Promise<object>} Objeto de datos meteorológicos procesados
- */
 export async function fetchWeatherData(lat, lon) {
   try {
     const url = new URL('https://api.open-meteo.com/v1/forecast');
     url.searchParams.set('latitude', lat.toFixed(4));
     url.searchParams.set('longitude', lon.toFixed(4));
     url.searchParams.set('timezone', 'auto');
-    
-    // Variables actuales
     url.searchParams.set('current', 'temperature_2m,weather_code,wind_speed_10m,wind_gusts_10m');
-    
-    // Variables horarias (próximas horas para análisis de tendencias)
     url.searchParams.set(
       'hourly',
       'precipitation_probability,precipitation,wind_speed_10m,wind_gusts_10m,uv_index,cape,weather_code'
     );
-    
-    // Variables diarias
     url.searchParams.set('daily', 'uv_index_max,sunrise,sunset');
 
     const response = await fetch(url.toString());

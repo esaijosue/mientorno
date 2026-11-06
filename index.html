@@ -6,28 +6,17 @@
   <title>MiEntorno &bull; Monitoreo de campo</title>
   <meta name="description" content="Plataforma de evaluación y monitoreo de riesgos climáticos y físicos en tiempo real para faenas mineras, energéticas, construcción y puertos del Perú.">
   
-  <!-- Favicon -->
   <link rel="icon" type="image/webp" href="logo.webp">
-
-  <!-- Tipografía Inter y JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
-
-  <!-- Estilos de la plataforma -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="theme-control-room">
-  <!-- Mapa satelital base -->
   <div id="map" class="fullscreen-map-canvas"></div>
-
-  <!-- Capa de viñeta perimetral -->
   <div class="map-photographic-vignette" aria-hidden="true"></div>
 
-  <!-- Cabecera principal -->
   <header class="app-top-header">
     <div class="header-brand-section">
       <img src="logo.webp" alt="Logo MiEntorno" class="brand-logo-img">
@@ -40,7 +29,6 @@
       </div>
     </div>
 
-    <!-- Buscador global integrado -->
     <div class="header-search-wrapper" id="header-search-wrapper">
       <div class="header-search-box">
         <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
@@ -59,7 +47,6 @@
       <ul id="search-results" class="search-dropdown-menu" hidden></ul>
     </div>
 
-    <!-- Controles de cabecera -->
     <div class="header-controls-group">
       <button id="btn-search-mobile-toggle" class="btn-icon-pill mobile-only-search-btn" type="button" title="Buscar mina, puerto o ciudad">
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
@@ -92,11 +79,8 @@
     </div>
   </header>
 
-  <!-- Espacio de trabajo flotante -->
   <div class="app-floating-workspace">
-    <!-- Panel lateral de métricas -->
     <aside id="panel-dashboard" class="intelligence-floating-panel">
-      <!-- Encabezado móvil del panel -->
       <div class="mobile-sheet-header">
         <div class="mobile-sheet-drag-handle" aria-hidden="true" title="Desliza para alternar vista">
           <span class="drag-bar"></span>
@@ -106,7 +90,7 @@
           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
       </div>
-      <!-- Resumen de condiciones operativas -->
+
       <div class="dual-status-kpi-row">
         <div class="status-counter-card">
           <div class="counter-head">
@@ -133,7 +117,6 @@
         </div>
       </div>
 
-      <!-- Índice de seguridad en faena -->
       <section class="safety-efficiency-card">
         <div class="efficiency-card-head">
           <div>
@@ -154,7 +137,6 @@
           </div>
         </div>
 
-        <!-- Gráfico Sparkline de curva 24h interactivo -->
         <div class="efficiency-chart-container">
           <svg id="efficiency-sparkline-svg" class="efficiency-chart-svg" viewBox="0 0 380 75" preserveAspectRatio="none">
             <defs>
@@ -178,10 +160,8 @@
         </div>
       </section>
 
-      <!-- Alerta de precisión GPS (solo si > 500m) -->
       <div id="accuracy-alert" class="accuracy-banner-container" hidden></div>
 
-      <!-- Alerta y protocolo SST destacado en el tablero -->
       <div id="dashboard-sst-alert-banner" class="dashboard-sst-alert-banner" hidden>
         <div class="dash-alert-head">
           <span class="dash-alert-badge">!</span>
@@ -194,16 +174,13 @@
         </div>
       </div>
 
-      <!-- Encabezado sutil -->
       <div class="factors-section-header">
         <span class="factors-title">Factores evaluados en tiempo real</span>
         <span id="last-updated" class="factors-timestamp">Sincronizado</span>
       </div>
 
-      <!-- Cuadrícula de tarjetas de evaluación -->
       <div id="cards-container" class="risk-cards-grid" aria-label="Tarjetas de evaluación de riesgo"></div>
 
-      <!-- Pie de página del panel -->
       <footer class="panel-dashboard-footer">
         <span>Desarrollado por Esai Josue Huaman Meza</span>
         <span class="footer-separator">&bull;</span>
@@ -211,9 +188,7 @@
       </footer>
     </aside>
 
-    <!-- Capa de elementos flotantes sobre el mapa -->
     <div class="map-floating-content-layer">
-      <!-- Selector de ubicación -->
       <div class="floating-map-hero-header">
         <h1 class="map-hero-title">Monitoreo de campo</h1>
         <div class="map-pills-row">
@@ -230,7 +205,6 @@
         </div>
       </div>
 
-      <!-- Métrica operativa destacada -->
       <div id="map-floating-card" class="frosted-glass-metric-card">
         <div class="glass-card-top">
           <span id="floating-kpi-title" class="glass-metric-label">Estado operativo</span>
@@ -244,7 +218,6 @@
         <span id="floating-kpi-caption" class="glass-caption-note">Parámetros dentro de umbrales permitidos</span>
       </div>
 
-      <!-- Panel de alertas y controles SST -->
       <aside class="floating-warning-accordion" id="warning-accordion">
         <div class="accordion-header" id="accordion-toggle-btn">
           <div class="accordion-header-left">
@@ -266,7 +239,6 @@
             <span id="accordion-warning-count">Condiciones con restricción (1 factor)</span>
           </div>
 
-          <!-- Tarjeta de alerta principal compacta -->
           <div class="warning-alert-box">
             <div class="warning-box-head">
               <span class="warning-badge-pill">1</span>
@@ -291,7 +263,6 @@
             </div>
           </div>
 
-          <!-- Protocolo secundario -->
           <div class="warning-secondary-protocol">
             <div class="protocol-row-head">
               <span class="protocol-indicator"></span>
@@ -302,7 +273,6 @@
         </div>
       </aside>
 
-      <!-- Controles de navegación y zoom en el mapa -->
       <div class="map-floating-navigation-controls">
         <button id="map-zoom-in" class="map-btn-circle" type="button" title="Acercar mapa satelital">+</button>
         <button id="map-recenter-gps" class="map-btn-circle" type="button" title="Centrar en mi ubicación GPS">
@@ -315,7 +285,6 @@
     </div>
   </div>
 
-  <!-- Barra de navegación inferior móvil -->
   <nav class="mobile-bottom-dock-bar" aria-label="Navegación móvil">
     <div class="dock-capsule-container">
       <button id="dock-btn-dashboard" class="dock-action-btn active" type="button" data-target="dashboard">
@@ -358,10 +327,7 @@
     </div>
   </nav>
 
-  <!-- Leaflet JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-
-  <!-- Script principal de la aplicación -->
   <script type="module" src="main.js"></script>
 </body>
 </html>

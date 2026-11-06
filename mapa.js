@@ -1,20 +1,9 @@
-/**
- * mapa.js - Inicialización y control del mapa satelital
- * Proyecto: MiEntorno
- * 
- * Capas satelitales (Esri World Imagery + referencias cartográficas)
- * y gestión del marcador interactivo de geolocalización.
- */
-
 import { PERU_DEFAULT_COORDS } from './reglas.js';
 
 let map = null;
 let marker = null;
 let accuracyCircle = null;
 
-/**
- * Crea el icono de radar pulsante de alta precisión para el mapa satelital.
- */
 function createPulseMarkerIcon() {
   if (typeof L === 'undefined') return null;
   return L.divIcon({
@@ -31,11 +20,6 @@ function createPulseMarkerIcon() {
   });
 }
 
-/**
- * Inicializa el mapa Leaflet con vista satelital fotorrealista que cubre toda la pantalla.
- * @param {string} containerId ID del contenedor HTML
- * @param {Function} onLocationChange Callback al mover marcador o hacer clic
- */
 export function initMap(containerId, onLocationChange) {
   if (typeof L === 'undefined') {
     console.warn('Leaflet aún no está cargado');
@@ -46,25 +30,21 @@ export function initMap(containerId, onLocationChange) {
     map.remove();
   }
 
-  // Inicializar mapa centrado en Perú
   map = L.map(containerId, {
     zoomControl: false,
     attributionControl: false
   }).setView([PERU_DEFAULT_COORDS.lat, PERU_DEFAULT_COORDS.lon], PERU_DEFAULT_COORDS.zoom);
 
-  // 1. Capa Satelital de Alta Resolución (Esri World Imagery)
   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     maxZoom: 19,
     attribution: 'Esri, Maxar, Earthstar Geographics'
   }).addTo(map);
 
-  // 2. Capa Híbrida de Referencia (Límites, carreteras y nombres de localidades)
   L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
     maxZoom: 19,
     opacity: 0.65
   }).addTo(map);
 
-  // Escuchar clic en el mapa para posicionamiento manual
   map.on('click', (e) => {
     const { lat, lng } = e.latlng;
     setMarkerPosition(lat, lng, null, false);
@@ -76,9 +56,6 @@ export function initMap(containerId, onLocationChange) {
   return map;
 }
 
-/**
- * Mueve o ubica el marcador de radar en las coordenadas indicadas con compensación de encuadre.
- */
 export function setMarkerPosition(lat, lon, accuracy = null, panTo = true, customZoom = null, onDragCallback = null) {
   if (typeof L === 'undefined' || !map) return;
 
@@ -108,7 +85,6 @@ export function setMarkerPosition(lat, lon, accuracy = null, panTo = true, custo
     marker.setLatLng(coords);
   }
 
-  // Círculo de radio de precisión translúcido
   if (accuracyCircle) {
     map.removeLayer(accuracyCircle);
     accuracyCircle = null;
@@ -137,8 +113,6 @@ export function setMarkerPosition(lat, lon, accuracy = null, panTo = true, custo
 
     map.setView(coords, targetZoom, { animate: true, duration: 0.8 });
 
-    // En pantallas de escritorio, desplazar ligeramente la vista para que el marcador
-    // se sitúe en la zona visible no cubierta por el panel lateral oscurecido
     if (window.innerWidth > 1024) {
       setTimeout(() => {
         if (map) {
@@ -153,9 +127,6 @@ export function setMarkerPosition(lat, lon, accuracy = null, panTo = true, custo
   }, 100);
 }
 
-/**
- * Centra el mapa en el Perú
- */
 export function centerPeru() {
   if (!map) return;
   map.setView([PERU_DEFAULT_COORDS.lat, PERU_DEFAULT_COORDS.lon], PERU_DEFAULT_COORDS.zoom, {
@@ -164,9 +135,6 @@ export function centerPeru() {
   });
 }
 
-/**
- * Control de zoom manual desde los botones flotantes del mapa
- */
 export function zoomIn() {
   if (map) map.zoomIn();
 }
@@ -175,9 +143,6 @@ export function zoomOut() {
   if (map) map.zoomOut();
 }
 
-/**
- * Redimensiona el mapa
- */
 export function resizeMap() {
   if (map) {
     map.invalidateSize();
