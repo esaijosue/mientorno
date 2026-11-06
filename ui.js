@@ -138,12 +138,17 @@ export function setRefreshButtonLoading(isRefreshing) {
   btn.classList.toggle('spinning', isRefreshing);
 }
 
-export function updateLastRefreshTimestamp() {
+export function updateLastRefreshTimestamp(horizon = currentForecastHorizon, targetTimeStr = '') {
   const timeEl = getElements().lastUpdated;
   if (!timeEl) return;
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  timeEl.textContent = `Actualizado ${timeStr}`;
+  if (horizon > 0 && targetTimeStr) {
+    const badgeText = formatHorizonBadge(horizon);
+    timeEl.textContent = `Proyección +${badgeText} (${targetTimeStr} h)`;
+  } else {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    timeEl.textContent = `Actualizado ${timeStr}`;
+  }
 }
 
 export function updateLocationInfo(lat, lon, accuracy, source = 'gps', placeName = null) {
@@ -251,13 +256,15 @@ export function renderRiskCards(weatherData, horizon = currentForecastHorizon) {
   if (!els.cardsContainer) return;
   els.cardsContainer.innerHTML = '';
 
+  const fc = getForecastContext(data, horizon);
+
   const riskContext = {
     safeCount: 0,
     alertCount: 0,
     scoreDeductions: 0,
     highestRisk: {
       title: 'Condición normal',
-      subtitle: 'Operaciones de campo',
+      subtitle: fc.isRealTime ? 'Operaciones de campo' : `Proyección a las ${fc.targetTimeStr} h`,
       value: 'Seguro',
       unit: '',
       caption: 'Parámetros dentro de umbrales permitidos',
@@ -267,66 +274,66 @@ export function renderRiskCards(weatherData, horizon = currentForecastHorizon) {
   };
 
   try {
-    els.cardsContainer.appendChild(createUVCard(data, riskContext, horizon));
+    els.cardsContainer.appendChild(createUVCard(data, riskContext, fc));
   } catch (err) {
     console.error('Error generando tarjeta UV:', err);
     els.cardsContainer.appendChild(createErrorCard('Radiación solar UV'));
   }
 
   try {
-    els.cardsContainer.appendChild(createRainCard(data, riskContext, horizon));
+    els.cardsContainer.appendChild(createRainCard(data, riskContext, fc));
   } catch (err) {
     console.error('Error generando tarjeta Lluvia:', err);
     els.cardsContainer.appendChild(createErrorCard('Precipitación pluvial'));
   }
 
   try {
-    els.cardsContainer.appendChild(createWindCard(data, riskContext, horizon));
+    els.cardsContainer.appendChild(createWindCard(data, riskContext, fc));
   } catch (err) {
     console.error('Error generando tarjeta Viento:', err);
     els.cardsContainer.appendChild(createErrorCard('Velocidad del viento'));
   }
 
   try {
-    els.cardsContainer.appendChild(createThunderstormCard(data, riskContext, horizon));
+    els.cardsContainer.appendChild(createThunderstormCard(data, riskContext, fc));
   } catch (err) {
     console.error('Error generando tarjeta Tormenta:', err);
     els.cardsContainer.appendChild(createErrorCard('Tormenta eléctrica'));
   }
 
   try {
-    els.cardsContainer.appendChild(createTemperatureCard(data, riskContext, horizon));
+    els.cardsContainer.appendChild(createTemperatureCard(data, riskContext, fc));
   } catch (err) {
     console.error('Error generando tarjeta Temperatura:', err);
     els.cardsContainer.appendChild(createErrorCard('Estrés térmico'));
   }
 
   try {
-    els.cardsContainer.appendChild(createSnowCard(data, riskContext, horizon));
+    els.cardsContainer.appendChild(createSnowCard(data, riskContext, fc));
   } catch (err) {
     console.error('Error generando tarjeta Nieve:', err);
     els.cardsContainer.appendChild(createErrorCard('Nieve y congelamiento'));
   }
 
   try {
-    els.cardsContainer.appendChild(createVisibilityCard(data, riskContext, horizon));
+    els.cardsContainer.appendChild(createVisibilityCard(data, riskContext, fc));
   } catch (err) {
     console.error('Error generando tarjeta Visibilidad:', err);
     els.cardsContainer.appendChild(createErrorCard('Visibilidad en ruta'));
   }
 
   try {
-    els.cardsContainer.appendChild(createSoilCard(data, riskContext, horizon));
+    els.cardsContainer.appendChild(createSoilCard(data, riskContext, fc));
   } catch (err) {
     console.error('Error generando tarjeta Suelo:', err);
     els.cardsContainer.appendChild(createErrorCard('Humedad de suelo'));
   }
 
   const finalScore = updateSafetyIndexSummary(riskContext, data);
-  updateFloatingMapCard(riskContext, finalScore);
+  updateFloatingMapCard(riskContext, finalScore, horizon, fc.targetTimeStr);
   updateWarningAccordion(riskContext);
   updateReliabilityBanner(horizon);
-  updateLastRefreshTimestamp();
+  updateLastRefreshTimestamp(horizon, fc.targetTimeStr);
 }
 
 function updateSafetyIndexSummary(context, weatherData) {
@@ -387,14 +394,16 @@ function renderSparklineCurve(weatherData, currentScore) {
   }
 }
 
-function updateFloatingMapCard(context, score) {
+function updateFloatingMapCard(context, score, horizon = currentForecastHorizon, targetTimeStr = '') {
   const els = getElements();
   if (!els.floatingKpiTitle || !els.floatingKpiValue) return;
 
   const hasAlerts = context.alertCount > 0;
   const currentScore = score !== undefined ? score : Math.max(20, Math.min(99, 100 - context.scoreDeductions));
+  const isRealTime = (horizon === 0);
+  const badgeText = formatHorizonBadge(horizon);
 
-  els.floatingKpiTitle.textContent = 'Estado operativo';
+  els.floatingKpiTitle.textContent = isRealTime ? 'Estado operativo' : `Estado previsto (${targetTimeStr || ('+' + badgeText)} h)`;
   els.floatingKpiSubtitle.textContent = hasAlerts
     ? `Faena con restricción (${context.alertCount} factor${context.alertCount > 1 ? 'es' : ''})`
     : 'Operación regular en faena';
@@ -462,73 +471,94 @@ export function formatHorizonBadge(h) {
   return `${h}h`;
 }
 
-function getSeriesForHorizon(data, key, horizonHours) {
-  const currentTimeStr = data?.current?.time;
-
-  if (horizonHours === 0) {
-    let currentVal = data?.current?.[key];
-    if (currentVal === undefined) {
-      const curIdx = getCurrentHourIndex(data?.hourly?.time, currentTimeStr);
-      currentVal = data?.hourly?.[key]?.[curIdx];
-    }
-    return {
-      times: [currentTimeStr || ''],
-      values: currentVal !== undefined ? [currentVal] : []
-    };
-  }
-
-  if (horizonHours <= 1 && data?.minutely_15?.[key] && Array.isArray(data?.minutely_15?.time)) {
-    const times = data.minutely_15.time;
-    const values = data.minutely_15[key];
-    const prefix = currentTimeStr ? currentTimeStr.slice(0, 16) : '';
-    let startIdx = times.findIndex((t) => t >= prefix);
-    if (startIdx === -1) startIdx = 0;
-
-    const count = Math.max(1, Math.round(horizonHours * 4));
-    return {
-      times: times.slice(startIdx, startIdx + count),
-      values: values.slice(startIdx, startIdx + count)
-    };
-  }
-
-  const times = data?.hourly?.time || [];
-  const values = data?.hourly?.[key] || [];
-  const currentPrefix = currentTimeStr ? currentTimeStr.slice(0, 13) : '';
-  let startIdx = times.findIndex((t) => t.startsWith(currentPrefix));
-  if (startIdx === -1) startIdx = 0;
-
-  const count = Math.max(1, Math.round(horizonHours));
-  return {
-    times: times.slice(startIdx, startIdx + count),
-    values: values.slice(startIdx, startIdx + count)
-  };
-}
-
-function createUVCard(data, ctx, horizon = 0) {
+function getForecastContext(data, horizon = 0) {
   const isRealTime = (horizon === 0);
-  const currentHourIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
-  const currentUV = data?.hourly?.uv_index ? (data.hourly.uv_index[currentHourIdx] ?? 0) : 0;
-  const dailyMaxUV = data?.daily?.uv_index_max?.[0] ?? currentUV;
+  const currentTimeStr = data?.current?.time || '';
+  const hourlyTimes = data?.hourly?.time || [];
+  const currentHourIdx = getCurrentHourIndex(hourlyTimes, currentTimeStr);
   const badgeText = formatHorizonBadge(horizon);
   const horizonTitle = horizon === 0.5 ? '30 minutos' : `${horizon} horas`;
 
-  const uvSeries = getSeriesForHorizon(data, 'uv_index', horizon);
-  const horizonUV = uvSeries.values;
-  const times = uvSeries.times;
+  if (isRealTime) {
+    const timeDisplay = currentTimeStr ? currentTimeStr.slice(11, 16) : '';
+    return {
+      isRealTime: true,
+      badgeText: 'Ahora',
+      horizonTitle: 'tiempo real',
+      targetTimeStr: timeDisplay,
+      targetHourIdx: currentHourIdx,
+      getValue: (key, fallback = 0) => {
+        if (data?.current?.[key] !== undefined && data.current[key] !== null) {
+          return data.current[key];
+        }
+        return data?.hourly?.[key]?.[currentHourIdx] ?? fallback;
+      },
+      getWindowValues: (key, fallback = 0) => {
+        const val = data?.current?.[key] ?? data?.hourly?.[key]?.[currentHourIdx] ?? fallback;
+        return [val];
+      }
+    };
+  }
 
-  let peakUV = currentUV;
-  let peakTimeStr = null;
-  for (let i = 0; i < horizonUV.length; i++) {
-    const val = horizonUV[i] || 0;
-    if (val > peakUV) {
-      peakUV = val;
-      if (times[i]) peakTimeStr = times[i].slice(11, 16);
+  // Horizon > 0 (30m, 1h, 3h, 9h, 12h, 24h)
+  let targetTimeStr = '';
+  let targetHourIdx = currentHourIdx;
+  let useMinutely = false;
+  let minutelyTargetIdx = -1;
+  let minutelyStartIdx = -1;
+
+  if (horizon <= 0.5 && data?.minutely_15?.time && Array.isArray(data.minutely_15.time)) {
+    const mTimes = data.minutely_15.time;
+    const prefix = currentTimeStr ? currentTimeStr.slice(0, 16) : '';
+    let startIdx = mTimes.findIndex((t) => t >= prefix);
+    if (startIdx === -1) startIdx = 0;
+    const steps = 2; // 30 min = 2 x 15 min
+    const targetIdx = Math.min(mTimes.length - 1, startIdx + steps);
+    if (mTimes[targetIdx]) {
+      useMinutely = true;
+      minutelyStartIdx = startIdx;
+      minutelyTargetIdx = targetIdx;
+      targetTimeStr = mTimes[targetIdx].slice(11, 16);
+      targetHourIdx = Math.min(hourlyTimes.length - 1, currentHourIdx + 1);
     }
   }
 
-  // En tiempo real evalúa el momento presente; en proyección evalúa el pico máximo de esa ventana horaria
-  const evalUV = isRealTime ? currentUV : peakUV;
-  const isNight = isRealTime ? (currentUV < 0.2) : (peakUV < 0.2);
+  if (!useMinutely) {
+    const offsetHours = Math.max(1, Math.round(horizon));
+    targetHourIdx = Math.min(hourlyTimes.length - 1, currentHourIdx + offsetHours);
+    const rawTime = hourlyTimes[targetHourIdx] || '';
+    targetTimeStr = rawTime ? rawTime.slice(11, 16) : '';
+  }
+
+  return {
+    isRealTime: false,
+    badgeText,
+    horizonTitle,
+    targetTimeStr,
+    targetHourIdx,
+    getValue: (key, fallback = 0) => {
+      if (useMinutely && data?.minutely_15?.[key]?.[minutelyTargetIdx] !== undefined) {
+        return data.minutely_15[key][minutelyTargetIdx];
+      }
+      return data?.hourly?.[key]?.[targetHourIdx] ?? fallback;
+    },
+    getWindowValues: (key, fallback = 0) => {
+      if (useMinutely && data?.minutely_15?.[key]) {
+        return data.minutely_15[key].slice(minutelyStartIdx, minutelyTargetIdx + 1);
+      }
+      const arr = data?.hourly?.[key] || [];
+      return arr.slice(currentHourIdx, targetHourIdx + 1);
+    }
+  };
+}
+
+function createUVCard(data, ctx, fc) {
+  const currentHourIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
+  const currentUV = data?.hourly?.uv_index ? (data.hourly.uv_index[currentHourIdx] ?? 0) : 0;
+  const dailyMaxUV = data?.daily?.uv_index_max?.[0] ?? currentUV;
+
+  const targetUV = fc.isRealTime ? currentUV : fc.getValue('uv_index', 0);
+  const isNight = targetUV < 0.2;
 
   let deduction = 0;
   let severityScore = 0;
@@ -538,31 +568,31 @@ function createUVCard(data, ctx, horizon = 0) {
     rule = {
       nivel: 'Noche',
       badge: 'Noche',
-      recomendacion: isRealTime
+      recomendacion: fc.isRealTime
         ? 'Sin radiación solar UV durante el turno nocturno. No se requiere fotoprotector en horas de oscuridad.'
-        : 'Ventana de proyección durante horario nocturno. Sin radiación solar ultravioleta.'
+        : `Horario nocturno previsto a las ${fc.targetTimeStr} h (+${fc.badgeText}). Sin radiación solar ultravioleta.`
     };
   } else {
-    rule = REGLAS_UV.find((r) => evalUV >= r.min && evalUV <= r.max) || REGLAS_UV[0];
-    if (evalUV >= 11) { deduction = 25; severityScore = 5; }
-    else if (evalUV >= 8) { deduction = 18; severityScore = 4; }
-    else if (evalUV >= 6) { deduction = 10; severityScore = 3; }
+    rule = REGLAS_UV.find((r) => targetUV >= r.min && targetUV <= r.max) || REGLAS_UV[0];
+    if (targetUV >= 11) { deduction = 25; severityScore = 5; }
+    else if (targetUV >= 8) { deduction = 18; severityScore = 4; }
+    else if (targetUV >= 6) { deduction = 10; severityScore = 3; }
   }
 
   ctx.scoreDeductions += deduction;
   if (severityScore === 0) ctx.safeCount++; else ctx.alertCount++;
 
-  const pillClass = isNight ? 'pill-green' : evalUV >= 8 ? 'pill-red' : evalUV >= 6 ? 'pill-amber' : 'pill-green';
-  const displayVal = isNight ? '0.0' : evalUV.toFixed(1);
+  const pillClass = isNight ? 'pill-green' : targetUV >= 8 ? 'pill-red' : targetUV >= 6 ? 'pill-amber' : 'pill-green';
+  const displayVal = isNight ? '0.0' : targetUV.toFixed(1);
   const statusLabel = isNight ? 'Noche' : rule.nivel;
 
   if (!isNight && severityScore > ctx.highestRisk.severityScore) {
     ctx.highestRisk = {
       title: 'Radiación solar UV',
       subtitle: `Nivel ${rule.nivel.toLowerCase()}`,
-      value: evalUV.toFixed(1),
+      value: targetUV.toFixed(1),
       unit: 'UVI',
-      caption: isRealTime ? `Pico del día: ${dailyMaxUV.toFixed(1)} UVI` : `Pico previsto: ${peakUV.toFixed(1)} UVI`,
+      caption: fc.isRealTime ? `Pico del día: ${dailyMaxUV.toFixed(1)} UVI` : `A las ${fc.targetTimeStr} h: ${targetUV.toFixed(1)} UVI`,
       recommendation: rule.recomendacion,
       severityScore
     };
@@ -579,14 +609,14 @@ function createUVCard(data, ctx, horizon = 0) {
   `;
 
   const secondaryText = isNight
-    ? (isRealTime ? 'Turno nocturno &bull; Sin exposición solar actínica' : `Ventana nocturna &bull; 0.0 UVI (${badgeText})`)
-    : (isRealTime
-        ? `Sensor en faena &bull; Exposición solar directa`
-        : `Pico solar a las ${peakTimeStr || '12:00'} h &bull; Turno proyectado ${badgeText}`);
+    ? (fc.isRealTime ? 'Turno nocturno &bull; Sin exposición solar actínica' : `Ventana nocturna a las ${fc.targetTimeStr} h &bull; 0.0 UVI`)
+    : (fc.isRealTime
+        ? 'Sensor en faena &bull; Exposición solar directa'
+        : `Previsto a las ${fc.targetTimeStr} h &bull; Radiación ${rule.nivel.toLowerCase()}`);
 
-  const badgeHTML = isRealTime
+  const badgeHTML = fc.isRealTime
     ? `<div class="metric-projection-badge" title="Pico máximo diurno previsto hoy"><span class="projection-label">Máx hoy:</span><span class="projection-val">${dailyMaxUV.toFixed(1)} UVI</span></div>`
-    : `<div class="metric-projection-badge" title="Pico máximo en ${horizonTitle}"><span class="projection-label">Pico ${badgeText}:</span><span class="projection-val">${peakUV.toFixed(1)} UVI</span></div>`;
+    : `<div class="metric-projection-badge" title="Pico diurno hoy"><span class="projection-label">Máx hoy:</span><span class="projection-val">${dailyMaxUV.toFixed(1)} UVI</span></div>`;
 
   const card = document.createElement('article');
   card.className = cardClass;
@@ -602,7 +632,7 @@ function createUVCard(data, ctx, horizon = 0) {
     <div class="risk-metric-hero-line">
       <div class="metric-main-group">
         <span class="metric-hero-val">${displayVal}</span>
-        <span class="metric-hero-unit">${isRealTime ? 'UVI' : 'UVI máx'}</span>
+        <span class="metric-hero-unit">UVI</span>
       </div>
       ${badgeHTML}
     </div>
@@ -616,13 +646,10 @@ function createUVCard(data, ctx, horizon = 0) {
   return card;
 }
 
-function createRainCard(data, ctx, horizon = 0) {
-  const isRealTime = (horizon === 0);
+function createRainCard(data, ctx, fc) {
   const currentPrecip = data?.current?.precipitation ?? 0;
   const currentHourIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
   const currentProb = data?.hourly?.precipitation_probability?.[currentHourIdx] ?? 0;
-  const badgeText = formatHorizonBadge(horizon);
-  const horizonTitle = horizon === 0.5 ? '30 minutos' : `${horizon} horas`;
 
   let nivelTexto = 'Seco';
   let pillClass = 'pill-green';
@@ -635,7 +662,7 @@ function createRainCard(data, ctx, horizon = 0) {
   let heroUnit = 'mm/h';
   let barsHTML = '';
 
-  if (isRealTime) {
+  if (fc.isRealTime) {
     heroVal = currentPrecip.toFixed(1);
     heroUnit = 'mm/h actual';
     badgeHTML = `<div class="metric-projection-badge" title="Probabilidad de lluvia actual"><span class="projection-label">Probabilidad:</span><span class="projection-val">${currentProb}%</span></div>`;
@@ -661,57 +688,45 @@ function createRainCard(data, ctx, horizon = 0) {
       recomendacion = 'Supervisar adherencia de neumáticos en haul roads y accesos.';
     }
   } else {
-    const probSeries = getSeriesForHorizon(data, 'precipitation_probability', horizon);
-    const amountSeries = getSeriesForHorizon(data, 'precipitation', horizon);
-    const times = probSeries.times;
-    const probs = probSeries.values;
-    const amounts = amountSeries.values;
+    const targetPrecip = fc.getValue('precipitation', 0);
+    const targetProb = fc.getValue('precipitation_probability', 0);
+    const windowAmounts = fc.getWindowValues('precipitation', targetPrecip);
+    const windowProbs = fc.getWindowValues('precipitation_probability', targetProb);
+    const totalPrecip = windowAmounts.reduce((a, b) => a + (b || 0), 0);
+    const maxProb = Math.max(...windowProbs, targetProb);
 
-    let nextRainText = `Sin precipitaciones en las próximas ${horizonTitle}.`;
-    let hasRain = false;
-    let maxProb = 0;
-    let totalPrecip = 0;
+    const hasRain = (targetPrecip > 0 || totalPrecip >= 0.2 || maxProb >= 30);
+    heroVal = targetPrecip > 0 ? targetPrecip.toFixed(1) : `${targetProb}%`;
+    heroUnit = targetPrecip > 0 ? 'mm/h' : 'prob.';
 
-    for (let i = 0; i < times.length; i++) {
-      const p = probs[i] || 0;
-      const mm = amounts[i] || 0;
-      if (p > maxProb) maxProb = p;
-      totalPrecip += mm;
+    badgeHTML = `<div class="metric-projection-badge" title="Acumulado estimado en ${fc.horizonTitle}"><span class="projection-label">${fc.badgeText}:</span><span class="projection-val">${totalPrecip.toFixed(1)} mm</span></div>`;
+    secondaryHTML = `<span>A las ${fc.targetTimeStr} h: ${targetPrecip.toFixed(1)} mm/h (${targetProb}%)</span><span class="telemetry-sep">&bull;</span><span>${hasRain ? `Acumulado: ${totalPrecip.toFixed(1)} mm` : 'Sin lluvia prevista'}</span>`;
 
-      if (!hasRain && (p >= 30 || mm >= 0.2)) {
-        const timeStr = times[i] ? times[i].slice(11, 16) : '';
-        nextRainText = `Lluvia estimada a las ${timeStr} h (${p}%, ${mm.toFixed(1)} mm)`;
-        hasRain = true;
-      }
-    }
+    pillClass = (!hasRain) ? 'pill-green' : (maxProb >= 70 || totalPrecip >= 5 || targetPrecip >= 5) ? 'pill-red' : 'pill-amber';
+    nivelTexto = (!hasRain) ? 'Seco' : (maxProb >= 70 || targetPrecip >= 5) ? 'Lluvia intensa' : 'Lluvia probable';
 
-    heroVal = `${maxProb}%`;
-    heroUnit = 'prob. máx';
-    badgeHTML = `<div class="metric-projection-badge" title="Acumulado estimado en ${horizonTitle}"><span class="projection-label">${badgeText}:</span><span class="projection-val">${totalPrecip.toFixed(1)} mm</span></div>`;
-    secondaryHTML = `<span>Actual: ${currentPrecip.toFixed(1)} mm/h</span><span class="telemetry-sep">&bull;</span><span>${hasRain ? nextRainText : 'Sin lluvia prevista'}</span>`;
-
-    pillClass = (!hasRain && currentPrecip === 0) ? 'pill-green' : (maxProb >= 70 || totalPrecip >= 5) ? 'pill-red' : 'pill-amber';
-    nivelTexto = (!hasRain && currentPrecip === 0) ? 'Seco' : maxProb >= 70 ? 'Lluvia intensa' : 'Lluvia probable';
-
-    recomendacion = (!hasRain && currentPrecip === 0)
+    recomendacion = (!hasRain)
       ? 'Vías secas. Tránsito normal de volquetes y equipos móviles sin restricción por humedad.'
-      : maxProb >= 70
+      : (maxProb >= 70 || totalPrecip >= 5 || targetPrecip >= 5)
         ? 'Pistas resbaladizas y riesgo de taludes: reducir velocidad en ruta y revisar drenajes de tajo.'
         : 'Uso de ropa impermeable de campo y precaución al subir o bajar de equipos pesados.';
 
-    if (maxProb >= 70 || totalPrecip >= 5) { deduction = 20; severityScore = 4; }
-    else if (maxProb >= 40 || totalPrecip >= 2) { deduction = 12; severityScore = 3; }
-    else if (maxProb >= 20 || totalPrecip > 0) { deduction = 6; severityScore = 1; }
+    if (maxProb >= 70 || totalPrecip >= 5 || targetPrecip >= 5) { deduction = 20; severityScore = 4; }
+    else if (maxProb >= 40 || totalPrecip >= 2 || targetPrecip >= 1) { deduction = 12; severityScore = 3; }
+    else if (hasRain) { deduction = 6; severityScore = 1; }
 
-    for (let i = 0; i < times.length; i++) {
-      const prob = probs[i] || 0;
-      const heightPct = Math.max(8, prob);
-      const isAlert = prob >= 40;
-      const isRain = prob > 0;
+    const hourlyTimes = data?.hourly?.time || [];
+    const stepCount = windowProbs.length;
+    for (let i = 0; i < stepCount; i++) {
+      const p = windowProbs[i] || 0;
+      const heightPct = Math.max(8, p);
+      const isAlert = p >= 40;
+      const isRain = p > 0;
       const barClass = isAlert ? 'bar-alert' : isRain ? 'bar-rain' : '';
-      barsHTML += `<div class="mini-bar ${barClass}" style="height: ${heightPct}%;" title="${times[i] ? times[i].slice(11, 16) : ''} h: ${prob}% prob"></div>`;
+      const tStr = hourlyTimes[currentHourIdx + i] ? hourlyTimes[currentHourIdx + i].slice(11, 16) : '';
+      barsHTML += `<div class="mini-bar ${barClass}" style="height: ${heightPct}%;" title="${tStr} h: ${p}% prob"></div>`;
     }
-    barsHTML = `<div class="mini-histogram-chart" title="Probabilidad horaria de precipitación (${badgeText})">${barsHTML}</div>`;
+    barsHTML = `<div class="mini-histogram-chart" title="Probabilidad de precipitación (${fc.badgeText})">${barsHTML}</div>`;
   }
 
   ctx.scoreDeductions += deduction;
@@ -720,10 +735,10 @@ function createRainCard(data, ctx, horizon = 0) {
   if (severityScore > ctx.highestRisk.severityScore) {
     ctx.highestRisk = {
       title: 'Precipitación pluvial',
-      subtitle: isRealTime ? `Tasa actual: ${currentPrecip.toFixed(1)} mm/h` : `${heroVal} prob`,
+      subtitle: fc.isRealTime ? `Tasa actual: ${currentPrecip.toFixed(1)} mm/h` : `Previsto a las ${fc.targetTimeStr} h: ${heroVal} ${heroUnit}`,
       value: heroVal,
       unit: heroUnit,
-      caption: isRealTime ? 'Lectura en tiempo real' : `Acumulado ${badgeText}`,
+      caption: fc.isRealTime ? 'Lectura en tiempo real' : `Acumulado ${fc.badgeText}`,
       recommendation: recomendacion,
       severityScore
     };
@@ -768,21 +783,17 @@ function createRainCard(data, ctx, horizon = 0) {
   return card;
 }
 
-function createWindCard(data, ctx, horizon = 0) {
-  const isRealTime = (horizon === 0);
+function createWindCard(data, ctx, fc) {
+  const currentHourIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
   const currentSpeed = data?.current?.wind_speed_10m ?? 0;
   const currentGust = data?.current?.wind_gusts_10m ?? currentSpeed;
-  const badgeText = formatHorizonBadge(horizon);
-  const horizonTitle = horizon === 0.5 ? '30 minutos' : `${horizon} horas`;
+  const current80m = data?.hourly?.wind_speed_80m?.[currentHourIdx] ?? currentSpeed;
 
-  const gustSeries = getSeriesForHorizon(data, 'wind_gusts_10m', horizon);
-  const boomSeries = getSeriesForHorizon(data, 'wind_speed_80m', horizon);
-
-  const nextGusts = gustSeries.values;
-  const next80mSpeed = boomSeries.values;
-
-  const targetGust = isRealTime ? currentGust : Math.max(currentGust, ...(nextGusts.length ? nextGusts : [0]));
-  const targetBoom = isRealTime ? currentSpeed : Math.max(currentSpeed, ...(next80mSpeed.length ? next80mSpeed : [0]));
+  const targetSpeed = fc.isRealTime ? currentSpeed : fc.getValue('wind_speed_10m', 0);
+  const targetGust = fc.isRealTime ? currentGust : fc.getValue('wind_gusts_10m', targetSpeed);
+  const targetBoom = fc.isRealTime ? current80m : fc.getValue('wind_speed_80m', targetSpeed);
+  const windowGusts = fc.getWindowValues('wind_gusts_10m', targetGust);
+  const maxGust = Math.max(targetGust, ...windowGusts);
 
   let nivelLabel = 'Normal';
   let pillClass = 'pill-green';
@@ -790,19 +801,19 @@ function createWindCard(data, ctx, horizon = 0) {
   let severityScore = 0;
   let recomendacion = 'Vientos seguros. Operaciones de izaje, grúas y trabajos en altura autorizados sin restricción.';
 
-  if (targetGust > 50 || targetBoom > 50) {
+  if (targetGust > 50 || targetBoom > 50 || maxGust > 50) {
     nivelLabel = 'Suspensión';
     pillClass = 'pill-red';
     deduction = 35;
     severityScore = 5;
     recomendacion = 'Parada mandatoria de grúas e izajes conforme a estándares de seguridad (> 50 km/h). Descenso de plumas.';
-  } else if (targetGust >= 32 || targetBoom >= 32) {
+  } else if (targetGust >= 32 || targetBoom >= 32 || maxGust >= 32) {
     nivelLabel = 'Restricción izaje';
     pillClass = 'pill-red';
     deduction = 20;
     severityScore = 4;
     recomendacion = 'Límite legal de izaje alcanzado (≥ 32 km/h D.S. 024-2016-EM). Prohibido izaje de cargas críticas.';
-  } else if (targetGust >= 25 || targetBoom >= 25) {
+  } else if (targetGust >= 25 || targetBoom >= 25 || maxGust >= 25) {
     nivelLabel = 'Precaución';
     pillClass = 'pill-amber';
     deduction = 8;
@@ -819,7 +830,7 @@ function createWindCard(data, ctx, horizon = 0) {
       subtitle: `${nivelLabel}`,
       value: Math.round(targetGust),
       unit: 'km/h',
-      caption: isRealTime ? `Ráfaga actual: ${Math.round(currentGust)} km/h` : `Ráfaga máx ${badgeText}: ${Math.round(targetGust)} km/h`,
+      caption: fc.isRealTime ? `Ráfaga actual: ${Math.round(currentGust)} km/h` : `A las ${fc.targetTimeStr} h: ráfaga ${Math.round(targetGust)} km/h`,
       recommendation: recomendacion,
       severityScore
     };
@@ -835,13 +846,13 @@ function createWindCard(data, ctx, horizon = 0) {
     </div>
   `;
 
-  const badgeHTML = isRealTime
+  const badgeHTML = fc.isRealTime
     ? `<div class="metric-projection-badge" title="Ráfaga instantánea"><span class="projection-label">Ráfaga:</span><span class="projection-val">${Math.round(currentGust)} km/h</span></div>`
-    : `<div class="metric-projection-badge" title="Ráfaga máxima estimada en ${horizonTitle}"><span class="projection-label">Ráfaga ${badgeText}:</span><span class="projection-val">${Math.round(targetGust)} km/h</span></div>`;
+    : `<div class="metric-projection-badge" title="Ráfaga prevista a las ${fc.targetTimeStr} h"><span class="projection-label">Ráfaga:</span><span class="projection-val">${Math.round(targetGust)} km/h</span></div>`;
 
-  const secondaryText = isRealTime
-    ? `<span>Pluma 80m: ${Math.round(targetBoom)} km/h</span><span class="telemetry-sep">&bull;</span><span>Anemómetro en mástil 10m</span>`
-    : `<span>Ráfaga actual: ${Math.round(currentGust)} km/h</span><span class="telemetry-sep">&bull;</span><span>Pluma 80m: ${Math.round(targetBoom)} km/h</span>`;
+  const secondaryText = fc.isRealTime
+    ? `<span>Pluma 80m: ${Math.round(current80m)} km/h</span><span class="telemetry-sep">&bull;</span><span>Anemómetro en mástil 10m</span>`
+    : `<span>A las ${fc.targetTimeStr} h</span><span class="telemetry-sep">&bull;</span><span>Pluma 80m: ${Math.round(targetBoom)} km/h</span><span class="telemetry-sep">&bull;</span><span>Pico ventana: ${Math.round(maxGust)} km/h</span>`;
 
   const card = document.createElement('article');
   card.className = cardClass;
@@ -856,7 +867,7 @@ function createWindCard(data, ctx, horizon = 0) {
 
     <div class="risk-metric-hero-line">
       <div class="metric-main-group">
-        <span class="metric-hero-val">${Math.round(currentSpeed)}</span>
+        <span class="metric-hero-val">${Math.round(targetSpeed)}</span>
         <span class="metric-hero-unit">km/h</span>
       </div>
       ${badgeHTML}
@@ -871,44 +882,30 @@ function createWindCard(data, ctx, horizon = 0) {
   return card;
 }
 
-function createThunderstormCard(data, ctx, horizon = 0) {
-  const isRealTime = (horizon === 0);
-  const badgeText = formatHorizonBadge(horizon);
-  const horizonTitle = horizon === 0.5 ? '30 minutos' : `${horizon} horas`;
-
-  const capeSeries = getSeriesForHorizon(data, 'cape', horizon);
-  const codeSeries = getSeriesForHorizon(data, 'weather_code', horizon);
-
-  const times = capeSeries.times;
-  const capes = capeSeries.values;
-  const weatherCodes = codeSeries.values;
-
+function createThunderstormCard(data, ctx, fc) {
   const currentHourIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
   const currentCape = data?.hourly?.cape ? (data.hourly.cape[currentHourIdx] ?? 0) : 0;
-  const targetCape = isRealTime ? currentCape : Math.max(currentCape, ...(capes.length ? capes : [0]));
+  const currentCode = data?.current?.weather_code ?? (data?.hourly?.weather_code?.[currentHourIdx] ?? 0);
 
-  let level = 'BAJO';
-  if (targetCape > 2500) level = 'MUY_ALTO';
-  else if (targetCape >= 1500) level = 'ALTO';
-  else if (targetCape >= 500) level = 'MODERADO';
+  const targetCape = fc.isRealTime ? currentCape : fc.getValue('cape', 0);
+  const targetCode = fc.isRealTime ? currentCode : fc.getValue('weather_code', 0);
+  const windowCapes = fc.getWindowValues('cape', targetCape);
+  const maxCape = Math.max(targetCape, ...windowCapes);
+  const windowCodes = fc.getWindowValues('weather_code', targetCode);
 
-  let capeRule = UMBRALES_CAPE[level];
   let stormDetected = false;
-  let estimatedStormTime = null;
-
-  if (isRealTime) {
-    const currentCode = data?.current?.weather_code ?? (weatherCodes[0] ?? 0);
+  if (fc.isRealTime) {
     stormDetected = WEATHER_CODES_TORMENTA.includes(currentCode);
   } else {
-    for (let i = 0; i < weatherCodes.length; i++) {
-      if (WEATHER_CODES_TORMENTA.includes(weatherCodes[i])) {
-        stormDetected = true;
-        estimatedStormTime = times[i] ? times[i].slice(11, 16) : null;
-        break;
-      }
-    }
+    stormDetected = WEATHER_CODES_TORMENTA.includes(targetCode) || windowCodes.some((c) => WEATHER_CODES_TORMENTA.includes(c));
   }
 
+  let level = 'BAJO';
+  if (targetCape > 2500 || maxCape > 2500) level = 'MUY_ALTO';
+  else if (targetCape >= 1500 || maxCape >= 1500) level = 'ALTO';
+  else if (targetCape >= 500 || maxCape >= 500) level = 'MODERADO';
+
+  let capeRule = UMBRALES_CAPE[level];
   let nivelLabel = capeRule.nivel;
   let recomendacion = capeRule.recomendacion;
   let pillClass = 'pill-green';
@@ -917,10 +914,10 @@ function createThunderstormCard(data, ctx, horizon = 0) {
 
   if (stormDetected) {
     pillClass = 'pill-red';
-    nivelLabel = isRealTime ? 'Tormenta activa' : 'Tormenta prevista';
+    nivelLabel = fc.isRealTime ? 'Tormenta activa' : 'Tormenta prevista';
     deduction = 35;
     severityScore = 5;
-    const horaMsg = isRealTime ? ' en faena.' : (estimatedStormTime ? ` aprox. a las ${estimatedStormTime} h.` : '.');
+    const horaMsg = fc.isRealTime ? ' en faena.' : ` prevista hacia las ${fc.targetTimeStr} h.`;
     recomendacion = `Tormenta eléctrica${horaMsg} Activar detector de rayos y evacuar a refugios Faraday (regla 30/30 WMO).`;
   } else if (level === 'MUY_ALTO') {
     pillClass = 'pill-red';
@@ -941,11 +938,11 @@ function createThunderstormCard(data, ctx, horizon = 0) {
 
   if (severityScore > ctx.highestRisk.severityScore) {
     ctx.highestRisk = {
-      title: 'Potencial de tormenta',
-      subtitle: stormDetected ? (isRealTime ? 'Tormenta activa en faena' : `Prevista a las ${estimatedStormTime || '--:--'} h`) : `Energía CAPE ${Math.round(targetCape)} J/kg`,
+      title: 'Tormenta eléctrica',
+      subtitle: stormDetected ? (fc.isRealTime ? 'Tormenta activa en faena' : `Prevista hacia las ${fc.targetTimeStr} h`) : `Energía CAPE ${Math.round(targetCape)} J/kg`,
       value: Math.round(targetCape),
       unit: 'J/kg',
-      caption: isRealTime ? 'Detector de rayos en tiempo real' : 'Alerta de convección atmosférica',
+      caption: fc.isRealTime ? 'Detector de rayos en tiempo real' : `Previsto a las ${fc.targetTimeStr} h`,
       recommendation: recomendacion,
       severityScore
     };
@@ -961,14 +958,14 @@ function createThunderstormCard(data, ctx, horizon = 0) {
     </div>
   `;
 
-  const stormBadgeVal = stormDetected ? 'Activas' : currentCape < 300 ? 'Estable' : currentCape < 1000 ? 'Moderada' : 'Severa';
-  const badgeHTML = isRealTime
+  const stormBadgeVal = stormDetected ? 'Activas' : targetCape < 300 ? 'Estable' : targetCape < 1000 ? 'Moderada' : 'Severa';
+  const badgeHTML = fc.isRealTime
     ? `<div class="metric-projection-badge" title="Inestabilidad convectiva instantánea"><span class="projection-label">${stormDetected ? 'Descargas:' : 'Inestabilidad:'}</span><span class="projection-val"${stormDetected ? ' style="color:#ef4444;"' : ''}>${stormBadgeVal}</span></div>`
-    : `<div class="metric-projection-badge" title="Energía convectiva máxima en ${horizonTitle}"><span class="projection-label">Pico ${badgeText}:</span><span class="projection-val">${Math.round(targetCape)} J/kg</span></div>`;
+    : `<div class="metric-projection-badge" title="Energía convectiva pico en ventana"><span class="projection-label">Pico ${fc.badgeText}:</span><span class="projection-val">${Math.round(maxCape)} J/kg</span></div>`;
 
   const secondaryText = stormDetected
-    ? (isRealTime ? 'Descargas activas en faena &bull; Regla 30/30' : `Descargas previstas a las ${estimatedStormTime || '--:--'} h &bull; Regla 30/30`)
-    : 'Atmósfera monitoreada &bull; Sin riesgo de descargas';
+    ? (fc.isRealTime ? 'Descargas activas en faena &bull; Regla 30/30' : `Descargas previstas hacia las ${fc.targetTimeStr} h &bull; Regla 30/30`)
+    : (fc.isRealTime ? 'Atmósfera monitoreada &bull; Sin riesgo de descargas' : `Previsto a las ${fc.targetTimeStr} h &bull; Atmósfera monitoreada`);
 
   const card = document.createElement('article');
   card.className = cardClass;
@@ -983,7 +980,7 @@ function createThunderstormCard(data, ctx, horizon = 0) {
 
     <div class="risk-metric-hero-line">
       <div class="metric-main-group">
-        <span class="metric-hero-val">${Math.round(currentCape)}</span>
+        <span class="metric-hero-val">${Math.round(targetCape)}</span>
         <span class="metric-hero-unit">J/kg</span>
       </div>
       ${badgeHTML}
@@ -998,52 +995,49 @@ function createThunderstormCard(data, ctx, horizon = 0) {
   return card;
 }
 
-function createTemperatureCard(data, ctx, horizon = 0) {
-  const isRealTime = (horizon === 0);
+function createTemperatureCard(data, ctx, fc) {
   const currentTemp = data?.current?.temperature_2m ?? 18;
   const currentApparent = data?.current?.apparent_temperature ?? currentTemp;
   const dailyMin = data?.daily?.temperature_2m_min?.[0] ?? currentTemp;
   const dailyMax = data?.daily?.temperature_2m_max?.[0] ?? currentTemp;
-  const badgeText = formatHorizonBadge(horizon);
-  const horizonTitle = horizon === 0.5 ? '30 minutos' : `${horizon} horas`;
 
-  const tempSeries = getSeriesForHorizon(data, 'temperature_2m', horizon);
-  const temps = tempSeries.values.length ? tempSeries.values : [currentTemp];
-
-  const minTemp = isRealTime ? currentTemp : Math.min(...temps);
-  const maxTemp = isRealTime ? currentTemp : Math.max(...temps);
+  const targetTemp = fc.isRealTime ? currentTemp : fc.getValue('temperature_2m', 18);
+  const targetApparent = fc.isRealTime ? currentApparent : fc.getValue('apparent_temperature', targetTemp);
+  const windowTemps = fc.getWindowValues('temperature_2m', targetTemp);
+  const minTemp = Math.min(...windowTemps);
+  const maxTemp = Math.max(...windowTemps);
 
   let rule = UMBRALES_TEMPERATURA.CONFORT;
   let pillClass = 'pill-green';
   let deduction = 0;
   let severityScore = 0;
 
-  if (currentTemp <= -5 || minTemp <= -5) {
+  if (targetTemp <= -5 || minTemp <= -5) {
     rule = UMBRALES_TEMPERATURA.FRIO_EXTREMO;
     pillClass = 'pill-red';
     deduction = 25;
     severityScore = 5;
-  } else if (currentTemp <= 0 || minTemp <= 0) {
+  } else if (targetTemp <= 0 || minTemp <= 0) {
     rule = UMBRALES_TEMPERATURA.FRIO_SEVERO;
     pillClass = 'pill-orange';
     deduction = 15;
     severityScore = 4;
-  } else if (currentTemp >= 38 || maxTemp >= 38) {
+  } else if (targetTemp >= 38 || maxTemp >= 38) {
     rule = UMBRALES_TEMPERATURA.GOLPE_CALOR;
     pillClass = 'pill-red';
     deduction = 25;
     severityScore = 5;
-  } else if (currentTemp >= 32 || maxTemp >= 32) {
+  } else if (targetTemp >= 32 || maxTemp >= 32) {
     rule = UMBRALES_TEMPERATURA.CALOR_SEVERO;
     pillClass = 'pill-amber';
     deduction = 15;
     severityScore = 3;
-  } else if (currentTemp <= 8 || minTemp <= 8) {
+  } else if (targetTemp <= 8 || minTemp <= 8) {
     rule = UMBRALES_TEMPERATURA.FRIO_MODERADO;
     pillClass = 'pill-amber';
     deduction = 6;
     severityScore = 1;
-  } else if (currentTemp >= 28 || maxTemp >= 28) {
+  } else if (targetTemp >= 28 || maxTemp >= 28) {
     rule = UMBRALES_TEMPERATURA.CALOR_MODERADO;
     pillClass = 'pill-amber';
     deduction = 6;
@@ -1056,10 +1050,10 @@ function createTemperatureCard(data, ctx, horizon = 0) {
   if (severityScore > ctx.highestRisk.severityScore) {
     ctx.highestRisk = {
       title: 'Temperatura y estrés térmico',
-      subtitle: `${rule.nivel} (${currentTemp.toFixed(1)}°C)`,
-      value: `${currentTemp.toFixed(1)}`,
+      subtitle: `${rule.nivel} (${targetTemp.toFixed(1)}°C)`,
+      value: `${targetTemp.toFixed(1)}`,
       unit: '°C',
-      caption: isRealTime ? `Sensación: ${currentApparent.toFixed(1)}°C` : `Rango en ${horizonTitle}: ${minTemp.toFixed(1)}°C a ${maxTemp.toFixed(1)}°C`,
+      caption: fc.isRealTime ? `Sensación: ${currentApparent.toFixed(1)}°C` : `A las ${fc.targetTimeStr} h: sensación ${targetApparent.toFixed(1)}°C`,
       recommendation: rule.recomendacion,
       severityScore
     };
@@ -1075,13 +1069,13 @@ function createTemperatureCard(data, ctx, horizon = 0) {
     </div>
   `;
 
-  const badgeHTML = isRealTime
+  const badgeHTML = fc.isRealTime
     ? `<div class="metric-projection-badge" title="Sensación térmica calculada"><span class="projection-label">Sensación:</span><span class="projection-val">${currentApparent.toFixed(1)}°C</span></div>`
-    : `<div class="metric-projection-badge" title="Rango previsto en ${horizonTitle}"><span class="projection-label">${badgeText}:</span><span class="projection-val">${minTemp.toFixed(0)}° a ${maxTemp.toFixed(0)}°C</span></div>`;
+    : `<div class="metric-projection-badge" title="Sensación térmica prevista"><span class="projection-label">Sensación:</span><span class="projection-val">${targetApparent.toFixed(1)}°C</span></div>`;
 
-  const secondaryText = isRealTime
+  const secondaryText = fc.isRealTime
     ? `<span>Rango del día: ${dailyMin.toFixed(0)}° a ${dailyMax.toFixed(0)}°C</span><span class="telemetry-sep">&bull;</span><span>${rule.badge === 'Normal' ? 'Rango confortable' : rule.nivel}</span>`
-    : `<span>Sensación: ${currentApparent.toFixed(1)}°C</span><span class="telemetry-sep">&bull;</span><span>Mín: ${minTemp.toFixed(1)}°C / Máx: ${maxTemp.toFixed(1)}°C</span>`;
+    : `<span>A las ${fc.targetTimeStr} h</span><span class="telemetry-sep">&bull;</span><span>Sensación: ${targetApparent.toFixed(1)}°C</span><span class="telemetry-sep">&bull;</span><span>Rango ${fc.badgeText}: ${minTemp.toFixed(0)}° a ${maxTemp.toFixed(0)}°C</span>`;
 
   const card = document.createElement('article');
   card.className = cardClass;
@@ -1096,7 +1090,7 @@ function createTemperatureCard(data, ctx, horizon = 0) {
 
     <div class="risk-metric-hero-line">
       <div class="metric-main-group">
-        <span class="metric-hero-val">${currentTemp.toFixed(1)}</span>
+        <span class="metric-hero-val">${targetTemp.toFixed(1)}</span>
         <span class="metric-hero-unit">°C</span>
       </div>
       ${badgeHTML}
@@ -1111,42 +1105,34 @@ function createTemperatureCard(data, ctx, horizon = 0) {
   return card;
 }
 
-function createSnowCard(data, ctx, horizon = 0) {
-  const isRealTime = (horizon === 0);
-  const badgeText = formatHorizonBadge(horizon);
-  const horizonTitle = horizon === 0.5 ? '30 minutos' : `${horizon} horas`;
+function createSnowCard(data, ctx, fc) {
+  const currentHourIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
+  const currentSnow = data?.current?.snowfall ?? (data?.hourly?.snowfall?.[currentHourIdx] ?? 0);
+  const currentDepthCm = Math.round((data?.hourly?.snow_depth?.[currentHourIdx] ?? 0) * 100);
+  const currentFreezing = Math.round(data?.hourly?.freezing_level_height?.[currentHourIdx] ?? 4500);
 
-  const currentIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
-  const snowSeries = getSeriesForHorizon(data, 'snowfall', horizon);
-  const snowfallList = snowSeries.values;
-
-  const count = Math.max(1, Math.round(horizon));
-  const snowDepthList = isRealTime
-    ? [(data?.hourly?.snow_depth?.[currentIdx] ?? 0)]
-    : (data?.hourly?.snow_depth?.slice(currentIdx, currentIdx + count) || []);
-  const freezingLevelList = data?.hourly?.freezing_level_height?.slice(currentIdx, currentIdx + (isRealTime ? 1 : count)) || [];
-
-  const currentSnow = data?.current?.snowfall ?? (snowfallList[0] || 0);
-  const totalSnowAccum = isRealTime ? currentSnow : snowfallList.reduce((acc, v) => acc + (v || 0), 0);
-  const maxDepthCm = Math.round(Math.max(0, ...snowDepthList) * 100);
-  const freezingLevel = Math.round(freezingLevelList[0] || 4500);
+  const targetSnow = fc.isRealTime ? currentSnow : fc.getValue('snowfall', 0);
+  const targetDepthCm = Math.round((fc.getValue('snow_depth', 0)) * 100);
+  const targetFreezing = Math.round(fc.getValue('freezing_level_height', 4500));
+  const windowSnow = fc.getWindowValues('snowfall', targetSnow);
+  const totalSnowAccum = fc.isRealTime ? currentSnow : windowSnow.reduce((acc, v) => acc + (v || 0), 0);
 
   let rule = UMBRALES_NIEVE.SIN_NIEVE;
   let pillClass = 'pill-green';
   let deduction = 0;
   let severityScore = 0;
 
-  if (totalSnowAccum >= 5 || maxDepthCm >= 5) {
+  if (totalSnowAccum >= 5 || targetDepthCm >= 5 || targetSnow >= 5) {
     rule = UMBRALES_NIEVE.INTENSA;
     pillClass = 'pill-red';
     deduction = 30;
     severityScore = 5;
-  } else if (totalSnowAccum >= 1 || maxDepthCm >= 1) {
+  } else if (totalSnowAccum >= 1 || targetDepthCm >= 1 || targetSnow >= 1) {
     rule = UMBRALES_NIEVE.MODERADA;
     pillClass = 'pill-amber';
     deduction = 18;
     severityScore = 3;
-  } else if (totalSnowAccum > 0 || currentSnow > 0) {
+  } else if (totalSnowAccum > 0 || targetSnow > 0) {
     rule = UMBRALES_NIEVE.LIGERA;
     pillClass = 'pill-amber';
     deduction = 8;
@@ -1159,10 +1145,10 @@ function createSnowCard(data, ctx, horizon = 0) {
   if (severityScore > ctx.highestRisk.severityScore) {
     ctx.highestRisk = {
       title: 'Nieve y congelamiento',
-      subtitle: `${rule.nivel} (${totalSnowAccum.toFixed(1)} cm)`,
-      value: `${totalSnowAccum.toFixed(1)}`,
+      subtitle: `${rule.nivel} (${targetSnow > 0 ? targetSnow.toFixed(1) : totalSnowAccum.toFixed(1)} cm)`,
+      value: `${targetSnow > 0 ? targetSnow.toFixed(1) : totalSnowAccum.toFixed(1)}`,
       unit: 'cm',
-      caption: isRealTime ? `Isoterma 0°C a ${freezingLevel} msnm` : `Isoterma 0°C a ${freezingLevel} msnm`,
+      caption: fc.isRealTime ? `Isoterma 0° a ${currentFreezing} msnm` : `A las ${fc.targetTimeStr} h: isoterma a ${targetFreezing} msnm`,
       recommendation: rule.recomendacion,
       severityScore
     };
@@ -1178,13 +1164,13 @@ function createSnowCard(data, ctx, horizon = 0) {
     </div>
   `;
 
-  const badgeHTML = isRealTime
-    ? `<div class="metric-projection-badge" title="Isoterma de cero grados"><span class="projection-label">Isoterma 0°:</span><span class="projection-val">${freezingLevel} m</span></div>`
-    : `<div class="metric-projection-badge" title="Nieve estimada en ${horizonTitle}"><span class="projection-label">${badgeText}:</span><span class="projection-val">${totalSnowAccum.toFixed(1)} cm</span></div>`;
+  const badgeHTML = fc.isRealTime
+    ? `<div class="metric-projection-badge" title="Isoterma de cero grados"><span class="projection-label">Isoterma 0°:</span><span class="projection-val">${currentFreezing} m</span></div>`
+    : `<div class="metric-projection-badge" title="Isoterma a las ${fc.targetTimeStr} h"><span class="projection-label">Isoterma 0°:</span><span class="projection-val">${targetFreezing} m</span></div>`;
 
-  const secondaryText = isRealTime
-    ? `<span>Espesor actual: ${maxDepthCm} cm</span><span class="telemetry-sep">&bull;</span><span>${currentSnow > 0 ? 'Nevada activa en cota alta' : 'Vías libres de nieve y hielo'}</span>`
-    : `<span>Espesor: ${maxDepthCm} cm</span><span class="telemetry-sep">&bull;</span><span>Isoterma 0°: ${freezingLevel} m</span>`;
+  const secondaryText = fc.isRealTime
+    ? `<span>Espesor actual: ${currentDepthCm} cm</span><span class="telemetry-sep">&bull;</span><span>${currentSnow > 0 ? 'Nevada activa en cota alta' : 'Vías libres de nieve y hielo'}</span>`
+    : `<span>A las ${fc.targetTimeStr} h</span><span class="telemetry-sep">&bull;</span><span>Espesor: ${targetDepthCm} cm</span><span class="telemetry-sep">&bull;</span><span>Acumulado: ${totalSnowAccum.toFixed(1)} cm</span>`;
 
   const card = document.createElement('article');
   card.className = cardClass;
@@ -1199,8 +1185,8 @@ function createSnowCard(data, ctx, horizon = 0) {
 
     <div class="risk-metric-hero-line">
       <div class="metric-main-group">
-        <span class="metric-hero-val">${currentSnow.toFixed(1)}</span>
-        <span class="metric-hero-unit">cm actual</span>
+        <span class="metric-hero-val">${targetSnow > 0 ? targetSnow.toFixed(1) : totalSnowAccum.toFixed(1)}</span>
+        <span class="metric-hero-unit">${targetSnow > 0 ? 'cm/h' : (fc.isRealTime ? 'cm actual' : 'cm acum')}</span>
       </div>
       ${badgeHTML}
     </div>
@@ -1214,35 +1200,32 @@ function createSnowCard(data, ctx, horizon = 0) {
   return card;
 }
 
-function createVisibilityCard(data, ctx, horizon = 0) {
-  const isRealTime = (horizon === 0);
-  const badgeText = formatHorizonBadge(horizon);
-  const horizonTitle = horizon === 0.5 ? '30 minutos' : `${horizon} horas`;
-
-  const visSeries = getSeriesForHorizon(data, 'visibility', horizon);
-  const visList = visSeries.values.length ? visSeries.values : [10000];
-
+function createVisibilityCard(data, ctx, fc) {
   const currentHourIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
-  const currentVis = data?.current?.visibility ?? (data?.hourly?.visibility?.[currentHourIdx] ?? (visList[0] ?? 10000));
+  const currentVis = data?.current?.visibility ?? (data?.hourly?.visibility?.[currentHourIdx] ?? 10000);
   const currentHumidity = data?.current?.relative_humidity_2m ?? (data?.hourly?.relative_humidity_2m?.[currentHourIdx] ?? 60);
-  const minVis = isRealTime ? currentVis : Math.min(...visList);
+
+  const targetVis = fc.isRealTime ? currentVis : fc.getValue('visibility', 10000);
+  const targetHumidity = fc.isRealTime ? currentHumidity : fc.getValue('relative_humidity_2m', 60);
+  const windowVis = fc.getWindowValues('visibility', targetVis);
+  const minVis = Math.min(...windowVis);
 
   let rule = UMBRALES_VISIBILIDAD.OPTIMA;
   let pillClass = 'pill-green';
   let deduction = 0;
   let severityScore = 0;
 
-  if (currentVis < 100 || minVis < 100) {
+  if (targetVis < 100 || minVis < 100) {
     rule = UMBRALES_VISIBILIDAD.CRITICA;
     pillClass = 'pill-red';
     deduction = 25;
     severityScore = 5;
-  } else if (currentVis < 500 || minVis < 500) {
+  } else if (targetVis < 500 || minVis < 500) {
     rule = UMBRALES_VISIBILIDAD.REDUCIDA;
     pillClass = 'pill-amber';
     deduction = 12;
     severityScore = 3;
-  } else if (currentVis < 2000 || minVis < 2000) {
+  } else if (targetVis < 2000 || minVis < 2000) {
     rule = UMBRALES_VISIBILIDAD.LIGERA;
     pillClass = 'pill-amber';
     deduction = 5;
@@ -1252,16 +1235,17 @@ function createVisibilityCard(data, ctx, horizon = 0) {
   ctx.scoreDeductions += deduction;
   if (severityScore === 0) ctx.safeCount++; else ctx.alertCount++;
 
-  const visKm = (currentVis / 1000).toFixed(1);
-  const minVisKm = (minVis / 1000).toFixed(1);
+  const visDisplay = targetVis < 1000 ? `${Math.round(targetVis)}` : (targetVis / 1000).toFixed(1);
+  const visUnit = targetVis < 1000 ? 'm' : 'km';
+  const minVisDisplay = minVis < 1000 ? `${Math.round(minVis)} m` : `${(minVis / 1000).toFixed(1)} km`;
 
   if (severityScore > ctx.highestRisk.severityScore) {
     ctx.highestRisk = {
       title: 'Visibilidad en ruta',
-      subtitle: `${rule.nivel} (${currentVis < 1000 ? currentVis + ' m' : visKm + ' km'})`,
-      value: currentVis < 1000 ? `${currentVis}` : `${visKm}`,
-      unit: currentVis < 1000 ? 'm' : 'km',
-      caption: isRealTime ? 'Lectura en tiempo real' : `Mínima en ${horizonTitle}: ${minVis < 1000 ? minVis + ' m' : minVisKm + ' km'}`,
+      subtitle: `${rule.nivel} (${visDisplay} ${visUnit})`,
+      value: visDisplay,
+      unit: visUnit,
+      caption: fc.isRealTime ? 'Lectura en tiempo real' : `A las ${fc.targetTimeStr} h: mín en ventana ${minVisDisplay}`,
       recommendation: rule.recomendacion,
       severityScore
     };
@@ -1277,13 +1261,13 @@ function createVisibilityCard(data, ctx, horizon = 0) {
     </div>
   `;
 
-  const badgeHTML = isRealTime
+  const badgeHTML = fc.isRealTime
     ? `<div class="metric-projection-badge" title="Humedad relativa en faena"><span class="projection-label">Humedad:</span><span class="projection-val">${currentHumidity}%</span></div>`
-    : `<div class="metric-projection-badge" title="Visibilidad mínima prevista en ${horizonTitle}"><span class="projection-label">Mín ${badgeText}:</span><span class="projection-val">${minVis < 1000 ? minVis + ' m' : minVisKm + ' km'}</span></div>`;
+    : `<div class="metric-projection-badge" title="Visibilidad mínima en ventana ${fc.badgeText}"><span class="projection-label">Mín ${fc.badgeText}:</span><span class="projection-val">${minVisDisplay}</span></div>`;
 
-  const secondaryText = isRealTime
+  const secondaryText = fc.isRealTime
     ? `<span>Tránsito de volquetes</span><span class="telemetry-sep">&bull;</span><span>${currentVis < 1000 ? 'Niebla en haul roads' : 'Ruta despejada y transitable'}</span>`
-    : `<span>Tránsito de volquetes</span><span class="telemetry-sep">&bull;</span><span>${minVis < 1000 ? 'Riesgo de niebla' : 'Ruta despejada'}</span>`;
+    : `<span>A las ${fc.targetTimeStr} h</span><span class="telemetry-sep">&bull;</span><span>Humedad: ${targetHumidity}%</span><span class="telemetry-sep">&bull;</span><span>${targetVis < 1000 ? 'Riesgo de niebla' : 'Ruta despejada'}</span>`;
 
   const card = document.createElement('article');
   card.className = cardClass;
@@ -1298,8 +1282,8 @@ function createVisibilityCard(data, ctx, horizon = 0) {
 
     <div class="risk-metric-hero-line">
       <div class="metric-main-group">
-        <span class="metric-hero-val">${currentVis < 1000 ? currentVis : visKm}</span>
-        <span class="metric-hero-unit">${currentVis < 1000 ? 'm' : 'km'}</span>
+        <span class="metric-hero-val">${visDisplay}</span>
+        <span class="metric-hero-unit">${visUnit}</span>
       </div>
       ${badgeHTML}
     </div>
@@ -1313,31 +1297,25 @@ function createVisibilityCard(data, ctx, horizon = 0) {
   return card;
 }
 
-function createSoilCard(data, ctx, horizon = 0) {
-  const isRealTime = (horizon === 0);
-  const badgeText = formatHorizonBadge(horizon);
-  const horizonTitle = horizon === 0.5 ? '30 minutos' : `${horizon} horas`;
+function createSoilCard(data, ctx, fc) {
+  const currentHourIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
+  const currentMoisture = data?.hourly?.soil_moisture_0_to_7cm?.[currentHourIdx] ?? 0.15;
 
-  const currentIdx = getCurrentHourIndex(data?.hourly?.time, data?.current?.time);
-  const count = Math.max(1, Math.round(horizon));
-  const moistureList = isRealTime
-    ? [(data?.hourly?.soil_moisture_0_to_7cm?.[currentIdx] ?? 0.15)]
-    : (data?.hourly?.soil_moisture_0_to_7cm?.slice(currentIdx, currentIdx + count) || [0.15]);
-
-  const currentMoisture = data?.hourly?.soil_moisture_0_to_7cm?.[currentIdx] ?? (moistureList[0] ?? 0.15);
-  const maxMoisture = isRealTime ? currentMoisture : Math.max(...moistureList);
+  const targetMoisture = fc.isRealTime ? currentMoisture : fc.getValue('soil_moisture_0_to_7cm', 0.15);
+  const windowMoisture = fc.getWindowValues('soil_moisture_0_to_7cm', targetMoisture);
+  const maxMoisture = Math.max(...windowMoisture);
 
   let rule = UMBRALES_SUELO.ESTABLE;
   let pillClass = 'pill-green';
   let deduction = 0;
   let severityScore = 0;
 
-  if (currentMoisture >= 0.40 || maxMoisture >= 0.40) {
+  if (targetMoisture >= 0.40 || maxMoisture >= 0.40) {
     rule = UMBRALES_SUELO.SATURADO;
     pillClass = 'pill-red';
     deduction = 20;
     severityScore = 4;
-  } else if (currentMoisture >= 0.28 || maxMoisture >= 0.28) {
+  } else if (targetMoisture >= 0.28 || maxMoisture >= 0.28) {
     rule = UMBRALES_SUELO.HUMEDO;
     pillClass = 'pill-amber';
     deduction = 10;
@@ -1347,7 +1325,7 @@ function createSoilCard(data, ctx, horizon = 0) {
   ctx.scoreDeductions += deduction;
   if (severityScore === 0) ctx.safeCount++; else ctx.alertCount++;
 
-  const moisturePct = Math.round(currentMoisture * 100);
+  const moisturePct = Math.round(targetMoisture * 100);
   const maxPct = Math.round(maxMoisture * 100);
 
   if (severityScore > ctx.highestRisk.severityScore) {
@@ -1356,7 +1334,7 @@ function createSoilCard(data, ctx, horizon = 0) {
       subtitle: `${rule.nivel} (${moisturePct}%)`,
       value: `${moisturePct}`,
       unit: '%',
-      caption: isRealTime ? 'Lectura en tiempo real' : `Saturación máx en ${horizonTitle}: ${maxPct}%`,
+      caption: fc.isRealTime ? 'Lectura en tiempo real' : `A las ${fc.targetTimeStr} h: saturación máx ${maxPct}%`,
       recommendation: rule.recomendacion,
       severityScore
     };
@@ -1372,9 +1350,13 @@ function createSoilCard(data, ctx, horizon = 0) {
     </div>
   `;
 
-  const badgeHTML = isRealTime
+  const badgeHTML = fc.isRealTime
     ? `<div class="metric-projection-badge" title="Contenido volumétrico de agua"><span class="projection-label">Volumen:</span><span class="projection-val">${currentMoisture.toFixed(3)} m³/m³</span></div>`
-    : `<div class="metric-projection-badge" title="Saturación hídrica máxima en ${horizonTitle}"><span class="projection-label">Máx ${badgeText}:</span><span class="projection-val">${maxPct}%</span></div>`;
+    : `<div class="metric-projection-badge" title="Contenido volumétrico a las ${fc.targetTimeStr} h"><span class="projection-label">Volumen:</span><span class="projection-val">${targetMoisture.toFixed(3)} m³/m³</span></div>`;
+
+  const secondaryText = fc.isRealTime
+    ? `<span>Capa 0-7 cm: ${currentMoisture.toFixed(3)} m³/m³</span><span class="telemetry-sep">&bull;</span><span>Taludes y botaderos</span>`
+    : `<span>A las ${fc.targetTimeStr} h</span><span class="telemetry-sep">&bull;</span><span>Capa 0-7 cm: ${targetMoisture.toFixed(3)} m³/m³</span><span class="telemetry-sep">&bull;</span><span>Taludes y botaderos</span>`;
 
   const card = document.createElement('article');
   card.className = soilCardClass;
@@ -1396,9 +1378,7 @@ function createSoilCard(data, ctx, horizon = 0) {
     </div>
 
     <div class="metric-secondary-telemetry">
-      <span>Capa 0-7 cm: ${currentMoisture.toFixed(3)} m³/m³</span>
-      <span class="telemetry-sep">&bull;</span>
-      <span>Taludes y botaderos</span>
+      ${secondaryText}
     </div>
 
     ${soilControlBoxHTML}
