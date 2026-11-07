@@ -410,6 +410,24 @@ function updateFloatingMapCard(context, score, horizon = currentForecastHorizon,
       ? 'Protocolos D.S. 024-2016-EM activos'
       : 'Parámetros dentro de umbrales permitidos';
   }
+
+  const dot = document.getElementById('kpi-status-dot');
+  const card = document.getElementById('map-floating-card');
+  if (dot && card) {
+    if (currentScore >= 95 && !hasAlerts) {
+      dot.className = 'kpi-status-dot safe';
+      card.classList.remove('has-warning', 'has-danger');
+      card.classList.add('is-safe');
+    } else if (currentScore >= 75) {
+      dot.className = 'kpi-status-dot warning';
+      card.classList.remove('is-safe', 'has-danger');
+      card.classList.add('has-warning');
+    } else {
+      dot.className = 'kpi-status-dot danger';
+      card.classList.remove('is-safe', 'has-warning');
+      card.classList.add('has-danger');
+    }
+  }
 }
 
 function updateDashboardAlertBanner(context) {

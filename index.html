@@ -200,33 +200,44 @@
     </aside>
 
     <div class="map-floating-content-layer">
-      <div class="floating-map-hero-header">
-        <h1 class="map-hero-title">Monitoreo de campo</h1>
-        <div class="map-pills-row">
-          <button id="map-location-pill" class="map-glass-pill" type="button" title="Haz clic para buscar otra ubicación">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path>
-              <circle cx="12" cy="10" r="3"></circle>
-            </svg>
-            <span id="floating-place-name">Frente operativo</span>
-            <svg class="pill-chevron" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </button>
+      <div class="map-top-hud-strip">
+        <div class="map-hud-left">
+          <h1 class="map-hud-heading">Monitoreo de campo</h1>
+          <div class="map-hud-tags-row">
+            <button id="map-location-pill" class="map-glass-pill" type="button" title="Haz clic para buscar otra ubicación">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span id="floating-place-name">Frente operativo</span>
+              <svg class="pill-chevron" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="map-hud-live-tag">
+              <span class="live-pulse-dot"></span>
+              <span>En vivo</span>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div id="map-floating-card" class="frosted-glass-metric-card">
-        <div class="glass-card-top">
-          <span id="floating-kpi-title" class="glass-metric-label">Estado operativo</span>
-          <span class="glass-arrow">&nearr;</span>
+        <div class="map-hud-right">
+          <div id="map-floating-card" class="frosted-glass-metric-card is-safe">
+            <div class="glass-card-top">
+              <div class="glass-title-group">
+                <span id="kpi-status-dot" class="kpi-status-dot"></span>
+                <span id="floating-kpi-title" class="glass-metric-label">Estado operativo</span>
+              </div>
+              <span class="glass-arrow">&nearr;</span>
+            </div>
+            <div class="glass-hero-row">
+              <span id="floating-kpi-value" class="glass-hero-val">100.0</span>
+              <span id="floating-kpi-unit" class="glass-hero-unit">%</span>
+            </div>
+            <span id="floating-kpi-subtitle" class="glass-metric-sub">Operación regular en campo</span>
+            <span id="floating-kpi-caption" class="glass-caption-note">Parámetros dentro de umbrales permitidos</span>
+          </div>
         </div>
-        <span id="floating-kpi-subtitle" class="glass-metric-sub">Operación regular en campo</span>
-        <div class="glass-hero-row">
-          <span id="floating-kpi-value" class="glass-hero-val">100</span>
-          <span id="floating-kpi-unit" class="glass-hero-unit">%</span>
-        </div>
-        <span id="floating-kpi-caption" class="glass-caption-note">Parámetros dentro de umbrales permitidos</span>
       </div>
 
       <div class="map-floating-navigation-controls">
