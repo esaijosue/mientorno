@@ -25,7 +25,7 @@ const RELIABILITY_BY_HORIZON = {
   1: { score: '92%', desc: 'Nowcasting táctico de corto plazo', level: 'rel-high' },
   3: { score: '88%', desc: 'Previsión de frentes dinámicos', level: 'rel-medium' },
   9: { score: '82%', desc: 'Jornada laboral diurna (ECMWF IFS)', level: 'rel-medium' },
-  12: { score: '78%', desc: 'Turno de faena 12x12 (Estándar SST)', level: 'rel-standard' },
+  12: { score: '78%', desc: 'Turno de faena 12x12 (Jornada continua)', level: 'rel-standard' },
   24: { score: '72%', desc: 'Ciclo circadiano y relevo diario', level: 'rel-standard' }
 };
 
@@ -884,7 +884,7 @@ function createThunderstormCard(data, ctx, fc) {
   else if (targetCape >= 500 || maxCape >= 500) level = 'MODERADO';
 
   let rule = UMBRALES_CAPE[level];
-  let pillClass = (level === 'MUY_ALTO') ? 'pill-red' : (level === 'ALTO') ? 'pill-amber' : (level === 'MODERADO') ? 'pill-amber' : 'pill-green';
+  let pillClass = (level === 'MUY_ALTO') ? 'pill-red' : (level === 'ALTO') ? 'pill-orange' : (level === 'MODERADO') ? 'pill-amber' : 'pill-green';
 
   if (stormDetected) {
     rule = REGLA_TORMENTA_ACTIVA;
@@ -987,7 +987,7 @@ function createTemperatureCard(data, ctx, fc) {
     severityScore = 5;
   } else if (targetTemp >= 32 || maxTemp >= 32) {
     rule = UMBRALES_TEMPERATURA.CALOR_SEVERO;
-    pillClass = 'pill-amber';
+    pillClass = 'pill-orange';
     deduction = 15;
     severityScore = 3;
   } else if (targetTemp <= 8 || minTemp <= 8) {
@@ -1088,7 +1088,7 @@ function createSnowCard(data, ctx, fc) {
     severityScore = 5;
   } else if (totalSnowAccum >= 1 || targetDepthCm >= 1 || targetSnow >= 1) {
     rule = UMBRALES_NIEVE.MODERADA;
-    pillClass = 'pill-amber';
+    pillClass = 'pill-orange';
     deduction = 18;
     severityScore = 3;
   } else if (totalSnowAccum > 0 || targetSnow > 0) {
@@ -1182,7 +1182,7 @@ function createVisibilityCard(data, ctx, fc) {
     severityScore = 5;
   } else if (targetVis < 500 || minVis < 500) {
     rule = UMBRALES_VISIBILIDAD.REDUCIDA;
-    pillClass = 'pill-amber';
+    pillClass = 'pill-orange';
     deduction = 12;
     severityScore = 3;
   } else if (targetVis < 2000 || minVis < 2000) {

@@ -477,10 +477,9 @@ export function evaluateHourlySlot(hourlyData, i) {
   const rainVal = hourlyData.precipitation?.[i] || 0;
   const probVal = hourlyData.precipitation_probability?.[i] || 0;
   let rainSev = 0;
-  if (rainVal >= 10.0 || probVal >= 90) rainSev = 5;
-  else if (rainVal >= 4.0 || probVal >= 70) rainSev = 4;
-  else if (rainVal >= 1.0 || probVal >= 40) rainSev = 2;
-  else if (rainVal > 0 || probVal >= 20) rainSev = 1;
+  if (rainVal >= 5.0 || probVal >= 70) rainSev = 4;
+  else if (rainVal >= 1.0 || probVal >= 40) rainSev = 3;
+  else if (rainVal >= 0.1 || probVal >= 20) rainSev = 1;
 
   const windVal = hourlyData.wind_speed_10m?.[i] || 0;
   const gustVal = hourlyData.wind_gusts_10m?.[i] || 0;
@@ -493,7 +492,7 @@ export function evaluateHourlySlot(hourlyData, i) {
   const weatherCode = hourlyData.weather_code?.[i];
   const capeVal = hourlyData.cape?.[i] || 0;
   let stormSev = 0;
-  if ([95, 96, 99].includes(weatherCode)) stormSev = 5;
+  if (WEATHER_CODES_TORMENTA.includes(weatherCode)) stormSev = 5;
   else if (capeVal >= 2500) stormSev = 4;
   else if (capeVal >= 1500) stormSev = 3;
   else if (capeVal >= 500) stormSev = 1;
