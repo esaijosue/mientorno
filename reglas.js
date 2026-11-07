@@ -472,20 +472,23 @@ export function evaluateHourlySlot(hourlyData, i) {
   if (uvVal >= 11) uvSev = 5;
   else if (uvVal >= 8) uvSev = 4;
   else if (uvVal >= 6) uvSev = 3;
+  else if (uvVal >= 3) uvSev = 1;
 
   const rainVal = hourlyData.precipitation?.[i] || 0;
   const probVal = hourlyData.precipitation_probability?.[i] || 0;
   let rainSev = 0;
-  if (rainVal >= 5.0 || probVal >= 70) rainSev = 4;
-  else if (rainVal >= 1.0 || probVal >= 40) rainSev = 3;
-  else if (rainVal >= 0.1 || probVal >= 20) rainSev = 1;
+  if (rainVal >= 10.0 || probVal >= 90) rainSev = 5;
+  else if (rainVal >= 4.0 || probVal >= 70) rainSev = 4;
+  else if (rainVal >= 1.0 || probVal >= 40) rainSev = 2;
+  else if (rainVal > 0 || probVal >= 20) rainSev = 1;
 
   const windVal = hourlyData.wind_speed_10m?.[i] || 0;
   const gustVal = hourlyData.wind_gusts_10m?.[i] || 0;
+  const effectiveWind = Math.max(windVal, gustVal);
   let windSev = 0;
-  if (windVal >= 50.0 || gustVal >= 65.0) windSev = 5;
-  else if (windVal >= 38.0 || gustVal >= 50.0) windSev = 4;
-  else if (windVal >= 25.0 || gustVal >= 35.0) windSev = 2;
+  if (effectiveWind >= 50.0) windSev = 5;
+  else if (effectiveWind >= 32.0) windSev = 4;
+  else if (effectiveWind >= 25.0) windSev = 2;
 
   const weatherCode = hourlyData.weather_code?.[i];
   const capeVal = hourlyData.cape?.[i] || 0;
@@ -501,19 +504,20 @@ export function evaluateHourlySlot(hourlyData, i) {
   const maxT = Math.max(tempVal, appVal);
   let tempSev = 0;
   if (minT <= -5.0 || maxT >= 38.0) tempSev = 5;
-  else if (minT <= -0.1 || maxT >= 32.0) tempSev = 4;
-  else if (minT < 10.0 || maxT >= 24.0) tempSev = 1;
+  else if (minT <= 0.0) tempSev = 4;
+  else if (maxT >= 32.0) tempSev = 3;
+  else if (minT <= 8.0 || maxT >= 28.0) tempSev = 1;
 
   const snowVal = hourlyData.snowfall?.[i] || 0;
   let snowSev = 0;
-  if (snowVal >= 3.0) snowSev = 5;
+  if (snowVal >= 5.0) snowSev = 5;
   else if (snowVal >= 1.0) snowSev = 3;
   else if (snowVal > 0) snowSev = 1;
 
   const visVal = hourlyData.visibility?.[i] ?? 10000;
   let visSev = 0;
-  if (visVal < 200) visSev = 5;
-  else if (visVal < 800) visSev = 3;
+  if (visVal < 100) visSev = 5;
+  else if (visVal < 500) visSev = 3;
   else if (visVal < 2000) visSev = 1;
 
   const soilVal = hourlyData.soil_moisture_0_to_7cm?.[i] || 0.15;

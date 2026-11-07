@@ -1,5 +1,12 @@
 let lastNominatimRequestTime = 0;
 
+function getFetchTimeoutSignal(timeoutMs = 12000) {
+  if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+    return AbortSignal.timeout(timeoutMs);
+  }
+  return undefined;
+}
+
 export async function searchLocationNominatim(query) {
   const cleanQuery = query?.trim();
   if (!cleanQuery || cleanQuery.length < 2) {
@@ -23,7 +30,8 @@ export async function searchLocationNominatim(query) {
     const response = await fetch(url.toString(), {
       headers: {
         'Accept': 'application/json'
-      }
+      },
+      signal: getFetchTimeoutSignal(10000)
     });
 
     if (!response.ok) {
@@ -61,7 +69,8 @@ export async function reverseGeocodeNominatim(lat, lon) {
     const response = await fetch(url.toString(), {
       headers: {
         'Accept': 'application/json'
-      }
+      },
+      signal: getFetchTimeoutSignal(6000)
     });
 
     if (!response.ok) return null;
@@ -103,7 +112,9 @@ export async function fetchWeatherData(lat, lon) {
       'uv_index_max,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max,sunrise,sunset'
     );
 
-    const response = await fetch(url.toString());
+    const response = await fetch(url.toString(), {
+      signal: getFetchTimeoutSignal(12000)
+    });
 
     if (!response.ok) {
       throw new Error(`Open-Meteo respondió con estado ${response.status}`);

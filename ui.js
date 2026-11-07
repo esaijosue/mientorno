@@ -49,7 +49,6 @@ export function initUI() {
     btnLocation: document.getElementById('btn-location'),
     locationStatus: document.getElementById('location-status'),
     accuracyAlert: document.getElementById('accuracy-alert'),
-    coordsDisplay: document.getElementById('coords-display'),
     searchInput: document.getElementById('search-input'),
     searchResults: document.getElementById('search-results'),
     cardsContainer: document.getElementById('cards-container'),
@@ -72,7 +71,6 @@ export function initUI() {
     accordionWarningCount: document.getElementById('accordion-warning-count'),
     warningPrimaryTitle: document.getElementById('warning-primary-title'),
     warningRecommendText: document.getElementById('warning-recommend-text'),
-    headerAlertBadge: document.getElementById('header-alert-badge'),
     dashboardAlertBanner: document.getElementById('dashboard-sst-alert-banner'),
     dashAlertTitle: document.getElementById('dash-alert-title'),
     dashAlertDesc: document.getElementById('dash-alert-desc'),
@@ -159,10 +157,6 @@ export function updateLocationInfo(lat, lon, accuracy, source = 'gps', placeName
   const els = getElements();
   if (!els.locationStatus) return;
 
-  if (els.coordsDisplay) {
-    els.coordsDisplay.textContent = `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`;
-  }
-
   const coordStr = `${lat >= 0 ? '+' : ''}${lat.toFixed(2)}°, ${lon >= 0 ? '+' : ''}${lon.toFixed(2)}°`;
   const displayName = placeName || coordStr;
 
@@ -210,6 +204,12 @@ export function showNotification(message, type = 'error') {
     </div>
   `;
   alertEl.hidden = false;
+
+  setTimeout(() => {
+    if (alertEl && alertEl.innerHTML.includes(escapeHTML(message))) {
+      alertEl.hidden = true;
+    }
+  }, 6000);
 }
 
 export function renderSearchResults(results, onSelect) {
@@ -361,18 +361,21 @@ function renderSparklineCurve(weatherData, currentScore) {
   if (!els.chartLinePath || !els.chartAreaPath) return;
 
   const width = 380;
-  const height = 90;
+  const height = 75;
   const steps = 24;
 
   const hourly = weatherData?.hourly;
+  const currentHourIdx = getCurrentHourIndex(hourly?.time, weatherData?.current?.time);
+  const dayStartIdx = Math.max(0, currentHourIdx - (currentHourIdx % 24));
   const points = [];
 
   for (let i = 0; i < steps; i++) {
+    const slotIdx = dayStartIdx + i;
     const x = Math.round((i / (steps - 1)) * width);
     let hourScore = currentScore || 100;
 
-    if (hourly && hourly.temperature_2m && hourly.temperature_2m.length > i) {
-      const evaluation = evaluateHourlySlot(hourly, i);
+    if (hourly && hourly.temperature_2m && hourly.temperature_2m.length > slotIdx) {
+      const evaluation = evaluateHourlySlot(hourly, slotIdx);
       hourScore = evaluation.finalScore;
     }
 
@@ -422,10 +425,6 @@ function updateFloatingMapCard(context, score, horizon = currentForecastHorizon,
 
 function updateWarningAccordion(context) {
   const els = getElements();
-  if (els.headerAlertBadge) {
-    els.headerAlertBadge.textContent = context.alertCount;
-    els.headerAlertBadge.style.display = context.alertCount > 0 ? 'flex' : 'none';
-  }
 
   if (els.accordionWarningCount) {
     els.accordionWarningCount.textContent = context.alertCount > 0
@@ -548,10 +547,15 @@ function getForecastContext(data, horizon = 0) {
     },
     getWindowValues: (key, fallback = 0) => {
       if (useMinutely && data?.minutely_15?.[key]) {
-        return data.minutely_15[key].slice(minutelyStartIdx, minutelyTargetIdx + 1);
+        const slice = data.minutely_15[key].slice(minutelyStartIdx, minutelyTargetIdx + 1);
+        if (slice && slice.length > 0) return slice;
       }
-      const arr = data?.hourly?.[key] || [];
-      return arr.slice(currentHourIdx, targetHourIdx + 1);
+      const arr = data?.hourly?.[key];
+      if (Array.isArray(arr) && arr.length > 0) {
+        const slice = arr.slice(currentHourIdx, targetHourIdx + 1);
+        if (slice && slice.length > 0) return slice;
+      }
+      return [fallback];
     }
   };
 }
@@ -958,8 +962,8 @@ function createTemperatureCard(data, ctx, fc) {
   const targetTemp = fc.isRealTime ? currentTemp : fc.getValue('temperature_2m', 18);
   const targetApparent = fc.isRealTime ? currentApparent : fc.getValue('apparent_temperature', targetTemp);
   const windowTemps = fc.getWindowValues('temperature_2m', targetTemp);
-  const minTemp = Math.min(...windowTemps);
-  const maxTemp = Math.max(...windowTemps);
+  const minTemp = Math.min(targetTemp, ...windowTemps);
+  const maxTemp = Math.max(targetTemp, ...windowTemps);
 
   let rule = UMBRALES_TEMPERATURA.CONFORT;
   let pillClass = 'pill-green';
@@ -1164,7 +1168,7 @@ function createVisibilityCard(data, ctx, fc) {
   const targetVis = fc.isRealTime ? currentVis : fc.getValue('visibility', 10000);
   const targetHumidity = fc.isRealTime ? currentHumidity : fc.getValue('relative_humidity_2m', 60);
   const windowVis = fc.getWindowValues('visibility', targetVis);
-  const minVis = Math.min(...windowVis);
+  const minVis = Math.min(targetVis, ...windowVis);
 
   let rule = UMBRALES_VISIBILIDAD.OPTIMA;
   let pillClass = 'pill-green';
@@ -1260,7 +1264,7 @@ function createSoilCard(data, ctx, fc) {
 
   const targetMoisture = fc.isRealTime ? currentMoisture : fc.getValue('soil_moisture_0_to_7cm', 0.15);
   const windowMoisture = fc.getWindowValues('soil_moisture_0_to_7cm', targetMoisture);
-  const maxMoisture = Math.max(...windowMoisture);
+  const maxMoisture = Math.max(targetMoisture, ...windowMoisture);
 
   let rule = UMBRALES_SUELO.ESTABLE;
   let pillClass = 'pill-green';

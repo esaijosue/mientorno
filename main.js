@@ -158,7 +158,7 @@ function solicitarGeolocalizacion(isAutoInit = false) {
   );
 }
 
-function manejarBusqueda(texto) {
+function manejarBusqueda(texto, immediate = false) {
   clearTimeout(searchDebounceTimer);
 
   const cleanText = texto?.trim();
@@ -167,7 +167,7 @@ function manejarBusqueda(texto) {
     return;
   }
 
-  searchDebounceTimer = setTimeout(async () => {
+  const runSearch = async () => {
     try {
       const results = await searchLocationNominatim(cleanText);
       renderSearchResults(results, (seleccionado) => {
@@ -184,7 +184,13 @@ function manejarBusqueda(texto) {
     } catch (err) {
       showNotification('Servicio de búsqueda no disponible momentáneamente. Intenta nuevamente.', 'warning');
     }
-  }, 1000);
+  };
+
+  if (immediate) {
+    runSearch();
+  } else {
+    searchDebounceTimer = setTimeout(runSearch, 1000);
+  }
 }
 
 function iniciarAutoRefresco() {
@@ -256,6 +262,14 @@ function iniciarApp() {
     searchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         hideSearchResults();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const firstSuggestion = document.querySelector('#search-results .suggestion-item');
+        if (firstSuggestion) {
+          firstSuggestion.click();
+        } else {
+          manejarBusqueda(searchInput.value, true);
+        }
       }
     });
   }

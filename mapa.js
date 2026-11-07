@@ -3,6 +3,7 @@ import { PERU_DEFAULT_COORDS } from './reglas.js';
 let map = null;
 let marker = null;
 let accuracyCircle = null;
+let currentDragCallback = null;
 
 function createPulseMarkerIcon() {
   if (typeof L === 'undefined') return null;
@@ -28,6 +29,10 @@ export function initMap(containerId, onLocationChange) {
 
   if (map) {
     map.remove();
+  }
+
+  if (typeof onLocationChange === 'function') {
+    currentDragCallback = onLocationChange;
   }
 
   map = L.map(containerId, {
@@ -59,6 +64,10 @@ export function initMap(containerId, onLocationChange) {
 export function setMarkerPosition(lat, lon, accuracy = null, panTo = true, customZoom = null, onDragCallback = null) {
   if (typeof L === 'undefined' || !map) return;
 
+  if (typeof onDragCallback === 'function') {
+    currentDragCallback = onDragCallback;
+  }
+
   const coords = [lat, lon];
   const pulseIcon = createPulseMarkerIcon();
 
@@ -77,8 +86,8 @@ export function setMarkerPosition(lat, lon, accuracy = null, panTo = true, custo
         accuracyCircle = null;
       }
 
-      if (typeof onDragCallback === 'function') {
-        onDragCallback(pos.lat, pos.lng, null, 'arrastre_marcador');
+      if (typeof currentDragCallback === 'function') {
+        currentDragCallback(pos.lat, pos.lng, null, 'arrastre_marcador');
       }
     });
   } else {
@@ -93,8 +102,8 @@ export function setMarkerPosition(lat, lon, accuracy = null, panTo = true, custo
   if (accuracy && accuracy > 0) {
     accuracyCircle = L.circle(coords, {
       radius: accuracy,
-      color: '#38bdf8',
-      fillColor: '#38bdf8',
+      color: '#64748b',
+      fillColor: '#64748b',
       fillOpacity: 0.12,
       weight: 1.5,
       dashArray: '3, 4'
