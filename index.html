@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>MiEntorno &bull; Monitoreo de campo</title>
-  <meta name="description" content="Plataforma de evaluación y monitoreo de riesgos climáticos y físicos en tiempo real para faenas mineras, energéticas, construcción y puertos del Perú.">
+  <meta name="description" content="Plataforma de evaluación y monitoreo de riesgos climáticos y físicos en tiempo real para operaciones en campo, obras y frentes de trabajo.">
   
   <link rel="icon" type="image/webp" href="logo.webp">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -113,7 +113,7 @@
       <section class="safety-efficiency-card">
         <div class="efficiency-card-head">
           <div>
-            <span class="efficiency-title">Índice de seguridad en faena</span>
+            <span class="efficiency-title">Índice de seguridad operacional</span>
             <p id="location-status" class="efficiency-subtitle">Localizando frente de operación...</p>
           </div>
           <span class="external-link-arrow">&nearr;</span>
@@ -158,7 +158,7 @@
       <div id="dashboard-sst-alert-banner" class="dashboard-sst-alert-banner" hidden>
         <div class="dash-alert-head">
           <span class="dash-alert-badge">!</span>
-          <span id="dash-alert-title" class="dash-alert-title">Atención requerida en faena</span>
+          <span id="dash-alert-title" class="dash-alert-title">Atención requerida en operaciones</span>
         </div>
         <p id="dash-alert-desc" class="dash-alert-desc"></p>
         <div class="dash-alert-protocol">
@@ -169,7 +169,7 @@
 
       <div class="factors-section-header">
         <div class="factors-header-top">
-          <span class="factors-title">Factores de faena</span>
+          <span class="factors-title">Factores operacionales</span>
           <span id="last-updated" class="factors-timestamp">Sincronizado</span>
         </div>
         <div id="model-reliability-banner" class="model-reliability-banner" title="Índice de certeza estadística y fiabilidad predictiva según horizonte temporal">
@@ -185,7 +185,7 @@
           <button class="horizon-btn" type="button" data-horizon="1" title="Proyección a 1 hora (Alerta táctica)">1h</button>
           <button class="horizon-btn" type="button" data-horizon="3" title="Proyección a 3 horas (Frentes dinámicos)">3h</button>
           <button class="horizon-btn" type="button" data-horizon="9" title="Proyección a 9 horas (Jornada diurna)">9h</button>
-          <button class="horizon-btn" type="button" data-horizon="12" title="Proyección a 12 horas (Turno de faena 12x12)">12h</button>
+          <button class="horizon-btn" type="button" data-horizon="12" title="Proyección a 12 horas (Jornada continua 12x12)">12h</button>
           <button class="horizon-btn" type="button" data-horizon="24" title="Proyección a 24 horas (Ciclo circadiano completo)">24h</button>
         </div>
       </div>
@@ -203,7 +203,7 @@
       <div class="floating-map-hero-header">
         <h1 class="map-hero-title">Monitoreo de campo</h1>
         <div class="map-pills-row">
-          <button id="map-location-pill" class="map-glass-pill" type="button" title="Haz clic para buscar otra faena">
+          <button id="map-location-pill" class="map-glass-pill" type="button" title="Haz clic para buscar otra ubicación">
             <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path>
               <circle cx="12" cy="10" r="3"></circle>
@@ -221,7 +221,7 @@
           <span id="floating-kpi-title" class="glass-metric-label">Estado operativo</span>
           <span class="glass-arrow">&nearr;</span>
         </div>
-        <span id="floating-kpi-subtitle" class="glass-metric-sub">Operación regular en faena</span>
+        <span id="floating-kpi-subtitle" class="glass-metric-sub">Operación regular en campo</span>
         <div class="glass-hero-row">
           <span id="floating-kpi-value" class="glass-hero-val">100</span>
           <span id="floating-kpi-unit" class="glass-hero-unit">%</span>

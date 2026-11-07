@@ -85,7 +85,7 @@ export const UMBRALES_LLUVIA = {
     pill: 'pill-green',
     deduccion: 0,
     severity: 0,
-    recomendacion: 'Vías secas y compactadas: tránsito regular de volquetes y equipos móviles. Mantener riego controlado antipolvo.'
+    recomendacion: 'Vías secas y compactadas: tránsito regular de vehículos y equipos móviles. Mantener control de polvo en accesos.'
   },
   LLOVIZNA: {
     nivel: 'Llovizna',
@@ -99,14 +99,14 @@ export const UMBRALES_LLUVIA = {
     pill: 'pill-amber',
     deduccion: 12,
     severity: 3,
-    recomendacion: 'Condición de riesgo en ruta: velocidad máx 20 km/h, duplicar distancia entre volquetes (mín 60 m), uso de trajes impermeables y 3 puntos de apoyo en cabinas.'
+    recomendacion: 'Condición de riesgo en ruta: velocidad máx 20 km/h, duplicar distancia entre vehículos (mín 60 m), trajes impermeables y tres puntos de apoyo en escaleras y cabinas.'
   },
   INTENSA: {
     nivel: 'Lluvia intensa',
     pill: 'pill-red',
     deduccion: 20,
     severity: 4,
-    recomendacion: 'Suspensión preventiva de acarreo en rampas empinadas y labores al pie de taludes: verificar cunetas de coronación y drenajes de tajo.'
+    recomendacion: 'Suspensión preventiva de transporte en rampas empinadas y labores al pie de taludes: verificar sistemas de drenaje y estabilidad de zanjas.'
   }
 };
 
@@ -196,10 +196,10 @@ export const WEATHER_CODES_TORMENTA = [95, 96, 99];
 
 export const REGLA_TORMENTA_ACTIVA = {
   nivel: 'Alerta Roja',
-  badge: 'Descargas en faena (< 16 km)',
+  badge: 'Descargas en proximidad (< 16 km)',
   deduccion: 35,
   severity: 5,
-  recomendacion: 'Alerta Roja de emergencia (Descargas en faena < 16 km): evacuación inmediata obligatoria a refugios Faraday certificados o vehículos con cabina metálica cerrada (D.S. 024-2016-EM). Aplicar regla 30/30 OMM: esperar 30 min sin descargas para reanudar.'
+  recomendacion: 'Alerta Roja de emergencia (Descargas en proximidad < 16 km): evacuación inmediata obligatoria a refugios Faraday certificados o vehículos con cabina metálica cerrada. Aplicar regla 30/30 OMM: esperar 30 min sin descargas para reanudar.'
 };
 
 export const UMBRALES_TEMPERATURA = {
@@ -230,7 +230,7 @@ export const UMBRALES_TEMPERATURA = {
     badge: 'Frío moderado',
     deduccion: 6,
     severity: 1,
-    recomendacion: 'Uso obligatorio de cortavientos, casacas térmicas de faena y calistenia muscular previa para evitar lesiones osteomusculares.'
+    recomendacion: 'Uso obligatorio de cortavientos, prendas térmicas de trabajo y calistenia muscular previa para evitar lesiones osteomusculares.'
   },
   CONFORT: {
     minTemp: 8.1,
@@ -322,7 +322,7 @@ export const UMBRALES_VISIBILIDAD = {
     badge: 'Óptima',
     deduccion: 0,
     severity: 0,
-    recomendacion: 'Visibilidad despejada: tránsito regular de volquetes y equipos móviles a velocidades normadas de faena con luces bajas encendidas.'
+    recomendacion: 'Visibilidad despejada: tránsito regular de vehículos y equipos móviles a velocidades normadas con luces bajas encendidas.'
   },
   LIGERA: {
     minMetros: 501,
@@ -332,7 +332,7 @@ export const UMBRALES_VISIBILIDAD = {
     badge: 'Neblina ligera',
     deduccion: 5,
     severity: 1,
-    recomendacion: 'Conducción a la defensiva: velocidad máx 40 km/h en haul roads, distancia mínima de 30 m entre unidades y chalecos reflectivos clase 3 en personal de piso.'
+    recomendacion: 'Conducción a la defensiva: velocidad máx 40 km/h en vías de circulación, distancia mínima de 30 m entre unidades y chalecos reflectivos clase 3 en personal de piso.'
   },
   REDUCIDA: {
     minMetros: 101,
@@ -342,7 +342,7 @@ export const UMBRALES_VISIBILIDAD = {
     badge: 'Niebla moderada',
     deduccion: 12,
     severity: 3,
-    recomendacion: 'Circulación restringida: faros neblineros amarillos, pértiga estroboscópica LED activa, distancia mínima de 60 m entre camiones y comunicación radial por punto kilométrico.'
+    recomendacion: 'Circulación restringida: faros neblineros amarillos, pértiga estroboscópica LED activa, distancia mínima de 60 m entre vehículos y comunicación radial por punto de control.'
   },
   CRITICA: {
     maxMetros: 100,
@@ -351,7 +351,7 @@ export const UMBRALES_VISIBILIDAD = {
     badge: 'Niebla densa',
     deduccion: 25,
     severity: 5,
-    recomendacion: 'Detención total de tránsito de acarreo pesado y vehículos livianos: parqueo seguro en bahías de emergencia, luces de emergencia encendidas y prohibición de tránsito peatonal en tajo.'
+    recomendacion: 'Detención total de tránsito de transporte pesado y vehículos livianos: parqueo seguro en bahías de emergencia, luces intermitentes activas y prohibición de tránsito peatonal en campo.'
   }
 };
 
@@ -387,7 +387,7 @@ export const UMBRALES_SUELO = {
 };
 
 /**
- * METODOLOGÍA DEL ÍNDICE DE SEGURIDAD EN FAENA (ISF) - 2 CAPAS
+ * METODOLOGÍA DEL ÍNDICE DE SEGURIDAD OPERACIONAL (ISO) - 2 CAPAS
  * Conforme a Ley N° 29783, D.S. 024-2016-EM e ICMM Critical Risk Management.
  * Capa 1: Ponderación multicriterio por criticidad operacional (suma 100%).
  * Capa 2: Puerta de Control Crítico (Non-compensatory Gating) por severidad máxima.
@@ -396,10 +396,10 @@ export const FACTOR_WEIGHTS = {
   tormenta: 0.25,      // 25% - Riesgo de fatalidad inmediata por descargas (D.S. 024-2016-EM)
   viento: 0.20,        // 20% - Riesgo crítico en izajes con grúas y trabajos en altura (ASME B30.5 / G.050)
   temperatura: 0.15,   // 15% - Estrés térmico extremo (hipotermia severa o golpe de calor mortal ISO 7243)
-  lluvia: 0.10,        // 10% - Pérdida de adherencia, derrape de volquetes y anegamiento en tajo
+  lluvia: 0.10,        // 10% - Pérdida de adherencia, derrape vehicular e inundación de frentes de trabajo
   nieve: 0.10,         // 10% - Congelamiento de pistas, pérdida de tracción en alta montaña
   suelo: 0.10,         // 10% - Inestabilidad de taludes y asentamiento de maquinaria pesada
-  visibilidad: 0.05,   // 5%  - Pérdida visual en tránsito de acarreo (niebla/polvo)
+  visibilidad: 0.05,   // 5%  - Pérdida visual en tránsito vehicular (niebla/polvo)
   uv: 0.05             // 5%  - Exposición solar acumulativa (Ley N° 30102)
 };
 

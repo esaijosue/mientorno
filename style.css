@@ -536,7 +536,7 @@ body.theme-control-room {
   font-family: var(--font-sans);
 }
 
-/* Tarjeta del índice de seguridad en faena */
+/* Tarjeta del índice de seguridad operacional */
 .safety-efficiency-card {
   background: var(--bg-card-glass);
   border: 1px solid var(--border-card);

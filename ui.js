@@ -25,7 +25,7 @@ const RELIABILITY_BY_HORIZON = {
   1: { score: '92%', desc: 'Nowcasting táctico de corto plazo', level: 'rel-high' },
   3: { score: '88%', desc: 'Previsión de frentes dinámicos', level: 'rel-medium' },
   9: { score: '82%', desc: 'Jornada laboral diurna (ECMWF IFS)', level: 'rel-medium' },
-  12: { score: '78%', desc: 'Turno de faena 12x12 (Jornada continua)', level: 'rel-standard' },
+  12: { score: '78%', desc: 'Turno de 12 horas (Jornada continua)', level: 'rel-standard' },
   24: { score: '72%', desc: 'Ciclo circadiano y relevo diario', level: 'rel-standard' }
 };
 
@@ -412,8 +412,8 @@ function updateFloatingMapCard(context, score, horizon = currentForecastHorizon,
 
   els.floatingKpiTitle.textContent = isRealTime ? 'Estado operativo' : `Estado previsto (${targetTimeStr || ('+' + badgeText)} h)`;
   els.floatingKpiSubtitle.textContent = hasAlerts
-    ? `Faena con restricción (${context.alertCount} factor${context.alertCount > 1 ? 'es' : ''})`
-    : 'Operación regular en faena';
+    ? `Operación con restricción (${context.alertCount} factor${context.alertCount > 1 ? 'es' : ''})`
+    : 'Operación regular en campo';
   els.floatingKpiValue.textContent = currentScore.toFixed(1);
   els.floatingKpiUnit.textContent = '%';
   if (els.floatingKpiCaption) {
@@ -620,7 +620,7 @@ function createUVCard(data, ctx, fc) {
   const secondaryText = isNight
     ? (fc.isRealTime ? 'Turno nocturno &bull; Sin exposición solar actínica' : `Ventana nocturna a las ${fc.targetTimeStr} h &bull; 0.0 UVI`)
     : (fc.isRealTime
-      ? 'Sensor en faena &bull; Exposición solar directa'
+      ? 'En superficie &bull; Exposición solar directa'
       : `Previsto a las ${fc.targetTimeStr} h &bull; Radiación ${rule.nivel.toLowerCase()}`);
 
   const badgeHTML = fc.isRealTime
@@ -671,7 +671,7 @@ function createRainCard(data, ctx, fc) {
     heroVal = currentPrecip.toFixed(1);
     heroUnit = 'mm/h actual';
     badgeHTML = `<div class="metric-projection-badge" title="Probabilidad de lluvia actual"><span class="projection-label">Probabilidad:</span><span class="projection-val">${currentProb}%</span></div>`;
-    secondaryHTML = `<span>${currentPrecip > 0 ? 'Precipitación activa sobre faena' : 'Calzada seca &bull; Sin lluvia actual'}</span>`;
+    secondaryHTML = `<span>${currentPrecip > 0 ? 'Precipitación activa en el área' : 'Superficie seca &bull; Sin lluvia actual'}</span>`;
 
     if (currentPrecip >= 5) {
       rule = UMBRALES_LLUVIA.INTENSA;
@@ -898,7 +898,7 @@ function createThunderstormCard(data, ctx, fc) {
   if (rule.severity > ctx.highestRisk.severityScore) {
     ctx.highestRisk = {
       title: 'Tormenta eléctrica',
-      subtitle: stormDetected ? (fc.isRealTime ? 'Alerta Roja: Tormenta en faena (< 16 km)' : `Alerta Roja hacia las ${fc.targetTimeStr} h`) : `${rule.nivel} (${rule.badge})`,
+      subtitle: stormDetected ? (fc.isRealTime ? 'Alerta Roja: Tormenta en proximidad (< 16 km)' : `Alerta Roja hacia las ${fc.targetTimeStr} h`) : `${rule.nivel} (${rule.badge})`,
       value: Math.round(targetCape),
       unit: 'J/kg',
       caption: fc.isRealTime ? 'Protocolo ThunderBolt / D.S. 024' : `Previsto a las ${fc.targetTimeStr} h`,
@@ -1223,11 +1223,11 @@ function createVisibilityCard(data, ctx, fc) {
   `;
 
   const badgeHTML = fc.isRealTime
-    ? `<div class="metric-projection-badge" title="Humedad relativa en faena"><span class="projection-label">Humedad:</span><span class="projection-val">${currentHumidity}%</span></div>`
+    ? `<div class="metric-projection-badge" title="Humedad relativa ambiental"><span class="projection-label">Humedad:</span><span class="projection-val">${currentHumidity}%</span></div>`
     : `<div class="metric-projection-badge" title="Visibilidad mínima en ventana ${fc.badgeText}"><span class="projection-label">Mín ${fc.badgeText}:</span><span class="projection-val">${minVisDisplay}</span></div>`;
 
   const secondaryText = fc.isRealTime
-    ? `<span>Tránsito de volquetes</span><span class="telemetry-sep">&bull;</span><span>${currentVis < 1000 ? 'Niebla en haul roads' : 'Ruta despejada y transitable'}</span>`
+    ? `<span>Tránsito vehicular y equipos</span><span class="telemetry-sep">&bull;</span><span>${currentVis < 1000 ? 'Niebla en vías de circulación' : 'Ruta despejada y transitable'}</span>`
     : `<span>A las ${fc.targetTimeStr} h</span><span class="telemetry-sep">&bull;</span><span>Humedad: ${targetHumidity}%</span><span class="telemetry-sep">&bull;</span><span>${targetVis < 1000 ? 'Riesgo de niebla' : 'Ruta despejada'}</span>`;
 
   const card = document.createElement('article');
