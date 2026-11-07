@@ -66,11 +66,6 @@ export function initUI() {
     safetyScoreNumber: document.getElementById('safety-score-number'),
     tallySafeCount: document.getElementById('tally-safe-count'),
     tallyAlertCount: document.getElementById('tally-alert-count'),
-    warningAccordion: document.getElementById('warning-accordion'),
-    accordionToggleBtn: document.getElementById('accordion-toggle-btn'),
-    accordionWarningCount: document.getElementById('accordion-warning-count'),
-    warningPrimaryTitle: document.getElementById('warning-primary-title'),
-    warningRecommendText: document.getElementById('warning-recommend-text'),
     dashboardAlertBanner: document.getElementById('dashboard-sst-alert-banner'),
     dashAlertTitle: document.getElementById('dash-alert-title'),
     dashAlertDesc: document.getElementById('dash-alert-desc'),
@@ -83,12 +78,6 @@ export function initUI() {
   };
 
   updateReliabilityBanner(currentForecastHorizon);
-
-  if (elements.accordionToggleBtn && elements.warningAccordion) {
-    elements.accordionToggleBtn.addEventListener('click', () => {
-      elements.warningAccordion.classList.toggle('collapsed');
-    });
-  }
 
   const horizonButtons = document.querySelectorAll('.horizon-btn');
   horizonButtons.forEach((btn) => {
@@ -336,7 +325,7 @@ export function renderRiskCards(weatherData, horizon = currentForecastHorizon) {
 
   const finalScore = updateSafetyIndexSummary(riskContext, data);
   updateFloatingMapCard(riskContext, finalScore, horizon, fc.targetTimeStr);
-  updateWarningAccordion(riskContext);
+  updateDashboardAlertBanner(riskContext);
   updateReliabilityBanner(horizon);
   updateLastRefreshTimestamp(horizon, fc.targetTimeStr);
 }
@@ -423,22 +412,8 @@ function updateFloatingMapCard(context, score, horizon = currentForecastHorizon,
   }
 }
 
-function updateWarningAccordion(context) {
+function updateDashboardAlertBanner(context) {
   const els = getElements();
-
-  if (els.accordionWarningCount) {
-    els.accordionWarningCount.textContent = context.alertCount > 0
-      ? `Condiciones con restricción (${context.alertCount} factor${context.alertCount > 1 ? 'es' : ''})`
-      : 'Condiciones de operación segura (0 factores de alerta)';
-  }
-
-  if (els.warningPrimaryTitle) {
-    els.warningPrimaryTitle.textContent = `${context.highestRisk.title}: ${context.highestRisk.subtitle} (${context.highestRisk.value} ${context.highestRisk.unit})`;
-  }
-
-  if (els.warningRecommendText && context.highestRisk.recommendation) {
-    els.warningRecommendText.textContent = context.highestRisk.recommendation;
-  }
 
   if (els.dashboardAlertBanner) {
     if (context.alertCount > 0 && context.highestRisk.severityScore > 0) {
