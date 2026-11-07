@@ -1173,9 +1173,6 @@ body.theme-control-room {
   top: 24px;
   left: 32px;
   z-index: 500;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   pointer-events: none;
 }
 
@@ -1188,11 +1185,26 @@ body.theme-control-room {
   line-height: 1.1;
 }
 
+.map-top-right-group {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.map-top-right-group > * {
+  pointer-events: auto;
+}
+
 .map-pills-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  pointer-events: auto;
 }
 
 .map-glass-pill {
@@ -1239,10 +1251,6 @@ body.theme-control-room {
 
 .frosted-glass-metric-card {
   pointer-events: auto;
-  position: absolute;
-  top: 110px;
-  left: 32px;
-  z-index: 500;
   width: 220px;
   background: var(--bg-card-glass);
   border: 1px solid var(--border-glass);
@@ -1500,14 +1508,22 @@ body.theme-control-room {
     left: 360px;
   }
 
+  .floating-map-hero-header {
+    top: 20px;
+    left: 20px;
+  }
+
   .map-hero-title {
     font-size: 1.55rem;
   }
 
+  .map-top-right-group {
+    top: 20px;
+    right: 20px;
+  }
+
   .frosted-glass-metric-card {
-    top: 75px;
-    left: 18px;
-    width: 185px;
+    width: 195px;
     padding: 12px 14px;
   }
 
@@ -1718,14 +1734,19 @@ body.theme-control-room {
     position: absolute;
     top: 10px;
     left: 12px;
-    right: 12px;
     pointer-events: none;
-    gap: 6px;
   }
 
   .map-hero-title {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     line-height: 1.1;
+  }
+
+  .map-top-right-group {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    gap: 6px;
   }
 
   .map-glass-pill {
@@ -1734,14 +1755,10 @@ body.theme-control-room {
     pointer-events: auto;
   }
 
-  
   .frosted-glass-metric-card {
-    position: absolute;
-    top: 60px;
-    left: 12px;
-    width: 160px;
-    padding: 10px 12px;
-    border-radius: 14px;
+    width: 155px;
+    padding: 8px 10px;
+    border-radius: 12px;
     background: rgba(18, 22, 28, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
