@@ -1168,57 +1168,31 @@ body.theme-control-room {
 }
 
 
-/* Tira HUD superior sobre el mapa */
-.map-top-hud-strip {
+.floating-map-hero-header {
   position: absolute;
-  top: 22px;
-  left: 28px;
-  right: 28px;
+  top: 24px;
+  left: 32px;
   z-index: 500;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  pointer-events: none;
-  gap: 16px;
-}
-
-.map-hud-left {
-  display: flex;
   flex-direction: column;
-  gap: 8px;
-  pointer-events: auto;
+  gap: 10px;
+  pointer-events: none;
 }
 
-.map-hud-heading {
-  font-size: 1.35rem;
+.map-hero-title {
+  font-size: 2.1rem;
   font-weight: 300;
   color: var(--text-pure);
-  letter-spacing: -0.02em;
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.85);
-  line-height: 1.15;
-  margin: 0;
+  letter-spacing: -0.03em;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.85);
+  line-height: 1.1;
 }
 
-.map-hud-tags-row {
+.map-pills-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-
-.map-hud-live-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: rgba(18, 22, 28, 0.75);
-  border: 1px solid var(--border-glass);
-  border-radius: var(--radius-pill);
-  font-size: 0.74rem;
-  font-weight: 400;
-  color: var(--text-secondary);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  gap: 10px;
+  pointer-events: auto;
 }
 
 .map-glass-pill {
@@ -1249,6 +1223,11 @@ body.theme-control-room {
   color: var(--text-secondary);
 }
 
+.provider-pill {
+  cursor: default;
+  color: var(--text-secondary);
+}
+
 .live-pulse-dot {
   width: 6px;
   height: 6px;
@@ -1257,41 +1236,24 @@ body.theme-control-room {
   box-shadow: 0 0 8px var(--color-safe);
 }
 
-.map-hud-right {
-  pointer-events: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
 
 .frosted-glass-metric-card {
   pointer-events: auto;
-  width: 250px;
-  background: rgba(18, 22, 28, 0.8);
+  position: absolute;
+  top: 110px;
+  left: 32px;
+  z-index: 500;
+  width: 220px;
+  background: var(--bg-card-glass);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-lg);
-  padding: 12px 16px;
+  padding: 16px 18px;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   box-shadow: var(--shadow-float);
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
-}
-
-.frosted-glass-metric-card.is-safe {
-  border-color: rgba(16, 185, 129, 0.32);
-}
-
-.frosted-glass-metric-card.has-warning {
-  border-color: rgba(245, 158, 11, 0.42);
-  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.15);
-}
-
-.frosted-glass-metric-card.has-danger {
-  border-color: rgba(239, 68, 68, 0.48);
-  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.2);
+  gap: 4px;
 }
 
 .glass-card-top {
@@ -1300,74 +1262,45 @@ body.theme-control-room {
   justify-content: space-between;
 }
 
-.glass-title-group {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.kpi-status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--color-safe);
-  box-shadow: 0 0 8px var(--color-safe);
-  flex-shrink: 0;
-  transition: background 0.2s ease, box-shadow 0.2s ease;
-}
-
-.kpi-status-dot.warning {
-  background: var(--color-warning);
-  box-shadow: 0 0 8px var(--color-warning);
-}
-
-.kpi-status-dot.danger {
-  background: var(--color-danger);
-  box-shadow: 0 0 8px var(--color-danger);
-}
-
 .glass-metric-label {
-  font-size: 0.76rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
   font-weight: 400;
 }
 
 .glass-arrow {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 
 .glass-metric-sub {
-  font-size: 0.72rem;
-  color: var(--text-primary);
-  font-weight: 400;
-  line-height: 1.25;
+  font-size: 0.7rem;
+  color: var(--text-muted);
 }
 
 .glass-hero-row {
   display: flex;
   align-items: baseline;
-  gap: 3px;
-  margin: 2px 0 1px 0;
+  gap: 4px;
+  margin: 4px 0 2px 0;
 }
 
 .glass-hero-val {
-  font-size: 2.3rem;
+  font-size: 2.6rem;
   font-weight: 300;
   color: var(--text-pure);
   line-height: 1;
 }
 
 .glass-hero-unit {
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 300;
   color: var(--text-secondary);
 }
 
 .glass-caption-note {
   font-size: 0.68rem;
-  color: #94a3b8;
-  line-height: 1.3;
+  color: #cbd5e1;
 }
 
 .map-floating-navigation-controls {
@@ -1567,24 +1500,19 @@ body.theme-control-room {
     left: 360px;
   }
 
-  .map-top-hud-strip {
-    top: 16px;
-    left: 16px;
-    right: 20px;
-    gap: 12px;
-  }
-
-  .map-hud-heading {
-    font-size: 1.2rem;
+  .map-hero-title {
+    font-size: 1.55rem;
   }
 
   .frosted-glass-metric-card {
-    width: 215px;
-    padding: 10px 14px;
+    top: 75px;
+    left: 18px;
+    width: 185px;
+    padding: 12px 14px;
   }
 
   .glass-hero-val {
-    font-size: 1.9rem;
+    font-size: 2.1rem;
   }
 
   .map-floating-navigation-controls {
@@ -1786,35 +1714,45 @@ body.theme-control-room {
     pointer-events: none;
   }
 
-  .map-top-hud-strip {
+  .floating-map-hero-header {
+    position: absolute;
     top: 10px;
-    left: 10px;
-    right: 10px;
-    gap: 8px;
+    left: 12px;
+    right: 12px;
+    pointer-events: none;
+    gap: 6px;
   }
 
-  .map-hud-heading {
-    font-size: 1.05rem;
-  }
-
-  .map-hud-live-tag {
-    display: none;
+  .map-hero-title {
+    font-size: 1.2rem;
+    line-height: 1.1;
   }
 
   .map-glass-pill {
-    padding: 5px 10px;
+    padding: 4px 10px;
     font-size: 0.72rem;
     pointer-events: auto;
   }
 
+  
   .frosted-glass-metric-card {
-    width: 155px;
-    padding: 8px 10px;
-    border-radius: 12px;
+    position: absolute;
+    top: 60px;
+    left: 12px;
+    width: 160px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(18, 22, 28, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    pointer-events: auto;
+    cursor: pointer;
   }
 
   .glass-hero-val {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
   }
 
   .glass-metric-label {
@@ -1822,11 +1760,7 @@ body.theme-control-room {
   }
 
   .glass-metric-sub {
-    font-size: 0.64rem;
-  }
-
-  .glass-caption-note {
-    font-size: 0.6rem;
+    font-size: 0.65rem;
   }
 
   .map-floating-navigation-controls {
