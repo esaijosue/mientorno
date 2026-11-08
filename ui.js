@@ -18,19 +18,20 @@ import {
 let elements = {};
 let currentForecastHorizon = 0;
 let cachedWeatherData = null;
+let currentOpenModalFactor = null;
 
-const RELIABILITY_BY_HORIZON = {
-  0: { score: '98%', desc: 'Telemetría instantánea y Nowcasting (OMM)', level: 'rel-high' },
-  0.5: { score: '95%', desc: 'Alta resolución 15 min (Maniobras críticas)', level: 'rel-high' },
-  1: { score: '92%', desc: 'Nowcasting táctico de corto plazo', level: 'rel-high' },
-  3: { score: '88%', desc: 'Previsión de frentes dinámicos', level: 'rel-medium' },
-  9: { score: '82%', desc: 'Jornada laboral diurna (ECMWF IFS)', level: 'rel-medium' },
-  12: { score: '78%', desc: 'Turno de 12 horas (Jornada continua)', level: 'rel-standard' },
-  24: { score: '72%', desc: 'Ciclo circadiano y relevo diario', level: 'rel-standard' }
-};
+export function getReliabilityForHorizon(h) {
+  if (h === 0) return { score: '98%', desc: 'Telemetría instantánea y Nowcasting (OMM)', level: 'rel-high' };
+  if (h <= 0.5) return { score: '95%', desc: 'Alta resolución 15 min (Maniobras críticas)', level: 'rel-high' };
+  if (h <= 1) return { score: '92%', desc: 'Nowcasting táctico de corto plazo', level: 'rel-high' };
+  if (h <= 3) return { score: `${Math.round(92 - (h - 1) * 2)}%`, desc: 'Previsión de frentes dinámicos', level: 'rel-medium' };
+  if (h <= 6) return { score: `${Math.round(88 - (h - 3) * 1.5)}%`, desc: 'Previsión táctica de turno', level: 'rel-medium' };
+  if (h <= 12) return { score: `${Math.round(83 - (h - 6) * 0.8)}%`, desc: 'Jornada continua de trabajo (12h)', level: 'rel-standard' };
+  return { score: `${Math.max(65, Math.round(78 - (h - 12) * 0.7))}%`, desc: 'Ciclo circadiano y relevo (24h)', level: 'rel-standard' };
+}
 
 export function updateReliabilityBanner(horizon = currentForecastHorizon) {
-  const rel = RELIABILITY_BY_HORIZON[horizon] || RELIABILITY_BY_HORIZON[0];
+  const rel = getReliabilityForHorizon(horizon);
   const els = getElements();
   if (els.reliabilityScore) {
     els.reliabilityScore.textContent = rel.score;
@@ -74,7 +75,11 @@ export function initUI() {
     chartLinePath: document.getElementById('chart-line-path'),
     dockBtnDashboard: document.getElementById('dock-btn-dashboard'),
     dockBtnMap: document.getElementById('dock-btn-map'),
-    dockBtnGps: document.getElementById('dock-btn-gps')
+    dockBtnGps: document.getElementById('dock-btn-gps'),
+    horizonGroup: document.getElementById('horizon-toggle-group'),
+    factorModal: document.getElementById('factor-detail-modal'),
+    modalCloseBtn: document.getElementById('modal-close-btn'),
+    modalContentBody: document.getElementById('modal-content-body')
   };
 
   updateReliabilityBanner(currentForecastHorizon);
@@ -93,7 +98,38 @@ export function initUI() {
     });
   });
 
+  // Modal interactions
+  elements.modalCloseBtn?.addEventListener('click', closeFactorDetailModal);
+  elements.factorModal?.addEventListener('click', (e) => {
+    if (e.target === elements.factorModal) {
+      closeFactorDetailModal();
+    }
+  });
+
+  // Delegación de clics en tarjetas de riesgo
+  elements.cardsContainer?.addEventListener('click', (e) => {
+    const card = e.target.closest('.risk-card[data-factor]');
+    if (card && card.dataset.factor) {
+      openFactorDetailModal(card.dataset.factor, cachedWeatherData, currentForecastHorizon);
+    }
+  });
+
+  elements.cardsContainer?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      const card = e.target.closest('.risk-card[data-factor]');
+      if (card && card.dataset.factor) {
+        e.preventDefault();
+        openFactorDetailModal(card.dataset.factor, cachedWeatherData, currentForecastHorizon);
+      }
+    }
+  });
+
   window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && elements.factorModal && !elements.factorModal.hasAttribute('hidden')) {
+      closeFactorDetailModal();
+      return;
+    }
+
     if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
       e.preventDefault();
       if (elements.searchInput) {
@@ -328,6 +364,11 @@ export function renderRiskCards(weatherData, horizon = currentForecastHorizon) {
   updateDashboardAlertBanner(riskContext);
   updateReliabilityBanner(horizon);
   updateLastRefreshTimestamp(horizon, fc.targetTimeStr);
+  renderHourlyRibbon(data, horizon);
+
+  if (currentOpenModalFactor) {
+    openFactorDetailModal(currentOpenModalFactor, data, horizon);
+  }
 }
 
 function updateSafetyIndexSummary(context, weatherData) {
@@ -603,7 +644,12 @@ function createUVCard(data, ctx, fc) {
     : `<div class="metric-projection-badge" title="Pico diurno hoy"><span class="projection-label">Máx hoy:</span><span class="projection-val">${dailyMaxUV.toFixed(1)} UVI</span></div>`;
 
   const card = document.createElement('article');
-  card.className = cardClass;
+  card.className = `${cardClass} clickable-factor-card`;
+  card.dataset.factor = 'uv';
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.setAttribute('aria-haspopup', 'dialog');
+  card.setAttribute('title', 'Clic para ver análisis técnico detallado de radiación UV y marco Ley 30102');
   card.innerHTML = `
     <div class="risk-card-top-row">
       <div class="factor-identifier">
@@ -626,6 +672,11 @@ function createUVCard(data, ctx, fc) {
     </div>
 
     ${controlBoxHTML}
+
+    <div class="card-detail-cta">
+      <span>Análisis técnico SST</span>
+      <span class="cta-arrow">&nearr;</span>
+    </div>
   `;
   return card;
 }
@@ -719,7 +770,12 @@ function createRainCard(data, ctx, fc) {
   `;
 
   const card = document.createElement('article');
-  card.className = cardClass;
+  card.className = `${cardClass} clickable-factor-card`;
+  card.dataset.factor = 'lluvia';
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.setAttribute('aria-haspopup', 'dialog');
+  card.setAttribute('title', 'Clic para ver análisis técnico detallado de precipitación y D.S. 024 Art. 272');
   card.innerHTML = `
     <div class="risk-card-top-row">
       <div class="factor-identifier">
@@ -743,6 +799,11 @@ function createRainCard(data, ctx, fc) {
 
     ${barsHTML}
     ${controlBoxHTML}
+
+    <div class="card-detail-cta">
+      <span>Análisis técnico SST</span>
+      <span class="cta-arrow">&nearr;</span>
+    </div>
   `;
   return card;
 }
@@ -808,7 +869,12 @@ function createWindCard(data, ctx, fc) {
     : `<span>A las ${fc.targetTimeStr} h</span><span class="telemetry-sep">&bull;</span><span>Pluma 80m: ${Math.round(targetBoom)} km/h</span><span class="telemetry-sep">&bull;</span><span>Pico ventana: ${Math.round(maxGust)} km/h</span>`;
 
   const card = document.createElement('article');
-  card.className = cardClass;
+  card.className = `${cardClass} clickable-factor-card`;
+  card.dataset.factor = 'viento';
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.setAttribute('aria-haspopup', 'dialog');
+  card.setAttribute('title', 'Clic para ver telemetría de viento en pluma 80m, ráfagas y controles D.S. 024 Art. 385');
   card.innerHTML = `
     <div class="risk-card-top-row">
       <div class="factor-identifier">
@@ -831,6 +897,11 @@ function createWindCard(data, ctx, fc) {
     </div>
 
     ${controlBoxHTML}
+
+    <div class="card-detail-cta">
+      <span>Análisis técnico SST</span>
+      <span class="cta-arrow">&nearr;</span>
+    </div>
   `;
   return card;
 }
@@ -901,7 +972,12 @@ function createThunderstormCard(data, ctx, fc) {
     : (fc.isRealTime ? 'Monitoreo de descargas &bull; Estándar D.S. 024-2016-EM / NFPA 780' : `Previsto a las ${fc.targetTimeStr} h &bull; Pico: ${Math.round(maxCape)} J/kg`);
 
   const card = document.createElement('article');
-  card.className = cardClass;
+  card.className = `${cardClass} clickable-factor-card`;
+  card.dataset.factor = 'tormenta';
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.setAttribute('aria-haspopup', 'dialog');
+  card.setAttribute('title', 'Clic para ver análisis de tormenta eléctrica, CAPE, regla 30/30 y D.S. 024 Art. 380');
   card.innerHTML = `
     <div class="risk-card-top-row">
       <div class="factor-identifier">
@@ -924,6 +1000,11 @@ function createThunderstormCard(data, ctx, fc) {
     </div>
 
     ${controlBoxHTML}
+
+    <div class="card-detail-cta">
+      <span>Análisis técnico SST</span>
+      <span class="cta-arrow">&nearr;</span>
+    </div>
   `;
   return card;
 }
@@ -1012,7 +1093,12 @@ function createTemperatureCard(data, ctx, fc) {
     : `<span>A las ${fc.targetTimeStr} h</span><span class="telemetry-sep">&bull;</span><span>Sensación: ${targetApparent.toFixed(1)}°C</span><span class="telemetry-sep">&bull;</span><span>Rango ${fc.badgeText}: ${minTemp.toFixed(0)}° a ${maxTemp.toFixed(0)}°C</span>`;
 
   const card = document.createElement('article');
-  card.className = cardClass;
+  card.className = `${cardClass} clickable-factor-card`;
+  card.dataset.factor = 'temperatura';
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.setAttribute('aria-haspopup', 'dialog');
+  card.setAttribute('title', 'Clic para ver estrés térmico, índice WBGT, pausas ISO 7243 y confort');
   card.innerHTML = `
     <div class="risk-card-top-row">
       <div class="factor-identifier">
@@ -1035,6 +1121,11 @@ function createTemperatureCard(data, ctx, fc) {
     </div>
 
     ${controlBoxHTML}
+
+    <div class="card-detail-cta">
+      <span>Análisis técnico SST</span>
+      <span class="cta-arrow">&nearr;</span>
+    </div>
   `;
   return card;
 }
@@ -1108,7 +1199,12 @@ function createSnowCard(data, ctx, fc) {
     : `<span>A las ${fc.targetTimeStr} h</span><span class="telemetry-sep">&bull;</span><span>Espesor: ${targetDepthCm} cm</span><span class="telemetry-sep">&bull;</span><span>Acumulado: ${totalSnowAccum.toFixed(1)} cm</span>`;
 
   const card = document.createElement('article');
-  card.className = cardClass;
+  card.className = `${cardClass} clickable-factor-card`;
+  card.dataset.factor = 'nieve';
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.setAttribute('aria-haspopup', 'dialog');
+  card.setAttribute('title', 'Clic para ver nieve acumulada, cota de congelamiento 0°C y cadenas D.S. 024');
   card.innerHTML = `
     <div class="risk-card-top-row">
       <div class="factor-identifier">
@@ -1131,6 +1227,11 @@ function createSnowCard(data, ctx, fc) {
     </div>
 
     ${controlBoxHTML}
+
+    <div class="card-detail-cta">
+      <span>Análisis técnico SST</span>
+      <span class="cta-arrow">&nearr;</span>
+    </div>
   `;
   return card;
 }
@@ -1206,7 +1307,12 @@ function createVisibilityCard(data, ctx, fc) {
     : `<span>A las ${fc.targetTimeStr} h</span><span class="telemetry-sep">&bull;</span><span>Humedad: ${targetHumidity}%</span><span class="telemetry-sep">&bull;</span><span>${targetVis < 1000 ? 'Riesgo de niebla' : 'Ruta despejada'}</span>`;
 
   const card = document.createElement('article');
-  card.className = cardClass;
+  card.className = `${cardClass} clickable-factor-card`;
+  card.dataset.factor = 'visibilidad';
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.setAttribute('aria-haspopup', 'dialog');
+  card.setAttribute('title', 'Clic para ver visibilidad en metros, límites de velocidad y balizamiento');
   card.innerHTML = `
     <div class="risk-card-top-row">
       <div class="factor-identifier">
@@ -1229,6 +1335,11 @@ function createVisibilityCard(data, ctx, fc) {
     </div>
 
     ${controlBoxHTML}
+
+    <div class="card-detail-cta">
+      <span>Análisis técnico SST</span>
+      <span class="cta-arrow">&nearr;</span>
+    </div>
   `;
   return card;
 }
@@ -1296,7 +1407,12 @@ function createSoilCard(data, ctx, fc) {
     : `<span>A las ${fc.targetTimeStr} h</span><span class="telemetry-sep">&bull;</span><span>Capa 0-7 cm: ${targetMoisture.toFixed(3)} m³/m³</span><span class="telemetry-sep">&bull;</span><span>Taludes y botaderos</span>`;
 
   const card = document.createElement('article');
-  card.className = soilCardClass;
+  card.className = `${soilCardClass} clickable-factor-card`;
+  card.dataset.factor = 'suelo';
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.setAttribute('aria-haspopup', 'dialog');
+  card.setAttribute('title', 'Clic para ver humedad volumétrica de suelo, capacidad portante y retranqueo G.050');
   card.innerHTML = `
     <div class="risk-card-top-row">
       <div class="factor-identifier">
@@ -1319,6 +1435,11 @@ function createSoilCard(data, ctx, fc) {
     </div>
 
     ${soilControlBoxHTML}
+
+    <div class="card-detail-cta">
+      <span>Análisis técnico SST</span>
+      <span class="cta-arrow">&nearr;</span>
+    </div>
   `;
   return card;
 }
@@ -1351,4 +1472,673 @@ function escapeHTML(str) {
       '"': '&quot;'
     }[tag] || tag)
   );
+}
+
+function getCompassDirection(deg) {
+  if (deg === null || deg === undefined) return 'Var';
+  const val = Math.floor((deg / 22.5) + 0.5);
+  const arr = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+  return arr[val % 16];
+}
+
+function getWMOCodeDesc(code) {
+  if (code === undefined || code === null) return 'Despejado';
+  if (code === 0) return 'Cielo despejado';
+  if (code === 1 || code === 2 || code === 3) return 'Parcialmente nublado';
+  if (code === 45 || code === 48) return 'Niebla o escarcha';
+  if (code >= 51 && code <= 55) return 'Llovizna';
+  if (code >= 61 && code <= 65) return 'Lluvia persistente';
+  if (code >= 71 && code <= 77) return 'Nevada o aguanieve';
+  if (code >= 80 && code <= 82) return 'Chubascos pluviales';
+  if (code >= 85 && code <= 86) return 'Chubascos de nieve';
+  if (code === 95) return 'Tormenta eléctrica';
+  if (code === 96 || code === 99) return 'Tormenta con granizo';
+  return 'Condición atmosférica reportada';
+}
+
+export function renderHourlyRibbon(weatherData, currentHorizon = currentForecastHorizon) {
+  const els = getElements();
+  if (!els.horizonGroup) return;
+
+  const hourly = weatherData?.hourly;
+  if (!hourly?.time || !Array.isArray(hourly.time)) return;
+
+  const currentTimeStr = weatherData?.current?.time || '';
+  const currentHourIdx = getCurrentHourIndex(hourly.time, currentTimeStr);
+
+  let html = '';
+
+  // 1. Botón En vivo (0)
+  const isLiveActive = (currentHorizon === 0);
+  html += `
+    <button class="horizon-btn ${isLiveActive ? 'active' : ''}" type="button" data-horizon="0" title="Lectura instantánea en tiempo real (OMM / Nowcasting)">
+      <span class="live-pulse-dot"></span> En vivo
+    </button>
+  `;
+
+  // 2. Botón +30m (0.5)
+  const is30mActive = (Math.abs(currentHorizon - 0.5) < 0.1);
+  html += `
+    <button class="horizon-btn ${is30mActive ? 'active' : ''}" type="button" data-horizon="0.5" title="Proyección a 30 minutos (Alta resolución 15 min para maniobras críticas)">
+      +30m
+    </button>
+  `;
+
+  // 3. Botones para las siguientes 24 horas consecutivas
+  const maxHours = Math.min(24, hourly.time.length - currentHourIdx - 1);
+  for (let i = 1; i <= maxHours; i++) {
+    const slotIdx = currentHourIdx + i;
+    const timeStr = hourly.time[slotIdx] || '';
+    const hourLabel = timeStr ? timeStr.slice(11, 16) : `+${i}h`;
+
+    const evalSlot = evaluateHourlySlot(hourly, slotIdx);
+    let dotClass = 'dot-safe';
+    let riskLabel = 'Condición normal';
+
+    if (evalSlot.finalScore < 60 || evalSlot.maxSeverity >= 4) {
+      dotClass = 'dot-danger';
+      riskLabel = 'Alerta o restricción';
+    } else if (evalSlot.finalScore < 80 || evalSlot.maxSeverity >= 3) {
+      dotClass = 'dot-warning';
+      riskLabel = 'Atención requerida';
+    }
+
+    const isActive = (Math.abs(currentHorizon - i) < 0.1);
+    html += `
+      <button class="horizon-btn ${isActive ? 'active' : ''}" type="button" data-horizon="${i}" title="Proyección ${hourLabel} h (+${i}h) • ${riskLabel} (${evalSlot.finalScore}%)">
+        <span class="ribbon-time">${hourLabel}</span>
+        <span class="ribbon-risk-dot ${dotClass}" aria-hidden="true"></span>
+      </button>
+    `;
+  }
+
+  els.horizonGroup.innerHTML = html;
+
+  const buttons = els.horizonGroup.querySelectorAll('.horizon-btn');
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const h = parseFloat(btn.dataset.horizon);
+      if (isNaN(h) || currentForecastHorizon === h) return;
+      currentForecastHorizon = h;
+      buttons.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      if (cachedWeatherData) {
+        renderRiskCards(cachedWeatherData, currentForecastHorizon);
+      }
+    });
+  });
+
+  if (!els.horizonGroup.dataset.wheelBound) {
+    els.horizonGroup.dataset.wheelBound = 'true';
+    els.horizonGroup.addEventListener('wheel', (e) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        els.horizonGroup.scrollLeft += e.deltaY;
+      }
+    }, { passive: false });
+  }
+
+  const activeBtn = els.horizonGroup.querySelector('.horizon-btn.active');
+  if (activeBtn) {
+    activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+}
+
+function renderModalTimeline(factorKey, data, currentHourIdx, fc) {
+  const hourly = data?.hourly;
+  if (!hourly?.time) return '';
+  const slots = [];
+  const hoursToShow = 12;
+
+  for (let i = 0; i < hoursToShow; i++) {
+    const idx = currentHourIdx + i;
+    if (!hourly.time[idx]) break;
+    const timeStr = hourly.time[idx].slice(11, 16);
+    const isCurrent = (idx === fc.targetHourIdx);
+
+    let displayVal = '--';
+    let dotClass = 'slot-safe';
+
+    if (factorKey === 'uv') {
+      const v = hourly.uv_index?.[idx] ?? 0;
+      displayVal = `${v.toFixed(1)}`;
+      if (v >= 8) dotClass = 'slot-danger';
+      else if (v >= 6) dotClass = 'slot-warning';
+    } else if (factorKey === 'lluvia') {
+      const p = hourly.precipitation?.[idx] ?? 0;
+      const prob = hourly.precipitation_probability?.[idx] ?? 0;
+      displayVal = `${p.toFixed(1)}mm`;
+      if (p >= 5 || prob >= 70) dotClass = 'slot-danger';
+      else if (p >= 1 || prob >= 40) dotClass = 'slot-warning';
+    } else if (factorKey === 'viento') {
+      const w = hourly.wind_speed_10m?.[idx] ?? 0;
+      const g = hourly.wind_gusts_10m?.[idx] ?? 0;
+      const eff = Math.max(w, g);
+      displayVal = `${Math.round(eff)}k`;
+      if (eff >= 50) dotClass = 'slot-danger';
+      else if (eff >= 32) dotClass = 'slot-warning';
+    } else if (factorKey === 'tormenta') {
+      const c = hourly.cape?.[idx] ?? 0;
+      const code = hourly.weather_code?.[idx] ?? 0;
+      displayVal = `${Math.round(c)}J`;
+      if ([95, 96, 99].includes(code) || c >= 2500) dotClass = 'slot-danger';
+      else if (c >= 1500) dotClass = 'slot-warning';
+    } else if (factorKey === 'temperatura') {
+      const t = hourly.temperature_2m?.[idx] ?? 15;
+      displayVal = `${Math.round(t)}°C`;
+      if (t <= 0 || t >= 36) dotClass = 'slot-danger';
+      else if (t <= 8 || t >= 30) dotClass = 'slot-warning';
+    } else if (factorKey === 'nieve') {
+      const s = hourly.snowfall?.[idx] ?? 0;
+      displayVal = `${s.toFixed(1)}cm`;
+      if (s >= 5) dotClass = 'slot-danger';
+      else if (s >= 1) dotClass = 'slot-warning';
+    } else if (factorKey === 'visibilidad') {
+      const v = (hourly.visibility?.[idx] ?? 10000) / 1000;
+      displayVal = `${v.toFixed(1)}km`;
+      if (v < 0.5) dotClass = 'slot-danger';
+      else if (v < 2.0) dotClass = 'slot-warning';
+    } else if (factorKey === 'suelo') {
+      const sm = hourly.soil_moisture_0_to_7cm?.[idx] ?? 0.15;
+      displayVal = `${(sm * 100).toFixed(0)}%`;
+      if (sm >= 0.40) dotClass = 'slot-danger';
+      else if (sm >= 0.28) dotClass = 'slot-warning';
+    }
+
+    slots.push(`
+      <div class="timeline-slot-pill ${isCurrent ? 'current-slot' : ''}">
+        <span class="slot-time">${timeStr}</span>
+        <span class="slot-val">${displayVal}</span>
+        <span class="slot-dot ${dotClass}" aria-hidden="true"></span>
+      </div>
+    `);
+  }
+
+  return `
+    <div class="modal-timeline-box">
+      <div class="modal-section-heading">Evolución horaria del factor en el turno (próximas 12 horas)</div>
+      <div class="modal-timeline-scroll">
+        ${slots.join('')}
+      </div>
+    </div>
+  `;
+}
+
+export function openFactorDetailModal(factorKey, data = cachedWeatherData, horizon = currentForecastHorizon) {
+  if (!data) return;
+  const els = getElements();
+  if (!els.factorModal || !els.modalContentBody) return;
+
+  currentOpenModalFactor = factorKey;
+  const fc = getForecastContext(data, horizon);
+  const hourly = data.hourly || {};
+  const currentHourIdx = getCurrentHourIndex(hourly.time, data.current?.time);
+  const targetIdx = fc.targetHourIdx;
+
+  let factorNum = '01';
+  let factorTitle = '';
+  let statusPillClass = 'pill-green';
+  let statusText = 'Condición normal';
+  let heroVal = '--';
+  let heroUnit = '';
+  let heroTag = fc.isRealTime ? 'Lectura en tiempo real' : `Proyección ${fc.targetTimeStr} h (+${fc.badgeText})`;
+  let telemetryItems = [];
+  let controlsList = [];
+  let legalCitations = [];
+
+  if (factorKey === 'uv') {
+    factorNum = '01';
+    factorTitle = 'Radiación Solar Ultravioleta (UV)';
+    const currentUV = hourly.uv_index ? (hourly.uv_index[currentHourIdx] ?? 0) : 0;
+    const targetUV = fc.isRealTime ? currentUV : fc.getValue('uv_index', 0);
+    const dailyMaxUV = data?.daily?.uv_index_max?.[0] ?? targetUV;
+    const sunrise = data?.daily?.sunrise?.[0]?.slice(11, 16) || '05:45';
+    const sunset = data?.daily?.sunset?.[0]?.slice(11, 16) || '18:15';
+
+    heroVal = targetUV.toFixed(1);
+    heroUnit = 'UVI';
+
+    if (targetUV < 0.2) {
+      statusText = 'Turno nocturno (0.0 UVI)';
+      statusPillClass = 'pill-green';
+    } else if (targetUV >= 11) {
+      statusText = 'Extremadamente alto (Severo)';
+      statusPillClass = 'pill-red';
+    } else if (targetUV >= 8) {
+      statusText = 'Muy alto (Restricción)';
+      statusPillClass = 'pill-red';
+    } else if (targetUV >= 6) {
+      statusText = 'Alto (Atención)';
+      statusPillClass = 'pill-amber';
+    } else {
+      statusText = 'Bajo / Moderado';
+      statusPillClass = 'pill-green';
+    }
+
+    telemetryItems = [
+      { label: 'UVI proyectado / instantáneo', val: `${targetUV.toFixed(1)} UVI`, desc: 'Índice de radiación global en superficie' },
+      { label: 'Pico solar diurno previsto', val: `${dailyMaxUV.toFixed(1)} UVI`, desc: 'Máxima irradiancia eritemática esperada' },
+      { label: 'Ventana crítica de exposición', val: '10:00 h – 15:30 h', desc: 'Horario con mayor carga de fotones actínicos' },
+      { label: 'Ciclo astronómico solar', val: `Orto: ${sunrise} • Ocaso: ${sunset}`, desc: 'Horas de salida y puesta del sol' }
+    ];
+
+    controlsList = [
+      'Aplicación obligatoria de bloqueador solar de amplio espectro FPS 50+ en rostro, cuello y orejas cada 2 horas (o cada 60 min en caso de transpiración profusa).',
+      'Uso permanente de lentes de seguridad con filtro ultravioleta UV400 certificado (norma técnica ANSI Z87.1 / EN 166).',
+      'Uso de cubrenuca tipo legionario adosado al casco de seguridad y camisas de manga larga 100% algodón de tejido cerrado.',
+      'Habilitación de mallas raschel con porcentaje de sombra mínimo del 80% o toldos desmontables en frentes de trabajo fijos.',
+      'Rotación obligatoria de cuadrillas hacia zonas bajo sombra durante el cenit solar (11:00 h a 14:00 h).'
+    ];
+
+    legalCitations = [
+      '<strong>Ley N° 30102:</strong> Dispone medidas preventivas contra los efectos nocivos para la salud por la exposición prolongada a la radiación solar.',
+      '<strong>D.S. 024-2016-EM:</strong> Art. 101 y Art. 102 (Higiene ocupacional y agentes físicos no ionizantes en minería).',
+      '<strong>R.M. 375-2008-TR:</strong> Norma básica de ergonomía y de procedimiento de evaluación de riesgo disergonómico.'
+    ];
+  } else if (factorKey === 'lluvia') {
+    factorNum = '02';
+    factorTitle = 'Precipitación Pluvial y Escorrentía';
+    const currentPrecip = data?.current?.precipitation ?? 0;
+    const targetPrecip = fc.isRealTime ? currentPrecip : fc.getValue('precipitation', 0);
+    const currentProb = hourly.precipitation_probability?.[currentHourIdx] ?? 0;
+    const targetProb = fc.isRealTime ? currentProb : fc.getValue('precipitation_probability', 0);
+    const dailySum = data?.daily?.precipitation_sum?.[0] ?? targetPrecip;
+
+    heroVal = targetPrecip.toFixed(1);
+    heroUnit = 'mm/h';
+
+    let frictionEstimate = '0.80 (Seco)';
+    if (targetPrecip >= 5.0) {
+      statusText = 'Lluvia intensa (Restricción)';
+      statusPillClass = 'pill-red';
+      frictionEstimate = '< 0.30 (Crítico / Fango)';
+    } else if (targetPrecip >= 1.0) {
+      statusText = 'Lluvia moderada (Atención)';
+      statusPillClass = 'pill-amber';
+      frictionEstimate = '0.45 (Húmedo / Resbaladizo)';
+    } else if (targetPrecip > 0 || targetProb >= 40) {
+      statusText = 'Llovizna / Probabilidad alta';
+      statusPillClass = 'pill-amber';
+      frictionEstimate = '0.55 (Superficie húmeda)';
+    } else {
+      statusText = 'Superficie seca / Despejado';
+      statusPillClass = 'pill-green';
+    }
+
+    telemetryItems = [
+      { label: 'Intensidad de precipitación', val: `${targetPrecip.toFixed(1)} mm/h`, desc: 'Tasa pluvial proyectada en superficie' },
+      { label: 'Probabilidad de lluvia', val: `${targetProb}%`, desc: 'Certeza estadística del ensamble meteorológico' },
+      { label: 'Acumulado 24 horas', val: `${dailySum.toFixed(1)} mm`, desc: 'Volumen total de agua previsto en la jornada' },
+      { label: 'Coeficiente de fricción calzada', val: frictionEstimate, desc: 'Adherencia estimada neumático-suelo en acarreo' }
+    ];
+
+    controlsList = [
+      'Reducción de velocidad máxima vehicular a 20 km/h en rampas principales de acarreo y accesos a tajos/plataformas.',
+      'Aumento de la distancia de seguimiento entre equipos pesados y vehículos ligeros a un mínimo de 60 metros.',
+      'Verificación y descolmatación continua de zanjas de coronación, cunetas de drenaje y activación de bombas de achique.',
+      'Inspección obligatoria de la altura de bermas de seguridad (mínimo 3/4 del diámetro del neumático del camión de mayor porte).',
+      'Dotación de trajes impermeables de dos piezas de alta visibilidad (chaqueta y pantalón) con cintas reflectivas y botas de jebe con puntera de acero.'
+    ];
+
+    legalCitations = [
+      '<strong>D.S. 024-2016-EM:</strong> Art. 272 (Tránsito en operaciones mineras bajo lluvia) y Art. 248 (Estabilidad de taludes y drenaje).',
+      '<strong>Norma Técnica G.050:</strong> Seguridad durante la Construcción, Art. 26 (Protección frente a condiciones climáticas adversas).'
+    ];
+  } else if (factorKey === 'viento') {
+    factorNum = '03';
+    factorTitle = 'Velocidad del Viento y Ráfagas';
+    const currentSpeed = data?.current?.wind_speed_10m ?? 0;
+    const currentGust = data?.current?.wind_gusts_10m ?? currentSpeed;
+    const current80m = hourly.wind_speed_80m?.[currentHourIdx] ?? currentSpeed;
+    const targetSpeed = fc.isRealTime ? currentSpeed : fc.getValue('wind_speed_10m', 0);
+    const targetGust = fc.isRealTime ? currentGust : fc.getValue('wind_gusts_10m', targetSpeed);
+    const targetBoom = fc.isRealTime ? current80m : (hourly.wind_speed_80m?.[targetIdx] ?? targetSpeed);
+    const windDir = fc.getValue('wind_direction_10m', 0);
+    const compass = getCompassDirection(windDir);
+
+    const effSpeed = Math.max(targetSpeed, targetGust);
+    heroVal = `${Math.round(targetSpeed)}`;
+    heroUnit = 'km/h';
+
+    if (effSpeed >= 50.0) {
+      statusText = 'Viento muy fuerte (Crítico)';
+      statusPillClass = 'pill-red';
+    } else if (effSpeed >= 32.0) {
+      statusText = 'Viento fuerte (Restricción izaje)';
+      statusPillClass = 'pill-amber';
+    } else if (effSpeed >= 25.0) {
+      statusText = 'Brisa moderada';
+      statusPillClass = 'pill-amber';
+    } else {
+      statusText = 'Condición normal / Favorable';
+      statusPillClass = 'pill-green';
+    }
+
+    telemetryItems = [
+      { label: 'Velocidad a 10m (Anemómetro)', val: `${Math.round(targetSpeed)} km/h (${(targetSpeed / 3.6).toFixed(1)} m/s)`, desc: 'Medición estándar OMM sobre mástil' },
+      { label: 'Ráfagas pico previstas', val: `${Math.round(targetGust)} km/h (${(targetGust / 3.6).toFixed(1)} m/s)`, desc: 'Pico turbulento instantáneo en superficie' },
+      { label: 'Viento en pluma (80m)', val: `${Math.round(targetBoom)} km/h (${(targetBoom / 3.6).toFixed(1)} m/s)`, desc: 'Velocidad estimada a altura de grúas móviles' },
+      { label: 'Rumbo y dirección azimutal', val: `${windDir}° (${compass})`, desc: 'Orientación del flujo eólico dominante' }
+    ];
+
+    controlsList = [
+      'Detención obligatoria e inmediata de izajes críticos con grúas móviles o torre al superar 32 km/h (8.8 m/s).',
+      'Paralización de todo trabajo en altura (andamios multidireccionales, plataformas elevadoras y canastillas) al superar 50 km/h (13.8 m/s).',
+      'Aseguramiento y arriostramiento de coberturas provisionales, planchas de calamina, cartelería y materiales ligeros.',
+      'Uso obligatorio y ajuste ceñido de barbiquejo elástico de 3 o 4 puntos en casco de seguridad.',
+      'Control estricto de estabilización con vientos o retenidas de soga para cualquier carga suspendida en maniobras permitidas.'
+    ];
+
+    legalCitations = [
+      '<strong>D.S. 024-2016-EM:</strong> Art. 385 (Operación de grúas e izajes según viento) y Art. 134 (Trabajos en altura).',
+      '<strong>Norma Técnica G.050:</strong> Art. 18 (Equipos de izaje y grúas) y Art. 19 (Seguridad en andamios y trabajos verticales).'
+    ];
+  } else if (factorKey === 'tormenta') {
+    factorNum = '04';
+    factorTitle = 'Alerta de Tormenta Eléctrica y Descargas';
+    const currentCape = hourly.cape?.[currentHourIdx] ?? 0;
+    const targetCape = fc.isRealTime ? currentCape : fc.getValue('cape', 0);
+    const targetCode = fc.getValue('weather_code', 0);
+    const isStormCode = WEATHER_CODES_TORMENTA.includes(targetCode);
+
+    heroVal = `${Math.round(targetCape)}`;
+    heroUnit = 'J/kg';
+
+    let proximityText = '> 50 km (Sin riesgo directo)';
+    if (isStormCode) {
+      statusText = 'Alerta Roja (Tormenta activa <16 km)';
+      statusPillClass = 'pill-red';
+      proximityText = '< 16 km (Evacuación inmediata)';
+    } else if (targetCape >= 2500) {
+      statusText = 'Alerta Naranja (Inestabilidad severa)';
+      statusPillClass = 'pill-red';
+      proximityText = '16 – 32 km (Cese de izajes y altura)';
+    } else if (targetCape >= 1500) {
+      statusText = 'Alerta Amarilla (Inestabilidad moderada)';
+      statusPillClass = 'pill-amber';
+      proximityText = '32 – 50 km (Aviso preventivo)';
+    } else {
+      statusText = 'Atmósfera estable (Normal)';
+      statusPillClass = 'pill-green';
+    }
+
+    telemetryItems = [
+      { label: 'Energía Convectiva CAPE', val: `${Math.round(targetCape)} J/kg`, desc: 'Convective Available Potential Energy en atmósfera' },
+      { label: 'Proximidad estimada de celda', val: proximityText, desc: 'Radio de acción respecto al frente de trabajo' },
+      { label: 'Código meteorológico WMO', val: `WMO ${targetCode} (${getWMOCodeDesc(targetCode)})`, desc: 'Clasificación de hidrometeoro OMM' },
+      { label: 'Nivel operacional de tormenta', val: isStormCode ? 'Alerta Roja (Crítica)' : (targetCape >= 1500 ? 'Alerta Amarilla/Naranja' : 'Condición Verde'), desc: 'Estándar D.S. 024-2016-EM / NFPA 780' }
+    ];
+
+    controlsList = [
+      'Alerta Amarilla (32 a 50 km): Aviso preventivo radial a todas las cuadrillas en tajos, cerros y áreas despejadas.',
+      'Alerta Naranja (16 a 32 km): Suspensión inmediata de izajes, cese de trabajos en torres/postes y manipulación de explosivos.',
+      'Alerta Roja (<16 km o tormenta detectada): Evacuación obligatoria a refugios Jaula de Faraday (camionetas cerradas o módulos aterrados).',
+      'Regla 30/30 OMM / NFPA 780: Esperar 30 minutos contados a partir del último trueno o descarga antes de autorizar el reingreso al campo.',
+      'Prohibido terminantemente guarecerse bajo árboles solitarios, postes eléctricos, torres de antena o estructuras metálicas abiertas.'
+    ];
+
+    legalCitations = [
+      '<strong>D.S. 024-2016-EM:</strong> Art. 380 (Sistemas de alerta temprana de tormentas eléctricas) y Art. 286 (Seguridad en voladura).',
+      '<strong>Norma NFPA 780:</strong> Standard for the Installation of Lightning Protection Systems.',
+      '<strong>Recomendaciones Técnicas OMM:</strong> Guía de gestión de riesgo por rayos y tormentas convectivas.'
+    ];
+  } else if (factorKey === 'temperatura') {
+    factorNum = '05';
+    factorTitle = 'Estrés Térmico y Confort Biometeorológico';
+    const currentTemp = data?.current?.temperature_2m ?? 18;
+    const currentApparent = data?.current?.apparent_temperature ?? currentTemp;
+    const targetTemp = fc.isRealTime ? currentTemp : fc.getValue('temperature_2m', 18);
+    const targetApparent = fc.isRealTime ? currentApparent : fc.getValue('apparent_temperature', targetTemp);
+    const humidity = fc.getValue('relative_humidity_2m', 50);
+    const pressure = data?.current?.surface_pressure ?? (hourly.surface_pressure?.[targetIdx] ?? 1013);
+
+    heroVal = `${targetTemp.toFixed(1)}`;
+    heroUnit = '°C';
+
+    if (targetTemp <= -5 || targetTemp >= 38) {
+      statusText = 'Estrés extremo (Crítico)';
+      statusPillClass = 'pill-red';
+    } else if (targetTemp <= 0 || targetTemp >= 32) {
+      statusText = 'Estrés térmico (Atención)';
+      statusPillClass = 'pill-amber';
+    } else {
+      statusText = 'Rango confortable / Seguro';
+      statusPillClass = 'pill-green';
+    }
+
+    telemetryItems = [
+      { label: 'Temperatura de bulbo seco', val: `${targetTemp.toFixed(1)} °C`, desc: 'Temperatura ambiental registrada a 2m' },
+      { label: 'Temperatura aparente (sensación)', val: `${targetApparent.toFixed(1)} °C`, desc: 'Índice bioclimático considerando viento y humedad' },
+      { label: 'Humedad relativa del aire', val: `${humidity}%`, desc: 'Grado de saturación hídrica atmosférica' },
+      { label: 'Presión barométrica', val: `${Math.round(pressure)} hPa`, desc: 'Presión atmosférica en cota de superficie' }
+    ];
+
+    controlsList = [
+      'Suministro obligatorio y continuo de agua fresca y sales de hidratación oral (mínimo 500 a 750 ml por hora por trabajador expuesto).',
+      'Régimen de trabajo/descanso según ISO 7243: si la sensación térmica excede 32°C, implementar pausas de 15 a 30 min por hora a la sombra.',
+      'En bajas temperaturas (<0°C): dotación de sistema de tres capas térmicas (primera capa térmica, polar intermedio y casaca cortaviento impermeable).',
+      'Monitoreo activo de signos tempranos de fatiga térmica, golpe de calor o principio de hipotermia en personal de campo.',
+      'Disponibilidad de zonas climatizadas de recuperación fisiológica en campamentos y garitas operativas.'
+    ];
+
+    legalCitations = [
+      '<strong>Norma ISO 7243:</strong> Ergonomics of the thermal environment - Assessment of heat stress using the WBGT index.',
+      '<strong>R.M. 375-2008-TR:</strong> Título VII (Factores ambientales de riesgo ergonómico y carga térmica).',
+      '<strong>D.S. 024-2016-EM:</strong> Art. 103 (Estrés térmico por frío o calor en labores mineras).'
+    ];
+  } else if (factorKey === 'nieve') {
+    factorNum = '06';
+    factorTitle = 'Nieve, Heladas e Isoterma de Congelamiento';
+    const currentSnow = data?.current?.snowfall ?? (hourly.snowfall?.[currentHourIdx] ?? 0);
+    const targetSnow = fc.isRealTime ? currentSnow : fc.getValue('snowfall', 0);
+    const currentDepthCm = Math.round((hourly.snow_depth?.[currentHourIdx] ?? 0) * 100);
+    const targetDepthCm = Math.round((fc.getValue('snow_depth', 0)) * 100);
+    const freezingLevel = Math.round(fc.getValue('freezing_level_height', 4500));
+
+    heroVal = targetSnow > 0 ? targetSnow.toFixed(1) : targetDepthCm.toString();
+    heroUnit = targetSnow > 0 ? 'cm/h' : 'cm acum';
+
+    let blackIce = 'Bajo (Calzada despejada)';
+    if (targetSnow >= 5.0) {
+      statusText = 'Nevada intensa (Crítica)';
+      statusPillClass = 'pill-red';
+      blackIce = 'Crítico (Hielo negro latente)';
+    } else if (targetSnow >= 1.0 || targetDepthCm > 0) {
+      statusText = 'Nevada / Escarcha en vía';
+      statusPillClass = 'pill-amber';
+      blackIce = 'Moderado / Alto en curvas y sombra';
+    } else {
+      statusText = 'Sin nieve / Despejado';
+      statusPillClass = 'pill-green';
+    }
+
+    telemetryItems = [
+      { label: 'Tasa horaria de nevada', val: `${targetSnow.toFixed(1)} cm/h`, desc: 'Intensidad de precipitación sólida proyectada' },
+      { label: 'Espesor acumulado en rasante', val: `${targetDepthCm} cm`, desc: 'Capa de nieve acumulada sobre el suelo' },
+      { label: 'Cota de congelamiento (Isoterma 0°)', val: `${freezingLevel} m s.n.m.`, desc: 'Altitud donde la temperatura del aire alcanza 0°C' },
+      { label: 'Riesgo de hielo negro (Black Ice)', val: blackIce, desc: 'Película delgada transparente de alta resbaladicidad' }
+    ];
+
+    controlsList = [
+      'Montaje obligatorio de cadenas para nieve en neumáticos motrices de vehículos de acarreo y camionetas 4x4.',
+      'Verificación diaria de anticongelante en radiadores y funcionamiento de calefacción y desempañador en cabinas.',
+      'Despeje mecánico de vías con motoniveladora y esparcido de sal o arena fina en pendientes pronunciadas.',
+      'Uso obligatorio de botas de seguridad térmicas con suela antideslizante para nieve y polainas impermeables.',
+      'Prohibición de tránsito peatonal sobre taludes nevados o estructuras elevadas con escarcha acumulada.'
+    ];
+
+    legalCitations = [
+      '<strong>D.S. 024-2016-EM:</strong> Art. 273 (Operación vehicular bajo nieve o calzada con hielo) y Art. 104 (Operaciones en alta montaña).',
+      '<strong>Manual de Carreteras MTC:</strong> Especificaciones técnicas de mantenimiento vial en temporada invernal.'
+    ];
+  } else if (factorKey === 'visibilidad') {
+    factorNum = '07';
+    factorTitle = 'Visibilidad Horizontal en Vías y Operaciones';
+    const currentVis = data?.current?.visibility ?? (hourly.visibility?.[currentHourIdx] ?? 10000);
+    const targetVis = fc.isRealTime ? currentVis : fc.getValue('visibility', 10000);
+    const visMeters = Math.round(targetVis);
+    const visKm = (targetVis / 1000).toFixed(1);
+
+    heroVal = visKm;
+    heroUnit = 'km';
+
+    let speedLimit = '60 km/h (Velocidad estándar)';
+    if (targetVis < 100) {
+      statusText = 'Visibilidad nula / densa (Paralización)';
+      statusPillClass = 'pill-red';
+      speedLimit = 'Paralización de tránsito vehicular';
+    } else if (targetVis < 500) {
+      statusText = 'Niebla densa (Restricción severa)';
+      statusPillClass = 'pill-red';
+      speedLimit = 'Máx 20 km/h (Con escolta obligatoria)';
+    } else if (targetVis < 2000) {
+      statusText = 'Bruma / Visibilidad reducida';
+      statusPillClass = 'pill-amber';
+      speedLimit = 'Máx 40 km/h (Luces y neblineros)';
+    } else {
+      statusText = 'Visibilidad óptima / Despejado';
+      statusPillClass = 'pill-green';
+    }
+
+    telemetryItems = [
+      { label: 'Alcance visual horizontal', val: `${visKm} km (${visMeters} m)`, desc: 'Distancia nítida de detección de obstáculos' },
+      { label: 'Condición atmosférica óptica', val: targetVis < 1000 ? 'Presencia de niebla / hidrometeoro denso' : 'Atmósfera diáfana / despejada', desc: 'Fenómeno reductor de visibilidad' },
+      { label: 'Velocidad vehicular permitida', val: speedLimit, desc: 'Límite de velocidad en pistas de acarreo' },
+      { label: 'Balizamiento lumínico exigido', val: 'Neblineros ámbar + pértiga LED + circulinas', desc: 'Sistemas de señalización visual activa' }
+    ];
+
+    controlsList = [
+      'Encendido obligatorio permanente de luces bajas y faros neblineros de penetración ámbar en toda la flota móvil.',
+      'Inspección y uso mandatorio de pértiga telescópica reglamentaria (4.20 m) con banderola reflectiva y luz estroboscópica LED.',
+      'Uso obligatorio de chaleco de seguridad clase 3 con cintas reflectivas de 2 pulgadas por todo el personal peatonal.',
+      'Si la visibilidad cae por debajo de 100 metros: velocidad restringida a 20 km/h y avance únicamente en caravana guiada por camioneta escolta.',
+      'Si la visibilidad es menor a 50 metros: suspensión total inmediata de tránsito y estacionamiento en bermas de seguridad autorizadas.'
+    ];
+
+    legalCitations = [
+      '<strong>D.S. 024-2016-EM:</strong> Art. 275 (Reglas de tránsito minero con visibilidad restringida por niebla, polvo o lluvia).',
+      '<strong>D.S. 016-2009-MTC:</strong> Texto Único Ordenado del Reglamento Nacional de Tránsito.'
+    ];
+  } else if (factorKey === 'suelo') {
+    factorNum = '08';
+    factorTitle = 'Humedad de Suelo y Capacidad Portante';
+    const currentMoisture = hourly.soil_moisture_0_to_7cm?.[currentHourIdx] ?? 0.15;
+    const targetMoisture = fc.isRealTime ? currentMoisture : fc.getValue('soil_moisture_0_to_7cm', 0.15);
+    const moisturePct = Math.round(targetMoisture * 100);
+
+    heroVal = `${moisturePct}`;
+    heroUnit = '% saturación';
+
+    let bearingCap = '> 250 kPa (Suelo firme)';
+    if (targetMoisture >= 0.40) {
+      statusText = 'Suelo saturado (Riesgo de hundimiento)';
+      statusPillClass = 'pill-red';
+      bearingCap = '< 80 kPa (Lodo saturado / Inestable)';
+    } else if (targetMoisture >= 0.28) {
+      statusText = 'Suelo húmedo (Consistencia plástica)';
+      statusPillClass = 'pill-amber';
+      bearingCap = '~ 150 kPa (Capacidad portante reducida)';
+    } else {
+      statusText = 'Suelo firme / Seco';
+      statusPillClass = 'pill-green';
+    }
+
+    telemetryItems = [
+      { label: 'Humedad volumétrica (0-7 cm)', val: `${targetMoisture.toFixed(3)} m³/m³ (${moisturePct}%)`, desc: 'Contenido hídrico en la capa superficial de apoyo' },
+      { label: 'Capacidad portante para grúas', val: bearingCap, desc: 'Tensión admisible de apoyo para estabilizadores' },
+      { label: 'Comportamiento mecánico', val: targetMoisture >= 0.40 ? 'Saturado / Riesgo de fluencia' : (targetMoisture >= 0.28 ? 'Plástico / Húmedo' : 'Firme y consolidado'), desc: 'Estado físico del terreno bajo carga' },
+      { label: 'Retranqueo mínimo a talud/zanja', val: 'Mínimo 3.0 m (Norma G.050)', desc: 'Distancia de seguridad obligatoria a borde libre' }
+    ];
+
+    controlsList = [
+      'Uso obligatorio de almohadillas o tacos de repartición de carga (outrigger pads) de polímero de alta densidad o madera dura bajo los estabilizadores de grúas móviles.',
+      'Inspección visual previa del punto de apoyo para descartar grietas de tensión, tubificación o blandones antes de posicionar maquinaria pesada.',
+      'Prohibición de estacionar o transitar maquinaria pesada a menos de 3 metros del borde superior de excavaciones o taludes no entibados.',
+      'Monitoreo geotécnico de infiltración y escorrentía en botaderos y plataformas tras precipitaciones para prevenir desprendimientos.',
+      'Uso de calzado de seguridad con suela profunda autolimpiante para evitar caídas en superficies lodosas.'
+    ];
+
+    legalCitations = [
+      '<strong>D.S. 024-2016-EM:</strong> Art. 248 y Art. 249 (Estabilidad de taludes, bermas de seguridad y control de pisos).',
+      '<strong>Norma Técnica G.050:</strong> Seguridad durante la Construcción, Art. 18 (Equipos de izaje y estabilización) y Art. 26 (Excavaciones y zanjas).'
+    ];
+  }
+
+  const timelineHTML = renderModalTimeline(factorKey, data, currentHourIdx, fc);
+
+  const telemetryHTML = telemetryItems.map(item => `
+    <div class="modal-telemetry-item">
+      <div class="telemetry-item-label">${escapeHTML(item.label)}</div>
+      <div class="telemetry-item-val">${escapeHTML(item.val)}</div>
+      <div class="telemetry-item-desc">${escapeHTML(item.desc)}</div>
+    </div>
+  `).join('');
+
+  const controlsHTML = controlsList.map(ctrl => `
+    <div class="control-item-row">
+      <div class="control-icon-circle" aria-hidden="true">&bull;</div>
+      <div class="control-text-content">${escapeHTML(ctrl)}</div>
+    </div>
+  `).join('');
+
+  const legalHTML = legalCitations.map(cit => `
+    <div class="legal-norm-badge">${cit}</div>
+  `).join('');
+
+  els.modalContentBody.innerHTML = `
+    <div class="modal-header-top">
+      <div class="modal-factor-badge">
+        <span class="modal-factor-num">${factorNum}</span>
+        <span>Análisis Técnico SST</span>
+      </div>
+      <span class="risk-status-pill ${statusPillClass}">${statusText}</span>
+    </div>
+
+    <div class="modal-title-row">
+      <h2 id="modal-factor-title" class="modal-title">${escapeHTML(factorTitle)}</h2>
+      <p class="modal-subtitle">Monitoreo operacional, evolución temporal y controles normativos de campo</p>
+    </div>
+
+    <div class="modal-hero-strip">
+      <span class="modal-hero-val">${heroVal}</span>
+      <span class="modal-hero-unit">${heroUnit}</span>
+      <span class="modal-hero-tag">${heroTag}</span>
+    </div>
+
+    <div class="modal-section-heading">Telemetría de precisión (Sensores / Open-Meteo)</div>
+    <div class="modal-telemetry-grid">
+      ${telemetryHTML}
+    </div>
+
+    ${timelineHTML}
+
+    <div class="modal-controls-card">
+      <div class="modal-section-heading" style="color:#f8fafc; margin-bottom: 8px;">Medidas de control operacional y EPP exigido</div>
+      ${controlsHTML}
+    </div>
+
+    <div class="modal-legal-footer">
+      <div class="modal-section-heading" style="margin-bottom: 6px;">Marco normativo y base legal aplicable</div>
+      ${legalHTML}
+    </div>
+  `;
+
+  els.factorModal.removeAttribute('hidden');
+  els.factorModal.setAttribute('aria-hidden', 'false');
+  requestAnimationFrame(() => {
+    els.factorModal.classList.add('active');
+  });
+  document.body.classList.add('modal-open');
+  els.modalCloseBtn?.focus?.();
+}
+
+export function closeFactorDetailModal() {
+  const els = getElements();
+  if (!els.factorModal) return;
+  els.factorModal.classList.remove('active');
+  els.factorModal.setAttribute('hidden', '');
+  els.factorModal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('modal-open');
+  currentOpenModalFactor = null;
 }

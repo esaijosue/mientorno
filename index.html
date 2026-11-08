@@ -179,14 +179,9 @@
           <span class="reliability-sep">&bull;</span>
           <span id="reliability-desc" class="reliability-desc">Telemetría instantánea y Nowcasting</span>
         </div>
-        <div class="horizon-toggle-group" role="group" aria-label="Modo de monitoreo y proyección">
+        <div class="horizon-toggle-group" id="horizon-toggle-group" role="group" aria-label="Modo de monitoreo y proyección">
           <button class="horizon-btn active" type="button" data-horizon="0" title="Lectura instantánea en tiempo real"><span class="live-pulse-dot"></span> En vivo</button>
-          <button class="horizon-btn" type="button" data-horizon="0.5" title="Proyección a 30 minutos (Maniobras críticas)">30m</button>
-          <button class="horizon-btn" type="button" data-horizon="1" title="Proyección a 1 hora (Alerta táctica)">1h</button>
-          <button class="horizon-btn" type="button" data-horizon="3" title="Proyección a 3 horas (Frentes dinámicos)">3h</button>
-          <button class="horizon-btn" type="button" data-horizon="9" title="Proyección a 9 horas (Jornada diurna)">9h</button>
-          <button class="horizon-btn" type="button" data-horizon="12" title="Proyección a 12 horas (Jornada continua 12x12)">12h</button>
-          <button class="horizon-btn" type="button" data-horizon="24" title="Proyección a 24 horas (Ciclo circadiano completo)">24h</button>
+          <button class="horizon-btn" type="button" data-horizon="0.5" title="Proyección a 30 minutos (Maniobras críticas)">+30m</button>
         </div>
       </div>
 
@@ -241,6 +236,14 @@
         </button>
         <button id="map-zoom-out" class="map-btn-circle" type="button" title="Alejar mapa satelital">&minus;</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal de Análisis Técnico Detallado SST por Factor -->
+  <div id="factor-detail-modal" class="factor-modal-backdrop" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-factor-title">
+    <div class="factor-modal-container">
+      <button id="modal-close-btn" class="modal-close-btn" type="button" aria-label="Cerrar ventana de detalle">&times;</button>
+      <div id="modal-content-body" class="modal-content-body"></div>
     </div>
   </div>
 
