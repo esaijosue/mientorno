@@ -876,7 +876,7 @@ function createThunderstormCard(data, ctx, fc) {
       subtitle: stormDetected ? (fc.isRealTime ? 'Alerta Roja: Tormenta en proximidad (< 16 km)' : `Alerta Roja hacia las ${fc.targetTimeStr} h`) : `${rule.nivel} (${rule.badge})`,
       value: Math.round(targetCape),
       unit: 'J/kg',
-      caption: fc.isRealTime ? 'Protocolo ThunderBolt / D.S. 024' : `Previsto a las ${fc.targetTimeStr} h`,
+      caption: fc.isRealTime ? 'Estándar D.S. 024-2016-EM / NFPA 780' : `Previsto a las ${fc.targetTimeStr} h`,
       recommendation: rule.recomendacion,
       severityScore: rule.severity
     };
@@ -893,12 +893,12 @@ function createThunderstormCard(data, ctx, fc) {
   `;
 
   const badgeHTML = fc.isRealTime
-    ? `<div class="metric-projection-badge" title="Protocolo operativo de tormenta (ThunderBolt)"><span class="projection-label">Protocolo:</span><span class="projection-val"${stormDetected ? ' style="color:#ef4444;"' : ''}>${rule.badge}</span></div>`
+    ? `<div class="metric-projection-badge" title="Estándar de tormentas eléctricas (D.S. 024-2016-EM / NFPA 780)"><span class="projection-label">Protocolo:</span><span class="projection-val"${stormDetected ? ' style="color:#ef4444;"' : ''}>${rule.badge}</span></div>`
     : `<div class="metric-projection-badge" title="Energía convectiva pico en ventana"><span class="projection-label">${fc.badgeText}:</span><span class="projection-val">${rule.badge}</span></div>`;
 
   const secondaryText = stormDetected
     ? (fc.isRealTime ? 'Alerta Roja activa &bull; Tormenta &lt; 16 km &bull; Regla 30/30' : `Alerta Roja prevista a las ${fc.targetTimeStr} h &bull; Regla 30/30`)
-    : (fc.isRealTime ? 'Monitoreo de descargas &bull; Protocolo ThunderBolt / D.S. 024' : `Previsto a las ${fc.targetTimeStr} h &bull; Pico: ${Math.round(maxCape)} J/kg`);
+    : (fc.isRealTime ? 'Monitoreo de descargas &bull; Estándar D.S. 024-2016-EM / NFPA 780' : `Previsto a las ${fc.targetTimeStr} h &bull; Pico: ${Math.round(maxCape)} J/kg`);
 
   const card = document.createElement('article');
   card.className = cardClass;
