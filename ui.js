@@ -98,6 +98,10 @@ export function initUI() {
     });
   });
 
+  if (elements.horizonGroup) {
+    enableHorizontalWheelAndDrag(elements.horizonGroup);
+  }
+
   // Modal interactions
   elements.modalCloseBtn?.addEventListener('click', closeFactorDetailModal);
   elements.factorModal?.addEventListener('click', (e) => {
@@ -1496,6 +1500,66 @@ function getWMOCodeDesc(code) {
   return 'Condición atmosférica reportada';
 }
 
+export function enableHorizontalWheelAndDrag(container) {
+  if (!container || container.dataset.scrollEnhanced === 'true') return;
+  container.dataset.scrollEnhanced = 'true';
+
+  // Desplazamiento horizontal fluido con la rueda del ratón
+  container.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      e.preventDefault();
+      container.scrollLeft += e.deltaY;
+    }
+  }, { passive: false });
+
+  // Desplazamiento fluido por arrastre con el mouse
+  let isDown = false;
+  let startX = 0;
+  let scrollLeft = 0;
+  let hasDragged = false;
+
+  container.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return; // Solo clic primario
+    isDown = true;
+    hasDragged = false;
+    startX = e.pageX - container.offsetLeft;
+    scrollLeft = container.scrollLeft;
+    container.style.cursor = 'grabbing';
+
+    const onMouseMove = (moveEvt) => {
+      if (!isDown) return;
+      const x = moveEvt.pageX - container.offsetLeft;
+      const walk = (x - startX);
+      if (Math.abs(walk) > 4) {
+        hasDragged = true;
+        moveEvt.preventDefault();
+        container.scrollLeft = scrollLeft - walk;
+      }
+    };
+
+    const onMouseUp = () => {
+      isDown = false;
+      container.style.cursor = '';
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+      setTimeout(() => {
+        hasDragged = false;
+      }, 50);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  });
+
+  // Evita que un arrastre accidental active el clic en los botones o pastillas internas
+  container.addEventListener('click', (e) => {
+    if (hasDragged) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  }, true);
+}
+
 export function renderHourlyRibbon(weatherData, currentHorizon = currentForecastHorizon) {
   const els = getElements();
   if (!els.horizonGroup) return;
@@ -1569,15 +1633,7 @@ export function renderHourlyRibbon(weatherData, currentHorizon = currentForecast
     });
   });
 
-  if (!els.horizonGroup.dataset.wheelBound) {
-    els.horizonGroup.dataset.wheelBound = 'true';
-    els.horizonGroup.addEventListener('wheel', (e) => {
-      if (e.deltaY !== 0) {
-        e.preventDefault();
-        els.horizonGroup.scrollLeft += e.deltaY;
-      }
-    }, { passive: false });
-  }
+  enableHorizontalWheelAndDrag(els.horizonGroup);
 
   const activeBtn = els.horizonGroup.querySelector('.horizon-btn.active');
   if (activeBtn) {
@@ -2082,7 +2138,7 @@ export function openFactorDetailModal(factorKey, data = cachedWeatherData, horiz
     <div class="modal-top-row">
       <div class="factor-identifier">
         <span class="factor-badge-circle">${factorNum}</span>
-        <h2 id="modal-factor-title" class="factor-title" style="margin: 0; font-size: 0.95rem; font-weight: 500;">${escapeHTML(factorTitle)}</h2>
+        <h2 id="modal-factor-title" class="factor-title" style="margin: 0;">${escapeHTML(factorTitle)}</h2>
       </div>
       <span class="risk-status-pill ${statusPillClass}">${statusText}</span>
     </div>
@@ -2101,7 +2157,7 @@ export function openFactorDetailModal(factorKey, data = cachedWeatherData, horiz
 
     ${timelineHTML}
 
-    <div class="control-measure-box" style="margin-top: 6px;">
+    <div class="control-measure-box modal-control-measure-box">
       <span class="control-box-label">Medidas de control operacional y EPP exigido:</span>
       <ul class="modal-controls-list">
         ${controlsItemsHTML}
@@ -2112,6 +2168,11 @@ export function openFactorDetailModal(factorKey, data = cachedWeatherData, horiz
       <strong>Base normativa:</strong> ${legalHTML}
     </div>
   `;
+
+  const modalTimeline = els.modalContentBody.querySelector('.modal-timeline-scroll');
+  if (modalTimeline) {
+    enableHorizontalWheelAndDrag(modalTimeline);
+  }
 
   els.factorModal.removeAttribute('hidden');
   els.factorModal.setAttribute('aria-hidden', 'false');
