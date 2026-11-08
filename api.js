@@ -13,14 +13,15 @@ export async function searchLocationNominatim(query) {
     return [];
   }
 
-  const now = Date.now();
-  const timeSinceLast = now - lastNominatimRequestTime;
-  if (timeSinceLast < 1000) {
-    await new Promise((resolve) => setTimeout(resolve, 1000 - timeSinceLast));
-  }
-  lastNominatimRequestTime = Date.now();
-
+  // 1. Intentar con Nominatim (OpenStreetMap)
   try {
+    const now = Date.now();
+    const timeSinceLast = now - lastNominatimRequestTime;
+    if (timeSinceLast < 1000) {
+      await new Promise((resolve) => setTimeout(resolve, 1000 - timeSinceLast));
+    }
+    lastNominatimRequestTime = Date.now();
+
     const url = new URL('https://nominatim.openstreetmap.org/search');
     url.searchParams.set('format', 'json');
     url.searchParams.set('q', cleanQuery);
@@ -31,24 +32,57 @@ export async function searchLocationNominatim(query) {
       headers: {
         'Accept': 'application/json'
       },
-      signal: getFetchTimeoutSignal(10000)
+      signal: getFetchTimeoutSignal(5000)
     });
 
-    if (!response.ok) {
-      throw new Error(`Error en el servidor de búsqueda (${response.status})`);
+    if (response.ok) {
+      const items = await response.json();
+      if (Array.isArray(items) && items.length > 0) {
+        return items.map((item) => ({
+          name: item.name || item.display_name.split(',')[0],
+          displayName: item.display_name,
+          lat: parseFloat(item.lat),
+          lon: parseFloat(item.lon)
+        }));
+      }
     }
-
-    const items = await response.json();
-    return items.map((item) => ({
-      name: item.name || item.display_name.split(',')[0],
-      displayName: item.display_name,
-      lat: parseFloat(item.lat),
-      lon: parseFloat(item.lon)
-    }));
-  } catch (error) {
-    console.error('Error al consultar Nominatim:', error);
-    throw error;
+  } catch (osmError) {
+    console.warn('Servicio primario Nominatim no disponible, consultando geocodificación de respaldo Open-Meteo:', osmError?.message || osmError);
   }
+
+  // 2. Respaldo resiliente: API de Geocodificación de Open-Meteo
+  try {
+    const url = new URL('https://geocoding-api.open-meteo.com/v1/search');
+    url.searchParams.set('name', cleanQuery);
+    url.searchParams.set('count', '5');
+    url.searchParams.set('language', 'es');
+    url.searchParams.set('format', 'json');
+
+    const response = await fetch(url.toString(), {
+      signal: getFetchTimeoutSignal(6000)
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data?.results && Array.isArray(data.results)) {
+        return data.results.map((item) => {
+          const parts = [item.name];
+          if (item.admin1 && item.admin1 !== item.name) parts.push(item.admin1);
+          if (item.country && item.country !== item.admin1) parts.push(item.country);
+          return {
+            name: item.name,
+            displayName: parts.join(', '),
+            lat: item.latitude,
+            lon: item.longitude
+          };
+        });
+      }
+    }
+  } catch (omError) {
+    console.warn('Geocodificación de respaldo Open-Meteo no disponible:', omError?.message || omError);
+  }
+
+  return [];
 }
 
 export async function reverseGeocodeNominatim(lat, lon) {
