@@ -19,6 +19,7 @@ let elements = {};
 let currentForecastHorizon = 0;
 let cachedWeatherData = null;
 let currentOpenModalFactor = null;
+let cachedEvaluatedFactors = {};
 
 export function getReliabilityForHorizon(h) {
   if (h === 0) return { score: '98%', desc: 'Telemetría instantánea y Nowcasting (OMM)', level: 'rel-high' };
@@ -288,6 +289,7 @@ export function renderRiskCards(weatherData, horizon = currentForecastHorizon) {
   const els = getElements();
   if (!els.cardsContainer) return;
   els.cardsContainer.innerHTML = '';
+  cachedEvaluatedFactors = {};
 
   const fc = getForecastContext(data, horizon);
 
@@ -682,6 +684,17 @@ function createUVCard(data, ctx, fc) {
       <span class="cta-arrow">&nearr;</span>
     </div>
   `;
+
+  cachedEvaluatedFactors.uv = {
+    factorNum: '01',
+    factorTitle: 'Radiación solar UV',
+    statusLabel,
+    pillClass,
+    severity: isNight ? 0 : severityScore,
+    heroVal: displayVal,
+    heroUnit: 'UVI'
+  };
+
   return card;
 }
 
@@ -809,6 +822,17 @@ function createRainCard(data, ctx, fc) {
       <span class="cta-arrow">&nearr;</span>
     </div>
   `;
+
+  cachedEvaluatedFactors.lluvia = {
+    factorNum: '02',
+    factorTitle: 'Precipitación pluvial',
+    statusLabel: rule.nivel,
+    pillClass: rule.pill,
+    severity: rule.severity,
+    heroVal,
+    heroUnit
+  };
+
   return card;
 }
 
@@ -907,6 +931,17 @@ function createWindCard(data, ctx, fc) {
       <span class="cta-arrow">&nearr;</span>
     </div>
   `;
+
+  cachedEvaluatedFactors.viento = {
+    factorNum: '03',
+    factorTitle: 'Velocidad del viento',
+    statusLabel: rule.nivel,
+    pillClass,
+    severity: rule.severity,
+    heroVal: `${Math.round(targetSpeed)}`,
+    heroUnit: 'km/h'
+  };
+
   return card;
 }
 
@@ -1010,6 +1045,17 @@ function createThunderstormCard(data, ctx, fc) {
       <span class="cta-arrow">&nearr;</span>
     </div>
   `;
+
+  cachedEvaluatedFactors.tormenta = {
+    factorNum: '04',
+    factorTitle: 'Tormenta eléctrica',
+    statusLabel: stormDetected ? 'Alerta Roja' : `${rule.nivel}`,
+    pillClass,
+    severity: rule.severity,
+    heroVal: `${Math.round(targetCape)}`,
+    heroUnit: 'J/kg'
+  };
+
   return card;
 }
 
@@ -1131,6 +1177,17 @@ function createTemperatureCard(data, ctx, fc) {
       <span class="cta-arrow">&nearr;</span>
     </div>
   `;
+
+  cachedEvaluatedFactors.temperatura = {
+    factorNum: '05',
+    factorTitle: 'Estrés térmico',
+    statusLabel: rule.nivel,
+    pillClass,
+    severity: severityScore,
+    heroVal: `${targetTemp.toFixed(1)}`,
+    heroUnit: '°C'
+  };
+
   return card;
 }
 
@@ -1237,6 +1294,17 @@ function createSnowCard(data, ctx, fc) {
       <span class="cta-arrow">&nearr;</span>
     </div>
   `;
+
+  cachedEvaluatedFactors.nieve = {
+    factorNum: '06',
+    factorTitle: 'Nieve y congelamiento',
+    statusLabel: rule.nivel,
+    pillClass,
+    severity: severityScore,
+    heroVal: `${targetSnow > 0 ? targetSnow.toFixed(1) : totalSnowAccum.toFixed(1)}`,
+    heroUnit: 'cm'
+  };
+
   return card;
 }
 
@@ -1345,6 +1413,17 @@ function createVisibilityCard(data, ctx, fc) {
       <span class="cta-arrow">&nearr;</span>
     </div>
   `;
+
+  cachedEvaluatedFactors.visibilidad = {
+    factorNum: '07',
+    factorTitle: 'Visibilidad en ruta',
+    statusLabel: rule.nivel,
+    pillClass,
+    severity: severityScore,
+    heroVal: visDisplay,
+    heroUnit: visUnit
+  };
+
   return card;
 }
 
@@ -1445,6 +1524,17 @@ function createSoilCard(data, ctx, fc) {
       <span class="cta-arrow">&nearr;</span>
     </div>
   `;
+
+  cachedEvaluatedFactors.suelo = {
+    factorNum: '08',
+    factorTitle: 'Humedad de suelo',
+    statusLabel: rule.badge || rule.nivel,
+    pillClass,
+    severity: severityScore,
+    heroVal: `${moisturePct}`,
+    heroUnit: '% saturación'
+  };
+
   return card;
 }
 
@@ -1805,20 +1895,20 @@ export function openFactorDetailModal(factorKey, data = cachedWeatherData, horiz
     heroUnit = 'mm/h';
 
     let frictionEstimate = '0.80 (Seco)';
-    if (targetPrecip >= 5.0) {
-      statusText = 'Lluvia intensa (Restricción)';
+    if (targetPrecip >= 5.0 || targetProb >= 70) {
+      statusText = 'Lluvia intensa';
       statusPillClass = 'pill-red';
       frictionEstimate = '< 0.30 (Crítico / Fango)';
-    } else if (targetPrecip >= 1.0) {
-      statusText = 'Lluvia moderada (Atención)';
+    } else if (targetPrecip >= 1.0 || targetProb >= 40) {
+      statusText = 'Lluvia moderada';
       statusPillClass = 'pill-amber';
       frictionEstimate = '0.45 (Húmedo / Resbaladizo)';
-    } else if (targetPrecip > 0 || targetProb >= 40) {
-      statusText = 'Llovizna / Probabilidad alta';
+    } else if (targetPrecip > 0 || targetProb >= 20) {
+      statusText = 'Llovizna';
       statusPillClass = 'pill-amber';
       frictionEstimate = '0.55 (Superficie húmeda)';
     } else {
-      statusText = 'Superficie seca / Despejado';
+      statusText = 'Seco';
       statusPillClass = 'pill-green';
     }
 
@@ -1853,21 +1943,21 @@ export function openFactorDetailModal(factorKey, data = cachedWeatherData, horiz
     const windDir = fc.getValue('wind_direction_10m', 0);
     const compass = getCompassDirection(windDir);
 
-    const effSpeed = Math.max(targetSpeed, targetGust);
+    const effSpeed = Math.max(targetSpeed, targetGust, targetBoom);
     heroVal = `${Math.round(targetSpeed)}`;
     heroUnit = 'km/h';
 
     if (effSpeed >= 50.0) {
-      statusText = 'Viento muy fuerte (Crítico)';
+      statusText = 'Suspensión';
       statusPillClass = 'pill-red';
     } else if (effSpeed >= 32.0) {
-      statusText = 'Viento fuerte (Restricción izaje)';
-      statusPillClass = 'pill-amber';
+      statusText = 'Restricción izaje';
+      statusPillClass = 'pill-red';
     } else if (effSpeed >= 25.0) {
-      statusText = 'Brisa moderada';
+      statusText = 'Precaución';
       statusPillClass = 'pill-amber';
     } else {
-      statusText = 'Condición normal / Favorable';
+      statusText = 'Normal';
       statusPillClass = 'pill-green';
     }
 
@@ -1902,20 +1992,25 @@ export function openFactorDetailModal(factorKey, data = cachedWeatherData, horiz
     heroUnit = 'J/kg';
 
     let proximityText = '> 50 km (Sin riesgo directo)';
-    if (isStormCode) {
-      statusText = 'Alerta Roja (Tormenta activa <16 km)';
+    const windowCodes = fc.getWindowValues('weather_code', targetCode);
+    const windowCapes = fc.getWindowValues('cape', targetCape);
+    const maxCape = Math.max(targetCape, ...windowCapes);
+    const stormDetected = isStormCode || windowCodes.some((c) => WEATHER_CODES_TORMENTA.includes(c));
+
+    if (stormDetected || targetCape >= 2500 || maxCape >= 2500) {
+      statusText = stormDetected ? 'Alerta Roja' : 'Muy alto';
       statusPillClass = 'pill-red';
-      proximityText = '< 16 km (Evacuación inmediata)';
-    } else if (targetCape >= 2500) {
-      statusText = 'Alerta Naranja (Inestabilidad severa)';
-      statusPillClass = 'pill-red';
-      proximityText = '16 – 32 km (Cese de izajes y altura)';
-    } else if (targetCape >= 1500) {
-      statusText = 'Alerta Amarilla (Inestabilidad moderada)';
-      statusPillClass = 'pill-amber';
+      proximityText = stormDetected ? '< 16 km (Evacuación inmediata)' : '16 – 32 km (Cese de izajes y altura)';
+    } else if (targetCape >= 1500 || maxCape >= 1500) {
+      statusText = 'Alto';
+      statusPillClass = 'pill-orange';
       proximityText = '32 – 50 km (Aviso preventivo)';
+    } else if (targetCape >= 500 || maxCape >= 500) {
+      statusText = 'Moderado';
+      statusPillClass = 'pill-amber';
+      proximityText = '> 50 km (Monitoreo preventivo)';
     } else {
-      statusText = 'Atmósfera estable (Normal)';
+      statusText = 'Bajo';
       statusPillClass = 'pill-green';
     }
 
@@ -1953,13 +2048,16 @@ export function openFactorDetailModal(factorKey, data = cachedWeatherData, horiz
     heroUnit = '°C';
 
     if (targetTemp <= -5 || targetTemp >= 38) {
-      statusText = 'Estrés extremo (Crítico)';
+      statusText = targetTemp <= -5 ? 'Frío extremo' : 'Golpe de calor';
       statusPillClass = 'pill-red';
     } else if (targetTemp <= 0 || targetTemp >= 32) {
-      statusText = 'Estrés térmico (Atención)';
+      statusText = targetTemp <= 0 ? 'Frío severo' : 'Calor severo';
+      statusPillClass = 'pill-orange';
+    } else if (targetTemp <= 8 || targetTemp >= 28) {
+      statusText = targetTemp <= 8 ? 'Frío moderado' : 'Calor moderado';
       statusPillClass = 'pill-amber';
     } else {
-      statusText = 'Rango confortable / Seguro';
+      statusText = 'Confort';
       statusPillClass = 'pill-green';
     }
 
@@ -1996,16 +2094,20 @@ export function openFactorDetailModal(factorKey, data = cachedWeatherData, horiz
     heroUnit = targetSnow > 0 ? 'cm/h' : 'cm acum';
 
     let blackIce = 'Bajo (Calzada despejada)';
-    if (targetSnow >= 5.0) {
-      statusText = 'Nevada intensa (Crítica)';
+    if (targetSnow >= 5.0 || targetDepthCm >= 5) {
+      statusText = 'Nevada intensa';
       statusPillClass = 'pill-red';
       blackIce = 'Crítico (Hielo negro latente)';
-    } else if (targetSnow >= 1.0 || targetDepthCm > 0) {
-      statusText = 'Nevada / Escarcha en vía';
-      statusPillClass = 'pill-amber';
+    } else if (targetSnow >= 1.0 || targetDepthCm >= 1) {
+      statusText = 'Nevada moderada';
+      statusPillClass = 'pill-orange';
       blackIce = 'Moderado / Alto en curvas y sombra';
+    } else if (targetSnow > 0 || targetDepthCm > 0) {
+      statusText = 'Nevada ligera';
+      statusPillClass = 'pill-amber';
+      blackIce = 'Posible en zonas altas';
     } else {
-      statusText = 'Sin nieve / Despejado';
+      statusText = 'Sin nieve';
       statusPillClass = 'pill-green';
     }
 
@@ -2041,19 +2143,19 @@ export function openFactorDetailModal(factorKey, data = cachedWeatherData, horiz
 
     let speedLimit = '60 km/h (Velocidad estándar)';
     if (targetVis < 100) {
-      statusText = 'Visibilidad nula / densa (Paralización)';
+      statusText = 'Crítica';
       statusPillClass = 'pill-red';
       speedLimit = 'Paralización de tránsito vehicular';
     } else if (targetVis < 500) {
-      statusText = 'Niebla densa (Restricción severa)';
-      statusPillClass = 'pill-red';
+      statusText = 'Reducida';
+      statusPillClass = 'pill-orange';
       speedLimit = 'Máx 20 km/h (Con escolta obligatoria)';
     } else if (targetVis < 2000) {
-      statusText = 'Bruma / Visibilidad reducida';
+      statusText = 'Ligera';
       statusPillClass = 'pill-amber';
       speedLimit = 'Máx 40 km/h (Luces y neblineros)';
     } else {
-      statusText = 'Visibilidad óptima / Despejado';
+      statusText = 'Óptima';
       statusPillClass = 'pill-green';
     }
 
@@ -2088,15 +2190,15 @@ export function openFactorDetailModal(factorKey, data = cachedWeatherData, horiz
 
     let bearingCap = '> 250 kPa (Suelo firme)';
     if (targetMoisture >= 0.40) {
-      statusText = 'Suelo saturado (Riesgo de hundimiento)';
+      statusText = 'Saturado';
       statusPillClass = 'pill-red';
       bearingCap = '< 80 kPa (Lodo saturado / Inestable)';
     } else if (targetMoisture >= 0.28) {
-      statusText = 'Suelo húmedo (Consistencia plástica)';
+      statusText = 'Húmedo';
       statusPillClass = 'pill-amber';
       bearingCap = '~ 150 kPa (Capacidad portante reducida)';
     } else {
-      statusText = 'Suelo firme / Seco';
+      statusText = 'Estable';
       statusPillClass = 'pill-green';
     }
 
@@ -2122,6 +2224,15 @@ export function openFactorDetailModal(factorKey, data = cachedWeatherData, horiz
   }
 
   const timelineHTML = renderModalTimeline(factorKey, data, currentHourIdx, fc);
+
+  const evaluated = cachedEvaluatedFactors[factorKey];
+  if (evaluated) {
+    statusText = evaluated.statusLabel || statusText;
+    statusPillClass = evaluated.pillClass || statusPillClass;
+    factorNum = evaluated.factorNum || factorNum;
+    if (evaluated.heroVal !== undefined) heroVal = evaluated.heroVal;
+    if (evaluated.heroUnit !== undefined) heroUnit = evaluated.heroUnit;
+  }
 
   const telemetrySpans = telemetryItems.map((item, idx) => `
     <span><strong style="color: #cbd5e1; font-weight: 500;">${escapeHTML(item.label)}:</strong> ${escapeHTML(item.val)}</span>
@@ -2172,6 +2283,18 @@ export function openFactorDetailModal(factorKey, data = cachedWeatherData, horiz
   const modalTimeline = els.modalContentBody.querySelector('.modal-timeline-scroll');
   if (modalTimeline) {
     enableHorizontalWheelAndDrag(modalTimeline);
+  }
+
+  const container = els.factorModal.querySelector('.factor-modal-container');
+  if (container) {
+    container.classList.remove('modal-alert', 'modal-warning');
+    const isAlert = statusPillClass === 'pill-red';
+    const isWarning = statusPillClass === 'pill-orange' || statusPillClass === 'pill-amber';
+    if (isAlert) {
+      container.classList.add('modal-alert');
+    } else if (isWarning) {
+      container.classList.add('modal-warning');
+    }
   }
 
   els.factorModal.removeAttribute('hidden');
