@@ -563,7 +563,7 @@
           <span class="byline-prefix">Desarrollado por:</span>
           <span class="byline-name">Esai Josue Huaman Meza</span>
         </div>
-        <div class="byline-role">Ingeniero de Seguridad Industrial</div>
+        <div class="byline-role">Ingeniero de Seguridad Industrial &bull; MSc. en Ciencias de la Computación &bull; MBA en Ciencia de Datos</div>
       </div>
     </header>
 
@@ -697,7 +697,7 @@
               </tr>
               <tr>
                 <td><span class="mono">Nivel 4 (Naranja)</span></td>
-                <td><span class="mono">40.0% a 59.9%</span></td>
+                <td><span class="mono">40.0% a 50.0% (techo &le; 50%)</span></td>
                 <td>Operación restringida</td>
                 <td>Suspensión de tareas en frentes expuestos: parada de izajes con grúas móviles (vientos &ge; 32 km/h D.S. 024 / ASME B30.5), restricción en rampas resbaladizas y repliegue de cuadrillas en zonas elevadas.</td>
               </tr>
@@ -731,10 +731,10 @@
 
         <div class="scale-card">
           <div class="scale-card-header">
-            <span class="scale-badge" style="background: rgba(249, 115, 22, 0.16); color: #fb923c;">40.0% a 59.9%</span>
+            <span class="scale-badge" style="background: rgba(249, 115, 22, 0.16); color: #fb923c;">40.0% a 50.0%</span>
             <span class="scale-title">Operación restringida</span>
           </div>
-          <div class="scale-card-desc">Suspensión de izajes con grúas (&ge; 32 km/h), restricción en rampas resbaladizas y repliegue de zonas elevadas.</div>
+          <div class="scale-card-desc">Suspensión de izajes con grúas (&ge; 32 km/h), restricción en rampas resbaladizas y repliegue de zonas elevadas (techo crítico &le; 50%).</div>
         </div>
 
         <div class="scale-card">
@@ -747,25 +747,15 @@
       </div>
 
       <p style="margin-top: 18px;">
-        El tablero inicia por defecto en modo <strong>En vivo (Tiempo real)</strong> y permite alternar a proyecciones
-        operativas según la naturaleza de la tarea, con la posibilidad de retornar al modo en tiempo real pulsando «En
-        vivo» en cualquier momento:
+        El tablero opera de forma dinámica mediante una <strong>cinta temporal interactiva</strong> y modales de análisis técnico, permitiendo auditar la telemetría actual o proyectar la viabilidad de la jornada completa:
       </p>
 
       <ul
-        style="margin: 8px 0 16px 20px; font-size: 0.88rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px;">
-        <li><strong>En vivo (Tiempo real):</strong> Modo predeterminado. Lectura instantánea de la telemetría en terreno
-          sin proyecciones hacia adelante. Refleja las condiciones operativas exactas en el momento actual.</li>
-        <li><strong>30 minutos (30m):</strong> Ventana inmediata de alta resolución para maniobras críticas de izaje con
-          grúas y traslados de cargas sobredimensionadas.</li>
-        <li><strong>1 hora (1h):</strong> Alerta táctica para trabajos temporales en altura (andamios, plataformas
-          elevadoras) y frentes expuestos.</li>
-        <li><strong>3 horas (3h):</strong> Ventana de ejecución de tareas programadas (vaciados, tendido de cables,
-          perforación y montajes).</li>
-        <li><strong>9 horas (9h):</strong> Jornada laboral diurna en obras civiles y frentes de superficie.</li>
-        <li><strong>12 horas (12h):</strong> Turno estándar continuo (régimen 12x12).</li>
-        <li><strong>24 horas (24h):</strong> Ciclo diario integral para previsión logística, relevo de guardias y
-          planificación del siguiente turno.</li>
+        style="margin: 8px 0 16px 20px; font-size: 0.88rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 6px;">
+        <li><strong>En vivo (Tiempo real):</strong> Modo predeterminado con telemetría instantánea y Nowcasting OMM en terreno sin desfase temporal. Refleja las condiciones operativas vigentes al minuto.</li>
+        <li><strong>+30 minutos (+30m):</strong> Proyección inmediata de alta resolución (intervalos de 15 minutos) orientada a ventanas críticas de izaje con grúas y traslados de cargas sobredimensionadas.</li>
+        <li><strong>Cinta horaria interactiva hora a hora (+1h hasta +24h):</strong> Proyección cronológica continua con hora local del turno, semáforo LED de riesgo (verde, amarillo o rojo) y recálculo instantáneo del Índice de Seguridad (0–100%) para cada hora del turno. Permite desplazamiento fluido horizontal mediante rueda de ratón o arrastre táctil.</li>
+        <li><strong>Análisis técnico detallado por factor (Modales emergentes):</strong> Al pulsar cualquier factor del tablero, se despliega una ficha técnica con telemetría de precisión (ej. viento a 80 m en pluma, radiación diurna esperada, saturación hídrica del suelo), evolución horaria gráfica a 12 horas y catálogo de medidas de control y EPP normativo aplicable.</li>
       </ul>
     </section>
 
@@ -854,17 +844,19 @@
                   Verde (&lt; 500 J/kg): Normal (&gt; 50 km)<br>
                   Amarilla (500&ndash;1499 J/kg): Vigilancia (32&ndash;50 km)<br>
                   Naranja (1500&ndash;2499 J/kg): Restricción (16&ndash;32 km)<br>
-                  Roja (&ge; 2500 J/kg o descargas): Evacuación (&lt; 16 km)
+                  Roja (&ge; 2500 J/kg): Inestabilidad extrema (&lt; 16 km)<br>
+                  Roja crítica (Descargas activas / WMO 95&ndash;99): Evacuación
                 </td>
                 <td class="cell-deduction mono">
                   <strong>25% peso</strong><br>
                   100% aptitud<br>
                   85% aptitud<br>
                   40% aptitud<br>
+                  15% aptitud<br>
                   0% (Evacuación)
                 </td>
                 <td>
-                  Estándar D.S. 024-2016-EM y NFPA 780: Alerta Amarilla (32 a 50 km) con notificación radial preventiva, verificación de operatividad de refugios Faraday y prohibición de iniciar voladuras. Alerta Naranja (16 a 32 km) con suspensión obligatoria de izajes con grúas, trabajos en altura y voladuras; repliegue preventivo de cuadrillas en zonas elevadas. Alerta Roja (&lt; 16 km o descargas en proximidad) con evacuación inmediata obligatoria a refugios Faraday certificados o vehículos con cabina metálica cerrada. Reanudar únicamente tras 30 min sin descargas (regla 30/30 OMM).
+                  Estándar D.S. 024-2016-EM y NFPA 780: Alerta Amarilla (32 a 50 km) con notificación radial preventiva, verificación de operatividad de refugios Faraday y prohibición de iniciar voladuras. Alerta Naranja (16 a 32 km) con suspensión obligatoria de izajes con grúas, trabajos en altura y voladuras; repliegue preventivo de cuadrillas en zonas elevadas. Alerta Roja (&ge; 2500 J/kg o descargas en proximidad) con evacuación inmediata obligatoria a refugios Faraday certificados o vehículos con cabina metálica cerrada. Reanudar únicamente tras 30 min sin descargas (regla 30/30 OMM).
                 </td>
               </tr>
               <tr>
@@ -886,7 +878,7 @@
                   85% aptitud<br>
                   100% aptitud<br>
                   85% aptitud<br>
-                  15% aptitud<br>
+                  40% aptitud<br>
                   0% (Crítico)
                 </td>
                 <td>
@@ -1009,7 +1001,8 @@
             <div class="factor-level-row"><span>Verde (&lt; 500): Normal (&gt; 50 km)</span><span class="mono">100% aptitud</span></div>
             <div class="factor-level-row"><span>Amarilla (500&ndash;1499): Vigilancia (32&ndash;50 km)</span><span class="mono">85% aptitud</span></div>
             <div class="factor-level-row"><span>Naranja (1500&ndash;2499): Restricción (16&ndash;32 km)</span><span class="mono">40% aptitud</span></div>
-            <div class="factor-level-row"><span>Roja (&ge; 2500 o descargas): Evacuación (&lt; 16 km)</span><span class="mono">0% (Evacuación)</span></div>
+            <div class="factor-level-row"><span>Roja (&ge; 2500): Inestabilidad extrema</span><span class="mono">15% aptitud</span></div>
+            <div class="factor-level-row"><span>Roja crítica: Descargas activas</span><span class="mono">0% (Evacuación)</span></div>
           </div>
           <div class="factor-action">Estándar D.S. 024-2016-EM y NFPA 780: Alerta Amarilla (32&ndash;50 km) con aviso radial y verificación de refugios; Alerta Naranja (16&ndash;32 km) con suspensión obligatoria de izajes, andamios y voladuras; Alerta Roja (&lt; 16 km o descargas en proximidad) con evacuación inmediata obligatoria a refugios Faraday certificados o camionetas cerradas. Reanudar únicamente tras 30 min sin descargas (regla 30/30 OMM).</div>
         </div>
@@ -1025,7 +1018,7 @@
             <div class="factor-level-row"><span>0.1° a 8.0°C: Frío moderado</span><span class="mono">85% aptitud</span></div>
             <div class="factor-level-row"><span>8.1° a 28.0°C: Confort térmico</span><span class="mono">100% aptitud</span></div>
             <div class="factor-level-row"><span>28.1° a 32.0°C: Calor moderado</span><span class="mono">85% aptitud</span></div>
-            <div class="factor-level-row"><span>32.1° a 38.0°C: Estrés por calor</span><span class="mono">15% aptitud</span></div>
+            <div class="factor-level-row"><span>32.1° a 38.0°C: Estrés por calor</span><span class="mono">40% aptitud</span></div>
             <div class="factor-level-row"><span>&gt; 38.0°C: Golpe de calor</span><span class="mono">0% (Crítico)</span></div>
           </div>
           <div class="factor-action">En heladas (&le; &minus;5°C): régimen 30m trabajo / 30m caseta calefaccionada, EPP multicapa y bebidas calientes. En estrés por calor (32&ndash;38°C): régimen 45m labor / 15m sombra fresca (ISO 7243) e hidratación de 1 L/h con electrolitos. Con &gt; 38°C: alerta roja, descanso 30m/30m o suspensión de tareas pesadas.</div>
