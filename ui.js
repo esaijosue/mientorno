@@ -1656,8 +1656,8 @@ function renderModalTimeline(factorKey, data, currentHourIdx, fc) {
   }
 
   return `
-    <div class="modal-timeline-box">
-      <div class="modal-section-heading">Evolución horaria del factor en el turno (próximas 12 horas)</div>
+    <div class="modal-timeline-section">
+      <span class="modal-timeline-label">Pronóstico del turno (próximas 12 horas):</span>
       <div class="modal-timeline-scroll">
         ${slots.join('')}
       </div>
@@ -2067,60 +2067,49 @@ export function openFactorDetailModal(factorKey, data = cachedWeatherData, horiz
 
   const timelineHTML = renderModalTimeline(factorKey, data, currentHourIdx, fc);
 
-  const telemetryHTML = telemetryItems.map(item => `
-    <div class="modal-telemetry-item">
-      <div class="telemetry-item-label">${escapeHTML(item.label)}</div>
-      <div class="telemetry-item-val">${escapeHTML(item.val)}</div>
-      <div class="telemetry-item-desc">${escapeHTML(item.desc)}</div>
-    </div>
+  const telemetrySpans = telemetryItems.map((item, idx) => `
+    <span><strong style="color: #cbd5e1; font-weight: 500;">${escapeHTML(item.label)}:</strong> ${escapeHTML(item.val)}</span>
+    ${idx < telemetryItems.length - 1 ? '<span class="telemetry-sep" aria-hidden="true">&bull;</span>' : ''}
   `).join('');
 
-  const controlsHTML = controlsList.map(ctrl => `
-    <div class="control-item-row">
-      <div class="control-icon-circle" aria-hidden="true">&bull;</div>
-      <div class="control-text-content">${escapeHTML(ctrl)}</div>
-    </div>
+  const controlsItemsHTML = controlsList.map(ctrl => `
+    <li>${escapeHTML(ctrl)}</li>
   `).join('');
 
-  const legalHTML = legalCitations.map(cit => `
-    <div class="legal-norm-badge">${cit}</div>
-  `).join('');
+  const legalHTML = legalCitations.join(' &bull; ');
 
   els.modalContentBody.innerHTML = `
-    <div class="modal-header-top">
-      <div class="modal-factor-badge">
-        <span class="modal-factor-num">${factorNum}</span>
-        <span>Análisis Técnico SST</span>
+    <div class="modal-top-row">
+      <div class="factor-identifier">
+        <span class="factor-badge-circle">${factorNum}</span>
+        <h2 id="modal-factor-title" class="factor-title" style="margin: 0; font-size: 0.95rem; font-weight: 500;">${escapeHTML(factorTitle)}</h2>
       </div>
       <span class="risk-status-pill ${statusPillClass}">${statusText}</span>
     </div>
 
-    <div class="modal-title-row">
-      <h2 id="modal-factor-title" class="modal-title">${escapeHTML(factorTitle)}</h2>
-      <p class="modal-subtitle">Monitoreo operacional, evolución temporal y controles normativos de campo</p>
+    <div class="modal-hero-row">
+      <div class="metric-main-group">
+        <span class="modal-hero-val">${heroVal}</span>
+        <span class="modal-hero-unit">${heroUnit}</span>
+      </div>
+      <span class="metric-projection-badge">${heroTag}</span>
     </div>
 
-    <div class="modal-hero-strip">
-      <span class="modal-hero-val">${heroVal}</span>
-      <span class="modal-hero-unit">${heroUnit}</span>
-      <span class="modal-hero-tag">${heroTag}</span>
-    </div>
-
-    <div class="modal-section-heading">Telemetría de precisión (Sensores / Open-Meteo)</div>
-    <div class="modal-telemetry-grid">
-      ${telemetryHTML}
+    <div class="metric-secondary-telemetry modal-telemetry-strip">
+      ${telemetrySpans}
     </div>
 
     ${timelineHTML}
 
-    <div class="modal-controls-card">
-      <div class="modal-section-heading" style="color:#f8fafc; margin-bottom: 8px;">Medidas de control operacional y EPP exigido</div>
-      ${controlsHTML}
+    <div class="control-measure-box" style="margin-top: 6px;">
+      <span class="control-box-label">Medidas de control operacional y EPP exigido:</span>
+      <ul class="modal-controls-list">
+        ${controlsItemsHTML}
+      </ul>
     </div>
 
-    <div class="modal-legal-footer">
-      <div class="modal-section-heading" style="margin-bottom: 6px;">Marco normativo y base legal aplicable</div>
-      ${legalHTML}
+    <div class="modal-legal-note">
+      <strong>Base normativa:</strong> ${legalHTML}
     </div>
   `;
 
