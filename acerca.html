@@ -1212,28 +1212,49 @@
       </div>
     </section>
     <section>
-      <h2>Fuentes de datos y telemetría</h2>
-      <ul>
-        <li>
-          <strong>Modelos numéricos atmosféricos globales:</strong> Telemetría procesada mediante la API de Open-Meteo,
-          integrando las corridas de alta resolución de ECMWF IFS (malla de 9 km), NOAA GFS y DWD ICON, con asimilación
-          continua y pronósticos horarios a 12 y 24 horas.
-        </li>
-        <li>
-          <strong>Doble régimen temporal:</strong> Diferenciación técnica entre la condición instantánea en tiempo real
-          (temperatura actual, UVI actual, ráfaga actual) y las proyecciones horarias del turno (picos de viento,
-          precipitación acumulada, horas de tormenta).
-        </li>
-        <li>
-          <strong>Imágenes satelitales ortorrectificadas:</strong> Capa base de alta definición de Esri World Imagery
-          (sensores Maxar y Earthstar Geographics), permitiendo ubicar frentes de trabajo, plataformas, instalaciones y
-          campamentos en cualquier parte del mundo.
-        </li>
-        <li>
-          <strong>Georreferenciación toponímica global:</strong> Sistema de coordenadas WGS84 mediante geolocalización
-          satelital del navegador y búsqueda toponímica en OpenStreetMap Nominatim.
-        </li>
-      </ul>
+      <h2>Fuentes de datos, procedencia y calidad de la telemetría (Open-Meteo)</h2>
+      <p>
+        <strong>MiEntorno</strong> obtiene su telemetría meteorológica a través de la infraestructura de <strong>Open-Meteo</strong>. En términos de ingeniería de software y ciencias atmosféricas, Open-Meteo no genera datos sintéticos ni heurísticas empíricas propias; opera como una pasarela técnica de computación geoespacial de alto rendimiento que decodifica, interpola y procesa directamente las salidas de supercomputación numérica de los principales institutos meteorológicos gubernamentales del mundo:
+      </p>
+
+      <div class="law-item">
+        <div class="law-name">1. ECMWF &mdash; Centro Europeo de Previsiones Meteorológicas a Plazo Medio</div>
+        <p class="law-desc">
+          Reconocido internacionalmente como el estándar de mayor precisión en predicción meteorológica numérica (NWP). Se integran las corridas operativas del modelo <strong>IFS (Integrated Forecasting System)</strong> con resolución espacial de 9 km, así como el reanálisis <strong>ERA5 / ERA5-Land</strong> (~9 km de resolución), el cual modela la física de la superficie terrestre (humedad volumétrica de suelo de 0 a 7 cm y balance de flujos térmicos).
+        </p>
+      </div>
+
+      <div class="law-item">
+        <div class="law-name">2. NOAA / NCEP &mdash; Administración Nacional Oceánica y Atmosférica (EE.UU.)</div>
+        <p class="law-desc">
+          Provee las salidas del modelo global <strong>GFS (Global Forecast System)</strong> y corridas de alta resolución <strong>HRRR (High-Resolution Rapid Refresh)</strong>. Incorpora asimilación continua de la constelación de satélites geoestacionarios GOES (GOES-East / GOES-West) para nowcasting de precipitación, temperatura de topes nubosos y campos de viento sinóptico.
+        </p>
+      </div>
+
+      <div class="law-item">
+        <div class="law-name">3. DWD &mdash; Servicio Meteorológico Nacional de Alemania</div>
+        <p class="law-desc">
+          Aporta las salidas del modelo <strong>ICON (Icosahedral Nonhydrostatic)</strong> en malla triangular icosaédrica. Su formulación física no hidrostática resuelve con precisión la dinámica vertical de masas de aire, base para el cálculo riguroso de la energía potencial convectiva disponible (<strong>CAPE</strong> en J/kg) y la estabilidad atmosférica previa a tormentas eléctricas.
+        </p>
+      </div>
+
+      <div class="law-item">
+        <div class="law-name">4. CAMS / Copernicus &mdash; Servicio de Vigilancia Atmosférica de la Unión Europea</div>
+        <p class="law-desc">
+          Suministra los modelos de radiación solar e <strong>Índice UV (UVI)</strong> global en superficie. Integra telemetría satelital del espesor de la capa de ozono estratosférico, ángulo cenital astronómico y profundidad óptica de aerosoles, conforme a la escala estandarizada por la Organización Mundial de la Salud (OMS).
+        </p>
+      </div>
+
+      <div class="law-item">
+        <div class="law-name">5. Cartografía satelital y georreferenciación toponímica</div>
+        <p class="law-desc">
+          La capa base visual utiliza ortofotografía satelital de alta resolución provista por <strong>Esri World Imagery</strong> (sensores comerciales Maxar y Earthstar Geographics), vinculada a geocodificación toponímica inversa sobre el elipsoide <strong>WGS84</strong> mediante OpenStreetMap Nominatim y la API geográfica de Open-Meteo.
+        </p>
+      </div>
+
+      <p style="margin-top: 14px; font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">
+        <strong>Calidad y asimilación de datos (Data Quality):</strong> Los modelos numéricos consumidos se someten a ciclos continuos de asimilación de datos <strong>4D-Var (variacional cuadridimensional)</strong>. Este proceso ajusta las ecuaciones de la física atmosférica contrastándolas en tiempo real contra millones de observaciones empíricas: estaciones meteorológicas de superficie certificadas por la OMM/WMO, radiosondeos en globos estratosféricos, sensores en aeronaves comerciales (AMDAR) y sondeos satelitales por radioocultación GPS.
+      </p>
     </section>
 
     <section>
