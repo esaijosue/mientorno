@@ -1268,6 +1268,18 @@
           del terreno).
         </li>
         <li>
+          <strong>Radiación solar UV (Modelo zonal vs. Sensor local):</strong> Discrepancia típica de &plusmn;0.5 a 1.5 UVI.
+          El modelo numérico calcula la irradiancia astronómica global y el espesor de la capa de ozono; la medición in situ
+          con solarímetro o radiómetro UV portátil puede variar puntualmente ante nubosidad fragmentada transitoria o
+          incrementarse por efecto albedo (reflexión en mantos de nieve o calaminas metálicas en campamentos).
+        </li>
+        <li>
+          <strong>Tormentas eléctricas (Energía CAPE vs. Detector de descargas):</strong> El índice CAPE modela la
+          inestabilidad termodinámica y el potencial convectivo de la masa de aire (J/kg); la orden de evacuación a
+          refugios Faraday (&lt; 16 km) se complementa en campo con detectores de tormentas electromagnéticos o de campo
+          electrostático bajo la regla 30/30 de la OMM.
+        </li>
+        <li>
           <strong>Temperatura física vs. Sensación y estrés térmico:</strong> La temperatura (°C) es la medida del
           termómetro de bulbo seco. La sensación térmica incorpora el efecto de enfriamiento por viento (wind chill) o
           sofocamiento por humedad. El <strong>Estrés térmico</strong> evalúa los límites ergonómicos de tolerancia
@@ -1275,6 +1287,79 @@
           de cuadrillas y puntos de hidratación.
         </li>
       </ul>
+    </section>
+
+    <section>
+      <h2>Protocolo de aplicación: Telemetría predictiva vs. Instrumentación in situ</h2>
+      <p>
+        En la gestión técnica de Seguridad y Salud en el Trabajo (SST), la plataforma <strong>MiEntorno</strong> y los <strong>equipos de medición física en terreno</strong> cumplen funciones operativas distintas y complementarias. La modelación numérica regional sirve para la planificación táctica de la guardia, mientras que el instrumento físico gobierna la detención inmediata a pie de obra:
+      </p>
+
+      <div class="table-desktop">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 22%;">Nivel de gestión</th>
+                <th style="width: 26%;">Instrumental / Plataforma</th>
+                <th style="width: 24%;">Momento de aplicación</th>
+                <th>Criterio y función operativa</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. Planificación táctica (Predictiva)</strong></td>
+                <td>
+                  <strong>Plataforma MiEntorno</strong><br>
+                  <span class="mono" style="font-size: 0.74rem; color: var(--text-subtle);">Modelos NWP asimilados (ECMWF IFS, NOAA GFS, ICON)</span>
+                </td>
+                <td>Al inicio de guardia (charla de seguridad de 5 min, elaboración de IPERC continuo y AST) y previo a la movilización de cuadrillas.</td>
+                <td>Anticipar el turno: definir ventanas horarias seguras, prever dotación de EPP específico (fotoprotector FPS 50+, ropa térmica multicapa), programar maniobras críticas antes de horas con viento restrictivo (&ge; 32 km/h) y mantener monitoreo preventivo en rutas o frentes sin estación fija.</td>
+              </tr>
+              <tr>
+                <td><strong>2. Control operativo in situ (Verificación física)</strong></td>
+                <td>
+                  <strong>Equipos de medición directa calibrados:</strong><br>
+                  &bull; Anemómetro digital (portátil de cazoletas/molinete o sensor en punta de pluma de grúa)<br>
+                  &bull; Radiómetro / Solarímetro UV portátil (Ley N° 30102)<br>
+                  &bull; Monitor de estrés térmico WBGT (ISO 7243 / R.M. 375-2008-TR)<br>
+                  &bull; Detector de tormentas y descargas atmosféricas (NFPA 780 / OMM)
+                </td>
+                <td>A pie de obra durante la ejecución de tareas críticas (maniobras de izaje con grúas, trabajos en andamios, excavaciones o vaciados).</td>
+                <td>Autorización o parada de emergencia inmediata en el punto exacto. Conforme al D.S. 024-2016-EM (Art. 385), si el anemómetro en pluma o terreno registra &ge; 32 km/h, la maniobra se suspende de inmediato, independientemente de la lectura del modelo zonal regional.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="cards-mobile">
+        <div class="scale-card">
+          <div class="scale-card-header">
+            <span class="scale-badge badge-safe">Nivel 1 &bull; Predictivo</span>
+            <span class="scale-title">Plataforma MiEntorno (Web)</span>
+          </div>
+          <div class="scale-card-desc">
+            <strong>Cuándo:</strong> Inicio de turno, charla de 5 minutos, IPERC continuo y AST.<br>
+            <strong>Función:</strong> Planificación de guardia, previsión logística de EPP y selección de ventanas horarias seguras antes del despliegue de personal.
+          </div>
+        </div>
+
+        <div class="scale-card" style="margin-top: 10px;">
+          <div class="scale-card-header">
+            <span class="scale-badge badge-warning">Nivel 2 &bull; In situ</span>
+            <span class="scale-title">Instrumentos calibrados de campo</span>
+          </div>
+          <div class="scale-card-desc">
+            <strong>Equipos:</strong> Anemómetro en pluma de grúa, radiómetro UV, monitor WBGT y detector de tormentas.<br>
+            <strong>Función:</strong> Control directo y parada de emergencia a pie de obra. La medición física en el punto exacto de la maniobra tiene validez resolutiva final.
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top: 14px; font-size: 0.88rem; color: var(--text-muted);">
+        <strong>Principio de autoridad de parada (Stop Work Authority):</strong> La telemetría predictiva evalúa la dinámica atmosférica de la celda geográfica (1 a 9 km); ante efectos de encajonamiento local, ráfagas turbulentas o microclimas en tajos y quebradas, la medición del instrumento físico calibrado en terreno rige la decisión legal y operativa.
+      </p>
     </section>
 
     <section>
