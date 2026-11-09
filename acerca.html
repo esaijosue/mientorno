@@ -578,14 +578,7 @@
 
     <section>
       <p>
-        <b>MiEntorno</b> es una herramienta de consulta y evaluación de factores climáticos y físicos en
-        tiempo real.
-        Está diseñada para frentes de trabajo en terreno.
-      </p>
-      <p>
-        Su misión es proporcionar criterios técnicos objetivos para facilitar la decisión oportuna de
-        continuar o suspender tareas críticas a cielo abierto (maniobras
-        de izaje, trabajos en altura, excavaciones y tránsito de vehículos o equipos móviles).
+        <strong>MiEntorno</strong> es una plataforma de evaluación y monitoreo de riesgos físicos ambientales orientada a operaciones de minería, energía y construcción. Centraliza lecturas meteorológicas instantáneas y proyecciones a 24 horas para respaldar la continuidad o suspensión preventiva de trabajos a cielo abierto: maniobras de izaje con grúas, trabajos en altura, excavaciones y tránsito en calzadas.
       </p>
     </section>
 
@@ -600,9 +593,7 @@
         <p class="law-desc">
           En su artículo 385 y normas conexas, exige suspender maniobras de izaje con grúas cuando la velocidad del
           viento alcance o supere los 32 km/h (o el límite establecido por el fabricante), así como paralizar trabajos
-          en altura
-          ante tormentas o lluvias continuas. Asimismo, norma las distancias de frenado y tránsito seguro de vehículos y
-          maquinaria pesada.
+          en altura ante tormentas o lluvias continuas. Asimismo, norma las distancias de frenado y tránsito seguro de vehículos y maquinaria pesada.
         </p>
       </div>
 
@@ -644,36 +635,25 @@
     <section>
       <h2>Metodología de cálculo: Índice de Seguridad Operacional (ISO)</h2>
       <p>
-        El Índice de Seguridad Operacional (ISO) consolida el riesgo ambiental instantáneo y proyectado en una métrica
-        porcentual entre 0.0% y 100.0%. A diferencia de modelos empíricos basados en deducciones aritméticas ciegas (que
-        pueden ocultar un peligro crítico si los demás factores están en calma), MiEntorno implementa un <strong>modelo
-          riguroso de dos capas</strong> alineado con los estándares de <strong>Gestión de Riesgos Críticos (CRM /
-          ICMM)</strong>, normas sectoriales y la <strong>Ley N° 29783</strong>:
+        El Índice de Seguridad Operacional (ISO) consolida el riesgo ambiental en una escala porcentual de 0.0% a 100.0%. El algoritmo aplica un sistema de dos niveles basado en la Ley N° 29783 y normas sectoriales:
       </p>
 
       <div class="callout" style="margin-bottom: 20px;">
-        <span class="callout-title">Principio no compensatorio en SST</span>
+        <span class="callout-title">Criterio de no compensación de riesgos</span>
         <p style="margin-bottom: 0;">
-          En la gestión de riesgos críticos, la seguridad <strong>no es compensatoria</strong>. La ausencia de lluvia o
-          la serenidad del viento no pueden compensar ni diluir una tormenta eléctrica activa en proximidad o ráfagas
-          violentas sobre una grúa. Si un factor alcanza un nivel crítico, gobierna inmediatamente el índice y activa la
-          parada técnica obligatoria.
+          En seguridad industrial, las condiciones climáticas favorables no anulan un peligro crítico. Si una variable alcanza nivel de alerta (como viento &ge; 32 km/h o tormenta eléctrica), esta gobierna el índice e impone la parada de la tarea, aunque el resto de factores esté en calma.
         </p>
       </div>
 
       <div class="calc-box">
-        <strong>Ecuación de cálculo del ISO en 2 Capas:</strong><br><br>
-        1. Aptitud ponderada base: S<sub>ponderado</sub> = &sum;<sub>i=1</sub><sup>8</sup> (W<sub>i</sub> &times;
-        Aptitud<sub>i</sub>)<br>
-        2. Puerta de control crítico (Gating): ISO = min( S<sub>ponderado</sub> ,
-        Techo<sub>crítico</sub>(Severidad<sub>máx</sub>) )
+        <strong>Ecuación de cálculo del ISO:</strong><br><br>
+        1. Aptitud ponderada base: S<sub>ponderado</sub> = &sum;<sub>i=1</sub><sup>8</sup> (W<sub>i</sub> &times; Aptitud<sub>i</sub>)<br>
+        2. Techo por factor crítico gobernante: ISO = min( S<sub>ponderado</sub> , Techo(Severidad<sub>máx</sub>) )
       </div>
 
       <p>
-        <strong>Capa 1 &mdash; Ponderación multicriterio por potencial de daño (&sum; W<sub>i</sub> =
-          100%):</strong><br>
-        Cada factor tiene asignado un peso técnico proporcional a su severidad intrínseca y potencial de daño en
-        operaciones y frentes de trabajo a la intemperie:
+        <strong>Nivel 1: Ponderación multicriterio (&sum; W<sub>i</sub> = 100%):</strong><br>
+        Distribución porcentual según el potencial de daño físico a personas e infraestructura:
       </p>
 
       <ul
@@ -697,8 +677,8 @@
       </ul>
 
       <p>
-        <strong>Capa 2 &mdash; Puerta de control crítico (Critical Risk Gating):</strong><br>
-        El factor más severo en terreno impone un <strong>techo máximo infranqueable</strong> al índice general:
+        <strong>Nivel 2: Techo por condición crítica gobernante:</strong><br>
+        La variable en condición más desfavorable impone el límite máximo del índice general:
       </p>
 
       <div class="table-desktop">
@@ -1212,56 +1192,55 @@
       </div>
     </section>
     <section>
-      <h2>Fuentes de datos, procedencia y calidad de la telemetría (Open-Meteo)</h2>
+      <h2>Fuentes de datos y calidad de la telemetría (Open-Meteo)</h2>
       <p>
-        <strong>MiEntorno</strong> obtiene su telemetría meteorológica a través de la infraestructura de <strong>Open-Meteo</strong>. En términos de ingeniería de software y ciencias atmosféricas, Open-Meteo no genera datos sintéticos ni heurísticas empíricas propias; opera como una pasarela técnica de computación geoespacial de alto rendimiento que decodifica, interpola y procesa directamente las salidas de supercomputación numérica de los principales institutos meteorológicos gubernamentales del mundo:
+        MiEntorno procesa su telemetría mediante la interfaz de <strong>Open-Meteo</strong>, la cual decodifica e integra directamente las salidas de supercomputación numérica de agencias meteorológicas y científicas gubernamentales:
       </p>
 
       <div class="law-item">
-        <div class="law-name">1. ECMWF &mdash; Centro Europeo de Previsiones Meteorológicas a Plazo Medio</div>
+        <div class="law-name">ECMWF (Centro Europeo de Previsiones Meteorológicas)</div>
         <p class="law-desc">
-          Reconocido internacionalmente como el estándar de mayor precisión en predicción meteorológica numérica (NWP). Se integran las corridas operativas del modelo <strong>IFS (Integrated Forecasting System)</strong> con resolución espacial de 9 km, así como el reanálisis <strong>ERA5 / ERA5-Land</strong> (~9 km de resolución), el cual modela la física de la superficie terrestre (humedad volumétrica de suelo de 0 a 7 cm y balance de flujos térmicos).
+          Modelo operativo IFS con resolución espacial de 9 km y reanálisis ERA5-Land (~9 km). Modela la física de superficie terrestre: balances térmicos y humedad volumétrica de suelo (capa de 0 a 7 cm). Es la referencia técnica global de mayor precisión en predicción numérica.
         </p>
       </div>
 
       <div class="law-item">
-        <div class="law-name">2. NOAA / NCEP &mdash; Administración Nacional Oceánica y Atmosférica (EE.UU.)</div>
+        <div class="law-name">NOAA / NCEP (Estados Unidos)</div>
         <p class="law-desc">
-          Provee las salidas del modelo global <strong>GFS (Global Forecast System)</strong> y corridas de alta resolución <strong>HRRR (High-Resolution Rapid Refresh)</strong>. Incorpora asimilación continua de la constelación de satélites geoestacionarios GOES (GOES-East / GOES-West) para nowcasting de precipitación, temperatura de topes nubosos y campos de viento sinóptico.
+          Modelos globales GFS y corridas de alta resolución HRRR. Incorpora asimilación continua de la constelación de satélites geoestacionarios GOES (GOES-East / GOES-West) para nowcasting de precipitación, topes nubosos y campos de viento sinóptico.
         </p>
       </div>
 
       <div class="law-item">
-        <div class="law-name">3. DWD &mdash; Servicio Meteorológico Nacional de Alemania</div>
+        <div class="law-name">DWD (Servicio Meteorológico Alemán)</div>
         <p class="law-desc">
-          Aporta las salidas del modelo <strong>ICON (Icosahedral Nonhydrostatic)</strong> en malla triangular icosaédrica. Su formulación física no hidrostática resuelve con precisión la dinámica vertical de masas de aire, base para el cálculo riguroso de la energía potencial convectiva disponible (<strong>CAPE</strong> en J/kg) y la estabilidad atmosférica previa a tormentas eléctricas.
+          Modelo no hidrostático ICON en malla triangular. Resuelve la dinámica vertical de masas de aire, base para el cálculo termodinámico de la energía potencial convectiva disponible (CAPE en J/kg) previa a tormentas eléctricas.
         </p>
       </div>
 
       <div class="law-item">
-        <div class="law-name">4. CAMS / Copernicus &mdash; Servicio de Vigilancia Atmosférica de la Unión Europea</div>
+        <div class="law-name">CAMS / Copernicus (Unión Europea)</div>
         <p class="law-desc">
-          Suministra los modelos de radiación solar e <strong>Índice UV (UVI)</strong> global en superficie. Integra telemetría satelital del espesor de la capa de ozono estratosférico, ángulo cenital astronómico y profundidad óptica de aerosoles, conforme a la escala estandarizada por la Organización Mundial de la Salud (OMS).
+          Modelo de radiación solar global e Índice UV (UVI) en superficie, calibrado según el espesor de la capa de ozono estratosférico, ángulo cenital astronómico y profundidad óptica de aerosoles bajo el estándar de la OMS.
         </p>
       </div>
 
       <div class="law-item">
-        <div class="law-name">5. Cartografía satelital y georreferenciación toponímica</div>
+        <div class="law-name">Cartografía satelital y datum geodésico</div>
         <p class="law-desc">
-          La capa base visual utiliza ortofotografía satelital de alta resolución provista por <strong>Esri World Imagery</strong> (sensores comerciales Maxar y Earthstar Geographics), vinculada a geocodificación toponímica inversa sobre el elipsoide <strong>WGS84</strong> mediante OpenStreetMap Nominatim y la API geográfica de Open-Meteo.
+          Ortofotografía satelital de alta resolución provista por Esri World Imagery (sensores Maxar y Earthstar Geographics) georreferenciada sobre el datum elipsoidal WGS84, con búsqueda toponímica en OpenStreetMap Nominatim.
         </p>
       </div>
 
-      <p style="margin-top: 14px; font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">
-        <strong>Calidad y asimilación de datos (Data Quality):</strong> Los modelos numéricos consumidos se someten a ciclos continuos de asimilación de datos <strong>4D-Var (variacional cuadridimensional)</strong>. Este proceso ajusta las ecuaciones de la física atmosférica contrastándolas en tiempo real contra millones de observaciones empíricas: estaciones meteorológicas de superficie certificadas por la OMM/WMO, radiosondeos en globos estratosféricos, sensores en aeronaves comerciales (AMDAR) y sondeos satelitales por radioocultación GPS.
+      <p style="margin-top: 12px; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55;">
+        <strong>Asimilación de datos (4D-Var):</strong> Las variables de los modelos numéricos se corrigen de forma continua contrastando las ecuaciones atmosféricas contra observaciones empíricas reales: estaciones meteorológicas automáticas de superficie certificadas por la OMM/WMO, radiosondas estratosféricas, reportes de aeronaves comerciales (AMDAR) y satélites con radioocultación GPS.
       </p>
     </section>
 
     <section>
       <h2>Márgenes de error, telemetría numérica y microclimas</h2>
       <p>
-        La plataforma utiliza predicción numérica meteorológica (NWP) asimilada con satélites y sondeos. Es fundamental
-        que el supervisor de SST comprenda cómo se relacionan los datos del modelo con la percepción física en terreno:
+        Para la evaluación de riesgos en terreno deben considerarse los siguientes factores físicos y de microclima:
       </p>
       <ul>
         <li>
@@ -1379,7 +1358,7 @@
       </div>
 
       <p style="margin-top: 14px; font-size: 0.88rem; color: var(--text-muted);">
-        <strong>Principio de autoridad de parada (Stop Work Authority):</strong> La telemetría predictiva evalúa la dinámica atmosférica de la celda geográfica (1 a 9 km); ante efectos de encajonamiento local, ráfagas turbulentas o microclimas en tajos y quebradas, la medición del instrumento físico calibrado en terreno rige la decisión legal y operativa.
+        <strong>Autoridad de detención de trabajo:</strong> La telemetría predictiva evalúa la atmósfera de la celda regional (1 a 9 km). Ante discrepancias por microclimas locales o encajonamiento en quebradas y tajos, rige de manera obligatoria la medición del instrumento físico calibrado en el punto exacto de la labor (D.S. 024-2016-EM).
       </p>
     </section>
 
@@ -1451,11 +1430,8 @@
         </div>
       </div>
 
-      <p style="margin-top: 12px; font-size: 0.88rem; color: var(--text-muted);">
-        En operaciones de campo y turnos extendidos, los horizontes de 12
-        horas (jornada continua) y 24 horas (relevo diario) son fundamentales para la gestión preventiva de riesgos. Con
-        una fiabilidad del 72% al 78%, los modelos numéricos modernos capturan con gran solvencia los ciclos diurnos de
-        temperatura, el paso de frentes fríos y las aceleraciones de viento sinóptico.
+      <p style="margin-top: 12px; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55;">
+        Para turnos extendidos (12x12) y planificación de relevos (24 h), los modelos sinópticos proyectan la evolución del ciclo diurno de temperatura, el paso de frentes fríos y aceleraciones de viento con una fiabilidad operacional estimada entre 72% y 78%.
       </p>
     </section>
 
