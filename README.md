@@ -1,149 +1,116 @@
 # MiEntorno
 
-> Plataforma de monitoreo ambiental y evaluación predictiva de riesgos físicos en tiempo real para operaciones industriales, mineras, energéticas y de infraestructura a nivel global.
+Plataforma de monitoreo y evaluación predictiva de riesgos físicos ambientales orientada a operaciones de minería, energía, construcción e infraestructura.
 
-[![Licencia](https://img.shields.io/badge/licencia-MIT-blue.svg)](LICENSE)
-[![Estándar](https://img.shields.io/badge/normativa-D.S.%20024--2016--EM%20%7C%20ISO%207243%20%7C%20WMO-brightgreen.svg)](#marco-normativo-y-regulatorio)
-[![Arquitectura](https://img.shields.io/badge/arquitectura-Vanilla%20ES%20Modules-black.svg)](#arquitectura-tecnologica)
+Permite consultar cualquier coordenada geográfica del mundo (WGS84), integrando modelos numéricos meteorológicos con criterios técnicos de seguridad y salud en el trabajo para respaldar la toma de decisiones preventivas en campo: maniobras de izaje con grúas, trabajos en altura, excavaciones, vaciados de concreto y tránsito en calzadas.
 
 ---
 
-## 1. Descripción general
+## Características principales
 
-**MiEntorno** es un sistema de soporte a la toma de decisiones preventivas para supervisores de turno, inspectores de seguridad y salud en el trabajo (SST / HSE) e ingenieros residentes. Centraliza en una interfaz cartográfica satelital la telemetría climática y atmosférica en tiempo real para faenas operativas en cualquier coordenada geográfica del mundo (WGS84).
-
-La herramienta calcula de manera continua un **Índice de seguridad en faena (ISF)** en escala porcentual ($0\%$ a $100\%$), proyecta el comportamiento de las condiciones en horizontes operativos de 30 minutos a 24 horas y emite recomendaciones de control operacional inmediatas fundamentadas en normas internacionales (ISO 7243, OMS, OMM / WMO, OSHA) y sectoriales (D.S. 024-2016-EM, R.M. 375-2008-TR).
-
----
-
-## 2. Alcance operacional
-
-La plataforma está diseñada para las siguientes actividades en campo:
-
-- **Operaciones mineras a cielo abierto y superficie:** plataformas de perforación, tajos, botaderos, canteras y plantas concentradoras.
-- **Proyectos de energía e infraestructura:** líneas de transmisión de alta tensión, subestaciones eléctricas, parques eólicos y presas hidroeléctricas.
-- **Obras civiles y viales:** movimiento de tierras, andamiaje, encofrado y trabajos de pavimentación en altura geográfica.
-- **Terminales portuarios y costeros:** patios de maniobra de contenedores, muelles y operación de grúas pórtico.
-- **Operaciones en alta montaña y frentes fríos:** control de escarcha, isoterma 0°C y estabilidad de accesos.
+- **Cartografía satelital interactiva:** Visualización en alta resolución con Esri World Imagery y Leaflet, con búsqueda por topónimo o coordenadas GPS en tiempo real.
+- **Monitoreo de 8 factores ambientales:** Radiación solar UV, lluvia, viento y ráfagas, tormentas eléctricas (CAPE), estrés térmico, nieve, visibilidad y saturación de suelo.
+- **Índice de Seguridad Operacional (ISO):** Métrica porcentual (0% a 100%) que consolida el nivel de riesgo en faena mediante un modelo de dos niveles con techos por severidad máxima.
+- **Cinta horaria predictiva (24 horas):** Proyección continua hora por hora (+1 h a +24 h) para planificar ventanas de trabajo seguras antes de movilizar cuadrillas.
+- **Detalle de controles operacionales:** Ficha desplegable por factor con lectura técnica, nivel de riesgo, equipos de protección requeridos y medidas normativas de control.
+- **Sin dependencias de compilación:** Desarrollado íntegramente en Vanilla JavaScript con ES Modules, ejecutable directamente en cualquier navegador o servidor estático.
 
 ---
 
-## 3. Marco normativo y regulatorio
+## Factores evaluados y marco normativo
 
-Los algoritmos de cálculo, umbrales de alerta y medidas de contingencia implementados en MiEntorno están calibrados conforme a los siguientes estándares:
+Los umbrales de alerta y medidas de control operacional se alinean con estándares técnicos y normativos vigentes:
 
-| Norma / Estándar | Ámbito de aplicación | Factor evaluado en el sistema |
-| :--- | :--- | :--- |
-| **D.S. 024-2016-EM** (Arts. 136, 137, 271, 385) | Seguridad y Salud Ocupacional en Minería | Límite obligatorio de parada técnica para izajes y grúas móviles por ráfagas de viento ($\ge 32\text{ km/h}$). Protocolo de refugio ante tormentas eléctricas. |
-| **Ley 30102 / OMS (WHO)** | Prevención contra radiación solar ultravioleta | Clasificación estandarizada del índice UV (escala global OMS de 0 a 16+) y obligatoriedad de fotoprotección, rotación a sombra y cubrenucas. |
-| **ISO 7243 / R.M. 375-2008-TR** | Ergonomía y estrés térmico en el trabajo | Criterios de confort térmico, regímenes de hidratación (500 ml/h) y pausas obligatorias por calor severo o temperaturas bajo cero. |
-| **Organización Meteorológica Mundial (OMM / WMO)** | Clasificación de inestabilidad convectiva | Gradiente de energía potencial convectiva disponible (CAPE en $\text{J/kg}$) y protocolo 30/30 para evacuación inmediata a refugios jaula de Faraday. |
-| **ASME B30.5 / OSHA 1926.1431** | Estándar internacional de grúas e izaje | Criterios de reducción y parada de maniobras de carga por viento en pluma ($80\text{ m}$). |
+| Factor | Variable analizada | Norma / Estándar técnico | Criterio operativo clave |
+| :--- | :--- | :--- | :--- |
+| **Viento y ráfagas** | Velocidad sostenida y ráfagas a 10 m (km/h) | **D.S. 024-2016-EM (Art. 385)** / ASME B30.5 | Parada obligatoria de izajes con grúas ante vientos $\ge 32\text{ km/h}$. |
+| **Tormenta eléctrica** | Código de tiempo y energía convectiva CAPE (J/kg) | **OMM / NFPA 780** | Protocolo 30/30: evacuación preventiva a refugios tipo jaula de Faraday si CAPE $\ge 1500\text{ J/kg}$ o descargas activas. |
+| **Estrés térmico** | Temperatura de bulbo seco y sensación térmica (°C) | **ISO 7243 / R.M. 375-2008-TR** | Monitoreo de regímenes de hidratación (500 ml/h) y pausas de descanso ante calor ($\ge 32^\circ\text{C}$) o frío extremo ($\le 0^\circ\text{C}$). |
+| **Radiación UV** | Índice Ultravioleta máximo (escala 0 a 16+) | **Ley N° 30102 / OMS** | Uso obligatorio de fotoprotector SPF 50+, cubrenucas y lentes con filtro UV al 100%. |
+| **Precipitación** | Milímetros acumulados (mm/h) y probabilidad (%) | **Norma Técnica G.050 / D.S. 024** | Suspensión de trabajos en zanjas abiertas y reducción de velocidad de tránsito en haul roads. |
+| **Nieve y escarcha** | Caída acumulada de nieve (cm/h) | **D.S. 024-2016-EM** | Control de tracción con cadenas, verificación de mecanismos hidráulicos y despeje de accesos. |
+| **Humedad de suelo** | Fracción volumétrica de agua en capa superficial (0 a 7 cm) | **Mecánica de suelos / Geotecnia SST** | Inspección de estabilidad en coronación de taludes y verificación de capacidad portante para zapatas de grúa. |
+| **Visibilidad** | Alcance visual horizontal (metros) | **Reglamento Nacional de Tránsito** | Uso obligatorio de faros neblineros, pértigas con banderín y distanciamiento preventivo vehicular. |
 
 ---
 
-## 4. Metodología de cálculo: Índice de seguridad en faena (ISF)
+## Metodología del Índice de Seguridad Operacional (ISO)
 
-El índice general consolida el riesgo ambiental instantáneo y proyectado en una métrica porcentual entre $0.0\%$ y $100.0\%$. A diferencia de fórmulas empíricas basadas en deducciones aritméticas lineales ciegas (que pueden ocultar un peligro de muerte si los demás factores están en calma), MiEntorno implementa un **modelo riguroso de dos capas** sustentado en la **Gestión de Riesgos Críticos (CRM / ICMM)**, el **Reglamento de Seguridad y Salud Ocupacional en Minería (D.S. 024-2016-EM)** y la **Ley N° 29783**:
+El índice consolida las condiciones ambientales en una escala de 0.0% a 100.0%. Su cálculo opera en dos etapas:
 
-### Principio No Compensatorio en SST
-En la prevención de fatalidades, la seguridad **no es compensatoria**. La ausencia de lluvia o la serenidad del viento no pueden compensar ni diluir una tormenta eléctrica activa con descargas a 4 km o ráfagas huracanadas sobre una grúa. Si un factor alcanza un nivel crítico de fatalidad, gobierna inmediatamente el índice general imponiendo un techo técnico y activando la parada técnica obligatoria.
+### 1. Ponderación multicriterio base
+Cada factor tiene asignado un peso según su potencial de severidad inmediata:
 
-### Formulación matemática en 2 Capas
-
-$$\text{ISF} = \min\left( \sum_{i=1}^{8} W_i \times A_i, \; C_{\max}(\text{Severidad}_{\max}) \right)$$
+$$\text{Puntaje ponderado} = \sum_{i=1}^{8} W_i \times A_i$$
 
 Donde:
-- $W_i$ es el **peso específico operacional** asignado a cada factor según su potencial de fatalidad ($\sum W_i = 100\%$).
-- $A_i$ es la **aptitud porcentual del subfactor** ($100\%$ en condición normal, $85\%$ en alerta baja, $65\%$ moderada, $40\%$ restricción, $15\%$ severa y $0\%$ en parada técnica).
-- $C_{\max}$ es la **Puerta de Control Crítico (*Non-compensatory Gate*)** impuesta por la severidad máxima presente en faena.
+- $W_i$ es el peso del factor: Tormenta (25%), Viento (20%), Temperatura (15%), Lluvia (10%), Nieve (10%), Suelo (10%), Visibilidad (5%) y Radiación UV (5%).
+- $A_i$ es la aptitud del subfactor según su nivel de severidad (0: 100%, 1: 85%, 2: 65%, 3: 40%, 4: 15%, 5: 0%).
 
-```mermaid
-flowchart TD
-    A["Telemetría de los 8 Factores Ambientales"] --> B{"¿Existe algún factor en RIESGO CRÍTICO / ROJO?<br>(Tormenta <16km, Viento >50km/h, Nieve severa, etc.)"}
-    B -- "SÍ (Principio No Compensatorio)" --> C["PUERTA DE CONTROL CRÍTICO ACTIVA:<br>El índice queda gobernado por el factor más severo.<br>Techo infranqueable: 0% a 25% (PARADA TÉCNICA)"]
-    B -- "NO (Condiciones normales o moderadas)" --> D["PONDERACIÓN MULTICRITERIO NORMATIVA:<br>Suma ponderada de aptitud según potencial de fatalidad:<br>Tormenta (25%) + Viento (20%) + Temperatura (15%) + Lluvia (10%) + Nieve (10%) + Suelo (10%) + Visibilidad (5%) + UV (5%)"]
-    C --> E["Índice de Seguridad en Faena (ISF Real)"]
-    D --> E
-```
+### 2. Techo de seguridad por severidad máxima
+Para evitar que condiciones favorables en variables secundarias enmascaren un peligro crítico inminente (por ejemplo, una tormenta eléctrica activa en un día de temperatura templada), el factor más desfavorable impone un límite superior al índice general:
 
-### Matriz de ponderación multicriterio ($W_i$)
+$$\text{ISO} = \min(\text{Puntaje ponderado}, \; \text{Techo}_{\text{severidad\_máxima}})$$
 
-| Factor ambiental y operativo | Peso ($W_i$) | Justificación técnica y normativa SST |
-| :--- | :---: | :--- |
-| **04. Tormenta eléctrica** | **25%** | Máximo potencial de fatalidad inmediata por caída de rayos a cielo abierto (D.S. 024-2016-EM). |
-| **03. Viento y ráfagas** | **20%** | Riesgo catastrófico inmediato en izajes con grúas (ASME B30.5) y trabajos en altura (Norma G.050). |
-| **05. Temperatura y estrés térmico** | **15%** | Riesgo vital por hipotermia severa ($\le -5^\circ	ext{C}$) o golpe de calor mortal ($\ge 38^\circ	ext{C}$, ISO 7243 / R.M. 375). |
-| **02. Precipitación pluvial** | **10%** | Pérdida de adherencia, derrape de volquetes en haul roads e inundación en fondo de tajo. |
-| **06. Nieve y congelamiento** | **10%** | Pérdida total de tracción en alta montaña y congelamiento de mecanismos hidráulicos. |
-| **08. Humedad de suelo** | **10%** | Inestabilidad geotécnica de taludes, coronación de bancos y asentamiento de grúas móviles. |
-| **07. Visibilidad en ruta** | **5%** | Riesgo de colisión de camiones de acarreo por niebla densa o polvaredas en rampas. |
-| **01. Radiación solar UV** | **5%** | Riesgo ergonómico y ocupacional acumulativo sobre piel y ojos (Ley N° 30102). |
+- **Severidad 5 (Crítico):** Techo máximo de 25% (Alerta Roja: Parada técnica obligatoria).
+- **Severidad 4 (Muy alto):** Techo máximo de 50% (Alerta Naranja: Operación restringida).
+- **Severidad 3 (Moderado):** Techo máximo de 75% (Alerta Amarilla: Precaución táctica).
 
-### Escala de acción operacional y techos críticos ($C_{\max}$)
+### Escala de acción en faena
 
-| Severidad máxima | Rango ISF | Condición en faena | Criterio de acción en faena |
-| :---: | :---: | :--- | :--- |
-| **Nivel 0 – 2** | **$\ge 80.0\%$** | **Condición normal (Verde)** | Operaciones regulares sin restricciones climáticas adicionales. |
-| **Nivel 3** | **$60.0\%$ a $79.9\%$** | **Atención requerida (Amarilla)** | Operación con controles preventivos: uso obligatorio de dos vientos guía (taglines) en izajes, cortavientos y rotación a la sombra. |
-| **Nivel 4** | **$40.0\%$ a $59.9\%$** | **Operación restringida (Naranja)** | Suspensión de tareas en frentes expuestos: parada de izajes con grúas (vientos $> 38	ext{ km/h}$), restricción en rampas resbaladizas y repliegue de crestas. |
-| **Nivel 5** | **$< 40.0\%$ ($C_{\max} \le 25\%$)** | **Alerta crítica / Parada obligatoria (Roja)** | **Parada técnica obligatoria inmediata** y evacuación a zonas seguras (refugios Faraday certificados ante tormentas $< 16	ext{ km}$, paralización total de grúas y andamios por viento $\ge 50	ext{ km/h}$ o nieve severa). |
+| Rango ISO | Estado | Criterio de acción en faena |
+| :---: | :--- | :--- |
+| **$\ge 80.0\%$** | **Condición normal (Verde)** | Labores regulares sin restricciones ambientales adicionales. |
+| **$60.0\%$ a $79.9\%$** | **Atención requerida (Amarilla)** | Operación con controles preventivos: vientos guía en izajes, hidratación programada y protección solar. |
+| **$40.0\%$ a $59.9\%$** | **Operación restringida (Naranja)** | Restricción en frentes expuestos: suspensión de izajes si el viento supera los 32 km/h y control en rampas resbaladizas. |
+| **$< 40.0\%$** | **Alerta crítica / Parada (Roja)** | Parada técnica obligatoria inmediata y repliegue a refugios certificados ante tormentas o vientos severos. |
 
 ---
 
-## 5. Horizontes operativos y fiabilidad estadística del modelo
+## Criterio de uso: Plataforma web vs. Instrumental in situ
 
-La plataforma cuenta con un selector de horizontes temporales que permite planificar el trabajo según la naturaleza de la maniobra, mostrando un indicador dinámico de fiabilidad en la cabecera:
+La gestión preventiva en campo opera en dos niveles complementarios:
 
-| Horizonte | Fiabilidad | Técnica meteorológica | Aplicación táctica SST |
-| :--- | :---: | :--- | :--- |
-| **En vivo (0h)** | **98%** | Telemetría instantánea y Nowcasting OMM | Monitoreo en tiempo real de frentes activos en faena. |
-| **30 minutos (30m)** | **95%** | Alta resolución cada 15 min (`minutely_15`) | Maniobras críticas de izaje y traslados de carga sobredimensionada. |
-| **1 hora (1h)** | **92%** | Nowcasting táctico de corto plazo | Trabajos temporales en altura (andamios) y frentes expuestos. |
-| **3 horas (3h)** | **88%** | Previsión de frentes dinámicos (HRRR / ICON) | Tareas programadas: vaciados de concreto, tendido y barrenación. |
-| **9 horas (9h)** | **82%** | Jornada laboral diurna (ECMWF IFS) | Planificación de frentes de superficie en obras civiles. |
-| **12 horas (12h)** | **78%** | Turno estándar de guardia (régimen 12x12) | Análisis Seguro de Trabajo (AST). Frentes de viento y ciclo térmico. |
-| **24 horas (24h)** | **72%** | Ciclo circadiano y relevo diario | Planificación logística, relevo de guardias y previsión del día siguiente. |
+1. **Nivel predictivo (Plataforma MiEntorno):** Se utiliza al inicio de turno durante la charla de seguridad, elaboración del IPERC continuo y AST. Permite identificar con anticipación las ventanas horarias más seguras del día y preparar los controles logísticos (EPP específico, luminarias, equipos de bombeo).
+2. **Nivel de control físico in situ (Instrumentos calibrados):** Durante la ejecución de la maniobra a pie de obra, rigen las mediciones directas tomadas por el instrumental de campo (anemómetro en punta de pluma de grúa, monitor de estrés térmico WBGT, radiómetro UV y detector local de tormentas). Si el anemómetro en pluma registra $\ge 32\text{ km/h}$, la maniobra se suspende de inmediato, independientemente de la lectura del modelo sinóptico regional.
 
 ---
 
-## 6. Arquitectura tecnológica
+## Arquitectura y tecnologías
 
-MiEntorno ha sido concebido bajo un principio de **arquitectura desacoplada, ligera y auditable** sin dependencias complejas de compilación:
-
-- **Frontend:** HTML5 semántico, CSS3 moderno (Custom Properties, Grid, Flexbox, backdrop-filter nativo) y ECMAScript Modules (ESM).
-- **Cartografía interactiva:** Leaflet v1.9 con mosaicos satelitales de alta resolución de Esri World Imagery (`ArcGIS REST Services`) y capa de referencia cartográfica híbrida.
-- **Telemetría meteorológica:** Integración directa con los modelos numéricos de alta resolución de [Open-Meteo](https://open-meteo.com) (GFS, ECMWF e ICON), consultando variables horarias de radiación solar, viento a 10 metros, ráfagas, probabilidad de lluvia y energía convectiva CAPE.
-- **Geocodificación y búsqueda:** OpenStreetMap Nominatim con control estricto de tasa (*rate limit* de 1 segundo) para localización precisa de minas, puertos y ciudades en el mundo.
-- **Geolocalización:** W3C Geolocation API con soporte de alta precisión (`enableHighAccuracy`) y monitoreo de dispersión satelital (alerta de precisión $> 500\text{ m}$).
+- **Frontend:** HTML5, CSS3 moderno (Custom Properties, Flexbox, Grid, backdrop-filter) y JavaScript Vanilla (ES Modules).
+- **Librería cartográfica:** [Leaflet](https://leafletjs.com/) v1.9 con capas satelitales de Esri World Imagery (ArcGIS REST Services) y etiquetas de referencia cartográfica.
+- **Modelos meteorológicos:** Integración con la API de [Open-Meteo](https://open-meteo.com/), consumiendo variables horarias asimiladas de centros meteorológicos globales (ECMWF IFS, NOAA GFS, DWD ICON).
+- **Geocodificación:** OpenStreetMap Nominatim con control de peticiones (*rate limit* de 1 segundo).
+- **Despliegue:** Compatible con cualquier hosting estático o Cloudflare Workers.
 
 ---
 
-## 7. Ejecución en entorno local
+## Ejecución local
 
-Al no requerir ningún paso de compilación o empaquetado (*zero build step*), el proyecto puede ejecutarse con cualquier servidor HTTP local:
+El proyecto no requiere Node.js, compilación ni empaquetado. Para probarlo localmente:
 
 ### Con Python (3.x):
 ```bash
 python3 -m http.server 8000
 ```
-Luego abrir `http://localhost:8000` en su navegador web.
+Abrir en el navegador: `http://localhost:8000`
 
-### Con Node.js (npx):
+### Con npx / Node.js:
 ```bash
 npx serve .
 ```
 
-### Con PHP:
-```bash
-php -S localhost:8000
-```
+---
+
+## Licencia
+
+Distribuido bajo licencia MIT. Consulte el archivo [LICENSE](LICENSE) para más detalles.
 
 ---
 
-## 8. Autoría técnica
+## Autor
 
 **Esai Josue Huaman Meza**  
-- Ingeniero HSE
-
----
+Ingeniero de Higiene y Seguridad Industrial | MSc. Ciencias de la Computación  
+GitHub: [@josuemzx](https://github.com/josuemzx)

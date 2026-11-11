@@ -387,10 +387,9 @@ export const UMBRALES_SUELO = {
 };
 
 /**
- * METODOLOGÍA DEL ÍNDICE DE SEGURIDAD OPERACIONAL (ISO) - 2 CAPAS
- * Conforme a Ley N° 29783, D.S. 024-2016-EM e ICMM Critical Risk Management.
- * Capa 1: Ponderación multicriterio por criticidad operacional (suma 100%).
- * Capa 2: Puerta de Control Crítico (Non-compensatory Gating) por severidad máxima.
+ * Metodología de cálculo del Índice de Seguridad Operacional (ISO).
+ * 1. Ponderación multicriterio por criticidad de factores (suma 100%).
+ * 2. Techo de seguridad por severidad máxima (condición más desfavorable).
  */
 export const FACTOR_WEIGHTS = {
   tormenta: 0.25,      // 25% - Riesgo de fatalidad inmediata por descargas (D.S. 024-2016-EM)
